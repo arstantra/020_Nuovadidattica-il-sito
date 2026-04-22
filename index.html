@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NuovaDidattica.EU — Formazione, TIC e AI per i Docenti</title>
+<meta name="description" content="Risorse didattiche, video, guide su Intelligenza Artificiale e TIC per docenti e studenti della scuola secondaria.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #D0021B;
+    --red-dark: #9E0015;
+    --red-light: #FF1A33;
+    --eu-blue: #003399;
+    --eu-blue-mid: #1A4DB0;
+    --eu-blue-light: #2255CC;
+    --eu-gold: #FFCC00;
+    --black: #050505;
+    --dark: #0E0E0E;
+    --dark2: #181818;
+    --dark3: #222222;
+    --gray: #888888;
+    --gray-light: #AAAAAA;
+    --white: #F5F4F0;
+    --white-dim: rgba(245,244,240,0.08);
+    --white-border: rgba(245,244,240,0.12);
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+    height: 64px;
+    background: rgba(5,5,5,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--white-border);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 12px;
+    text-decoration: none;
+  }
+
+  /* Logo SVG inline */
+  .logo-mark {
+    width: 42px; height: 42px; flex-shrink: 0;
+  }
+
+  .nav-brand {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .nav-brand span { color: var(--eu-gold); }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 1.8rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--gray-light);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    background: var(--red) !important;
+    color: var(--white) !important;
+    padding: 0.45rem 1.1rem;
+    border-radius: 100px;
+    font-weight: 500 !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--red-light) !important; color: var(--white) !important; }
+
+  /* ── MAIN WRAPPER ── */
+  main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── BENTO GRID ── */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 80px;
+    gap: 14px;
+  }
+
+  /* Card base */
+  .card {
+    background: var(--dark2);
+    border: 1px solid var(--white-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .card:hover {
+    border-color: rgba(245,244,240,0.25);
+    transform: translateY(-2px);
+  }
+  .card-inner {
+    padding: 1.8rem 2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-tag {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    opacity: 0.6;
+  }
+  .card-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .card-body {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--gray-light);
+    margin-top: 0.6rem;
+  }
+  .card-icon {
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 0.8rem;
+  }
+  .card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 1rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--gray-light);
+    transition: color 0.2s;
+  }
+  .card-link:hover { color: var(--white); }
+  .card-link svg { transition: transform 0.2s; }
+  .card-link:hover svg { transform: translateX(3px); }
+
+  /* ── HERO CARD ── */
+  .card-hero {
+    grid-column: 1 / 8;
+    grid-row: 1 / 6;
+    background: var(--red);
+    border-color: transparent;
+  }
+  .card-hero .card-inner {
+    justify-content: flex-end;
+    padding: 2.5rem;
+  }
+  .card-hero .card-tag { color: rgba(255,255,255,0.7); opacity: 1; }
+  .card-hero .card-title {
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    color: var(--white);
+    max-width: 14ch;
+  }
+  .card-hero .card-body { color: rgba(255,255,255,0.75); font-size: 1rem; max-width: 38ch; }
+  .hero-bg-pattern {
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+    opacity: 0.07;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.5) 39px, rgba(255,255,255,0.5) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.5) 39px, rgba(255,255,255,0.5) 40px);
+  }
+  .hero-logo-bg {
+    position: absolute;
+    top: -30px; right: -20px;
+    width: 240px; height: 240px;
+    opacity: 0.12;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 100px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    margin-top: 1.2rem;
+    width: fit-content;
+    text-decoration: none;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #7EFFB2;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── LOGO CARD ── */
+  .card-logo {
+    grid-column: 8 / 13;
+    grid-row: 1 / 4;
+    background: var(--dark3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: var(--white-border);
+  }
+
+  /* ── AI CARD ── */
+  .card-ai {
+    grid-column: 8 / 11;
+    grid-row: 4 / 7;
+    background: var(--eu-blue);
+    border-color: transparent;
+  }
+  .card-ai .card-tag { color: rgba(255,255,255,0.65); opacity: 1; }
+  .card-ai .card-title { color: var(--white); font-size: 1.4rem; }
+  .card-ai .card-body { color: rgba(255,255,255,0.72); }
+  .card-ai .card-link { color: rgba(255,255,255,0.7); }
+  .card-ai .card-link:hover { color: var(--white); }
+
+  /* ── COMMUNITY CARD ── */
+  .card-community {
+    grid-column: 11 / 13;
+    grid-row: 4 / 7;
+    background: var(--eu-gold);
+    border-color: transparent;
+  }
+  .card-community .card-title { color: var(--black); font-size: 1.3rem; }
+  .card-community .card-tag { color: rgba(0,0,0,0.55); opacity: 1; }
+  .card-community .card-body { color: rgba(0,0,0,0.65); }
+  .card-community .card-link { color: rgba(0,0,0,0.6); }
+  .card-community .card-link:hover { color: var(--black); }
+
+  /* ── ROW 2 — VIDEO, PDF, GOOGLE ── */
+  .card-video {
+    grid-column: 1 / 5;
+    grid-row: 6 / 10;
+  }
+  .card-video-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #111;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0.9rem;
+    flex-shrink: 0;
+  }
+  .card-video-thumb .yt-thumb-inner {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  }
+  .yt-play {
+    width: 52px; height: 52px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .card-video:hover .yt-play { transform: scale(1.1); background: var(--red-light); }
+  .yt-play svg { margin-left: 4px; }
+
+  .card-pdf {
+    grid-column: 5 / 8;
+    grid-row: 6 / 10;
+    background: var(--dark2);
+  }
+  .pdf-list {
+    list-style: none;
+    margin-top: 0.6rem;
+    flex: 1;
+  }
+  .pdf-list li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--white-border);
+    font-size: 0.83rem;
+    color: var(--gray-light);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .pdf-list li:last-child { border-bottom: none; }
+  .pdf-list li:hover { color: var(--white); }
+  .pdf-badge {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .pdf-badge.pdf { background: rgba(208,2,27,0.2); color: #FF6B7A; }
+  .pdf-badge.slide { background: rgba(255,204,0,0.15); color: var(--eu-gold); }
+
+  .card-google {
+    grid-column: 8 / 13;
+    grid-row: 7 / 10;
+    background: var(--dark2);
+  }
+  .google-apps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 0.8rem;
+  }
+  .gapp {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    background: var(--white-dim);
+    border: 1px solid var(--white-border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 0.4rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    text-decoration: none;
+  }
+  .gapp:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); }
+  .gapp-icon { font-size: 1.5rem; line-height: 1; }
+  .gapp-label { font-size: 0.65rem; color: var(--gray-light); text-align: center; letter-spacing: 0.02em; }
+
+  /* ── STAT CARDS ── */
+  .card-stat1 {
+    grid-column: 8 / 10;
+    grid-row: 6 / 7;
+  }
+  .card-stat2 {
+    grid-column: 10 / 12;
+    grid-row: 6 / 7;
+  }
+  .card-stat3 {
+    grid-column: 12 / 13;
+    grid-row: 6 / 7;
+  }
+  .stat-num {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  /* ── SOCIAL CARD ── */
+  .card-social {
+    grid-column: 1 / 5;
+    grid-row: 10 / 13;
+  }
+  .social-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 0.8rem;
+  }
+  .social-item {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--white-dim);
+    border: 1px solid var(--white-border);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 0.9rem;
+    text-decoration: none;
+    color: var(--white);
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .social-item:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.22); }
+  .social-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .si-yt { background: #FF0000; }
+  .si-ig { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
+  .si-li { background: #0A66C2; }
+  .si-tg { background: #26A5E4; }
+
+  /* ── NEWSLETTER CARD ── */
+  .card-newsletter {
+    grid-column: 5 / 10;
+    grid-row: 10 / 13;
+    background: var(--dark3);
+    border: 1px solid var(--white-border);
+  }
+  .newsletter-form {
+    display: flex; gap: 8px;
+    margin-top: 1rem;
+  }
+  .newsletter-form input {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--white-border);
+    border-radius: 100px;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.85rem;
+    color: var(--white);
+    font-family: var(--font-body);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .newsletter-form input::placeholder { color: var(--gray); }
+  .newsletter-form input:focus { border-color: rgba(255,255,255,0.35); }
+  .newsletter-form button {
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    padding: 0.65rem 1.4rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .newsletter-form button:hover { background: var(--red-light); }
+  .newsletter-perks {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+  .perk {
+    font-size: 0.76rem;
+    color: var(--gray-light);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .perk::before { content: '✓'; color: #7EFFB2; font-size: 0.7rem; }
+
+  /* ── QUOTE CARD ── */
+  .card-quote {
+    grid-column: 10 / 13;
+    grid-row: 10 / 13;
+    background: var(--red-dark);
+    border-color: transparent;
+  }
+  .quote-text {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    flex: 1;
+  }
+  .quote-cite {
+    margin-top: auto;
+    padding-top: 1rem;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.55);
+    font-style: italic;
+  }
+
+  /* ── ABOUT SECTION ── */
+  .section-about {
+    margin-top: 4rem;
+    padding: 0 0.5rem;
+  }
+  .section-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+  }
+  .section-title {
+    font-family: var(--font-head);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .section-title em { font-style: normal; color: var(--red); }
+  .section-desc {
+    max-width: 60ch;
+    color: var(--gray-light);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  /* ── FEATURES GRID ── */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 2.5rem;
+  }
+  .feature-card {
+    background: var(--dark2);
+    border: 1px solid var(--white-border);
+    border-radius: var(--radius-lg);
+    padding: 1.8rem;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .feature-card:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+  .feature-icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+  .fi-red { background: rgba(208,2,27,0.15); }
+  .fi-blue { background: rgba(0,51,153,0.2); }
+  .fi-gold { background: rgba(255,204,0,0.12); }
+  .fi-green { background: rgba(0,200,120,0.12); }
+  .feature-title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+  }
+  .feature-desc {
+    font-size: 0.87rem;
+    color: var(--gray-light);
+    line-height: 1.65;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--white-border);
+    margin-top: 5rem;
+    padding: 2.5rem 1.5rem;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .footer-brand {
+    font-family: var(--font-head);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .footer-brand span { color: var(--eu-gold); }
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--gray);
+  }
+  .footer-links {
+    display: flex; gap: 1.5rem; list-style: none;
+  }
+  .footer-links a {
+    font-size: 0.8rem; color: var(--gray);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--white); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .bento { grid-template-columns: repeat(6, 1fr); }
+    .card-hero { grid-column: 1 / 7; grid-row: 1 / 5; }
+    .card-logo { grid-column: 1 / 4; grid-row: 5 / 8; }
+    .card-ai { grid-column: 4 / 7; grid-row: 5 / 8; }
+    .card-community { grid-column: 1 / 4; grid-row: 8 / 11; }
+    .card-video { grid-column: 4 / 7; grid-row: 8 / 11; }
+    .card-pdf { grid-column: 1 / 7; grid-row: 11 / 14; }
+    .card-google { grid-column: 1 / 7; grid-row: 14 / 17; }
+    .card-stat1 { grid-column: 1 / 3; grid-row: 17 / 18; }
+    .card-stat2 { grid-column: 3 / 5; grid-row: 17 / 18; }
+    .card-stat3 { grid-column: 5 / 7; grid-row: 17 / 18; }
+    .card-social { grid-column: 1 / 7; grid-row: 18 / 21; }
+    .card-newsletter { grid-column: 1 / 7; grid-row: 21 / 24; }
+    .card-quote { grid-column: 1 / 7; grid-row: 24 / 27; }
+    .nav-links { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 1rem; }
+    main { padding: 1rem 0.75rem 3rem; }
+    .bento { grid-template-columns: 1fr 1fr; grid-auto-rows: 70px; gap: 10px; }
+    .card-hero { grid-column: 1 / 3; grid-row: 1 / 7; }
+    .card-logo { grid-column: 1 / 2; grid-row: 7 / 11; }
+    .card-ai { grid-column: 2 / 3; grid-row: 7 / 11; }
+    .card-community { grid-column: 1 / 3; grid-row: 11 / 14; }
+    .card-video { grid-column: 1 / 3; grid-row: 14 / 18; }
+    .card-pdf { grid-column: 1 / 3; grid-row: 18 / 22; }
+    .card-google { grid-column: 1 / 3; grid-row: 22 / 26; }
+    .card-stat1 { grid-column: 1 / 2; grid-row: 26 / 27; }
+    .card-stat2 { grid-column: 2 / 3; grid-row: 26 / 27; }
+    .card-stat3 { grid-column: 1 / 2; grid-row: 27 / 28; }
+    .card-social { grid-column: 1 / 3; grid-row: 28 / 32; }
+    .card-newsletter { grid-column: 1 / 3; grid-row: 32 / 36; }
+    .card-quote { grid-column: 1 / 3; grid-row: 36 / 39; }
+    .newsletter-form { flex-direction: column; }
+    .google-apps { grid-template-columns: repeat(4, 1fr); }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <svg class="logo-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <!-- N shape -->
+      <polygon points="5,15 5,65 20,65 20,30 40,65 55,65 55,15 40,15 40,50 20,15" fill="#D0021B"/>
+      <!-- D shape (partial overlap) -->
+      <rect x="35" y="15" width="20" height="50" fill="#A80015" opacity="0.8"/>
+      <path d="M35,15 L55,15 Q85,15 85,40 Q85,65 55,65 L35,65 Z" fill="#D0021B"/>
+      <path d="M55,25 Q73,25 73,40 Q73,55 55,55 L55,25 Z" fill="#A80015"/>
+      <!-- dot -->
+      <circle cx="20" cy="80" r="7" fill="#D0021B"/>
+      <!-- EU circle -->
+      <circle cx="65" cy="80" r="18" fill="#003399"/>
+      <!-- EU stars (12 stars) -->
+      <g fill="#FFCC00">
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(30, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(60, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(90, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(120, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(150, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(180, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(210, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(240, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(270, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(300, 65, 80) scale(0.55) translate(53,47)"/>
+        <polygon points="65,64 66.2,67.8 70.2,67.8 67,70.2 68.2,74 65,71.8 61.8,74 63,70.2 59.8,67.8 63.8,67.8" transform="rotate(330, 65, 80) scale(0.55) translate(53,47)"/>
+      </g>
+    </svg>
+    <div class="nav-brand">Nuova Didattica<span>.EU</span></div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#contenuti">Contenuti</a></li>
+    <li><a href="#ai">AI & TIC</a></li>
+    <li><a href="#google">Google Workspace</a></li>
+    <li><a href="#community">Community</a></li>
+    <li><a href="#newsletter" class="nav-cta">Iscriviti</a></li>
+  </ul>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div class="bento">
+
+    <!-- HERO CARD -->
+    <div class="card card-hero" id="contenuti">
+      <div class="hero-bg-pattern"></div>
+      <!-- Big ND logo watermark -->
+      <svg class="hero-logo-bg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="5,15 5,65 20,65 20,30 40,65 55,65 55,15 40,15 40,50 20,15" fill="white"/>
+        <rect x="35" y="15" width="20" height="50" fill="white" opacity="0.6"/>
+        <path d="M35,15 L55,15 Q85,15 85,40 Q85,65 55,65 L35,65 Z" fill="white"/>
+        <circle cx="20" cy="80" r="7" fill="white"/>
+        <circle cx="65" cy="80" r="18" fill="white" opacity="0.5"/>
+      </svg>
+      <div class="card-inner">
+        <div class="card-tag">Formazione digitale per docenti e studenti</div>
+        <h1 class="card-title">Didattica del futuro, <br>oggi in classe.</h1>
+        <p class="card-body">Risorse su TIC, Intelligenza Artificiale, video, guide e strumenti pratici per chi insegna e per chi impara. Progetto europeo, prospettiva italiana.</p>
+        <a href="#newsletter" class="hero-badge">Entra nella community gratuita</a>
+      </div>
+    </div>
+
+    <!-- LOGO CARD -->
+    <div class="card card-logo">
+      <div class="card-inner" style="align-items:center; justify-content:center; gap:12px;">
+        <svg viewBox="0 0 200 200" width="160" xmlns="http://www.w3.org/2000/svg">
+          <!-- N -->
+          <polygon points="10,30 10,130 40,130 40,60 80,130 110,130 110,30 80,30 80,100 40,30" fill="#D0021B"/>
+          <!-- D overlap -->
+          <rect x="70" y="30" width="40" height="100" fill="#A80015" opacity="0.85"/>
+          <path d="M70,30 L110,30 Q170,30 170,80 Q170,130 110,130 L70,130 Z" fill="#D0021B"/>
+          <path d="M110,50 Q148,50 148,80 Q148,110 110,110 L110,50 Z" fill="#9E0015"/>
+          <!-- dot -->
+          <circle cx="35" cy="160" r="14" fill="#D0021B"/>
+          <!-- EU circle -->
+          <circle cx="130" cy="160" r="36" fill="#003399"/>
+          <!-- 12 stars manually placed -->
+          <g fill="#FFCC00" font-size="10">
+            <text x="130" y="128" text-anchor="middle" font-size="11">★</text>
+            <text x="148" y="132" text-anchor="middle" font-size="9">★</text>
+            <text x="161" y="147" text-anchor="middle" font-size="9">★</text>
+            <text x="166" y="164" text-anchor="middle" font-size="9">★</text>
+            <text x="159" y="181" text-anchor="middle" font-size="9">★</text>
+            <text x="145" y="193" text-anchor="middle" font-size="9">★</text>
+            <text x="130" y="196" text-anchor="middle" font-size="9">★</text>
+            <text x="115" y="193" text-anchor="middle" font-size="9">★</text>
+            <text x="101" y="181" text-anchor="middle" font-size="9">★</text>
+            <text x="94" y="164" text-anchor="middle" font-size="9">★</text>
+            <text x="99" y="147" text-anchor="middle" font-size="9">★</text>
+            <text x="112" y="132" text-anchor="middle" font-size="9">★</text>
+          </g>
+        </svg>
+        <div style="font-family:var(--font-head); font-size:0.85rem; color:var(--gray); letter-spacing:0.06em; text-transform:uppercase;">nuovadidattica.eu</div>
+      </div>
+    </div>
+
+    <!-- AI CARD -->
+    <div class="card card-ai" id="ai">
+      <div class="card-inner">
+        <div class="card-tag">Intelligenza Artificiale</div>
+        <div class="card-icon">🤖</div>
+        <h2 class="card-title">AI per la Didattica</h2>
+        <p class="card-body">Prompt engineering, strumenti AI in classe, generazione di contenuti e valutazione automatica.</p>
+        <a href="#ai-contenuti" class="card-link">
+          Esplora
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- COMMUNITY CARD -->
+    <div class="card card-community" id="community">
+      <div class="card-inner">
+        <div class="card-tag">Community</div>
+        <div class="card-icon">👥</div>
+        <h2 class="card-title">Docenti in rete</h2>
+        <p class="card-body" style="color:rgba(0,0,0,0.6);">Forum, scambio di pratiche, collaborazione su progetti digitali.</p>
+        <a href="#community" class="card-link" style="color:rgba(0,0,0,0.6);">
+          Partecipa
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- VIDEO CARD -->
+    <div class="card card-video">
+      <div class="card-inner" style="padding:1.4rem">
+        <div class="card-tag">Video YouTube</div>
+        <div class="card-video-thumb">
+          <div class="yt-thumb-inner">
+            <div class="yt-play">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+          <div style="position:absolute; bottom:8px; left:10px; font-size:0.7rem; color:rgba(255,255,255,0.7); font-weight:500;">Ultimo video • Novità</div>
+        </div>
+        <h3 class="card-title" style="font-size:1rem;">Come usare ChatGPT per creare verifiche personalizzate</h3>
+        <a href="https://youtube.com/@nuovadidattica" target="_blank" class="card-link">
+          Guarda su YouTube
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- PDF / SLIDE CARD -->
+    <div class="card card-pdf">
+      <div class="card-inner">
+        <div class="card-tag">Risorse scaricabili</div>
+        <h2 class="card-title" style="font-size:1.2rem;">PDF & Slide</h2>
+        <ul class="pdf-list">
+          <li>
+            <span class="pdf-badge pdf">PDF</span>
+            Guida all'uso dell'AI in classe — Scuola Secondaria
+          </li>
+          <li>
+            <span class="pdf-badge slide">SLIDE</span>
+            Presentazione: Google Workspace per Docenti
+          </li>
+          <li>
+            <span class="pdf-badge pdf">PDF</span>
+            Rubrica di valutazione digitale (editabile)
+          </li>
+          <li>
+            <span class="pdf-badge slide">SLIDE</span>
+            TIC nella didattica: 10 strumenti pratici
+          </li>
+          <li>
+            <span class="pdf-badge pdf">PDF</span>
+            Prompt template per docenti — AI generativa
+          </li>
+        </ul>
+        <a href="#risorse" class="card-link" style="border-top:1px solid var(--white-border); margin-top:auto; padding-top:0.8rem;">
+          Tutte le risorse
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="card card-stat1">
+      <div class="card-inner" style="justify-content:center; padding:1rem 1.4rem;">
+        <div class="stat-num" style="color:var(--red);">50+</div>
+        <div class="stat-label">Video pubblicati</div>
+      </div>
+    </div>
+    <div class="card card-stat2">
+      <div class="card-inner" style="justify-content:center; padding:1rem 1.4rem;">
+        <div class="stat-num" style="color:var(--eu-gold);">30+</div>
+        <div class="stat-label">Risorse gratuite</div>
+      </div>
+    </div>
+    <div class="card card-stat3">
+      <div class="card-inner" style="justify-content:center; padding:1rem 0.8rem;">
+        <div class="stat-num" style="color:#7EFFB2; font-size:1.6rem;">🇪🇺</div>
+        <div class="stat-label">Prospettiva europea</div>
+      </div>
+    </div>
+
+    <!-- GOOGLE WORKSPACE CARD -->
+    <div class="card card-google" id="google">
+      <div class="card-inner">
+        <div class="card-tag">Google Workspace for Education</div>
+        <h2 class="card-title" style="font-size:1.2rem;">Integrazione completa con il tuo Google Workspace</h2>
+        <div class="google-apps">
+          <a href="#" class="gapp">
+            <div class="gapp-icon">📚</div>
+            <div class="gapp-label">Classroom</div>
+          </a>
+          <a href="#" class="gapp">
+            <div class="gapp-icon">📄</div>
+            <div class="gapp-label">Docs</div>
+          </a>
+          <a href="#" class="gapp">
+            <div class="gapp-icon">📊</div>
+            <div class="gapp-label">Slides</div>
+          </a>
+          <a href="#" class="gapp">
+            <div class="gapp-icon">📋</div>
+            <div class="gapp-label">Forms</div>
+          </a>
+          <a href="#" class="gapp">
+            <div class="gapp-icon">📅</div>
+            <div class="gapp-label">Calendar</div>
+          </a>
+          <a href="#" class="gapp">
+            <div class="gapp-icon">💬</div>
+            <div class="gapp-label">Meet</div>
+          </a>
+          <a href="#" class="gapp">
+            <div class="gapp-icon">📁</div>
+            <div class="gapp-label">Drive</div>
+          </a>
+          <a href="#" class="gapp">
+            <div class="gapp-icon">✉️</div>
+            <div class="gapp-label">Gmail</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOCIAL CARD -->
+    <div class="card card-social">
+      <div class="card-inner">
+        <div class="card-tag">Seguimi sui social</div>
+        <h2 class="card-title" style="font-size:1.2rem;">Resta aggiornato</h2>
+        <div class="social-grid">
+          <a href="https://youtube.com/@nuovadidattica" target="_blank" class="social-item">
+            <div class="social-icon si-yt">▶</div>
+            YouTube
+          </a>
+          <a href="https://instagram.com/nuovadidattica" target="_blank" class="social-item">
+            <div class="social-icon si-ig" style="font-size:1rem; color:white; display:flex; align-items:center; justify-content:center;">📷</div>
+            Instagram
+          </a>
+          <a href="https://linkedin.com/in/nuovadidattica" target="_blank" class="social-item">
+            <div class="social-icon si-li" style="color:white; font-size:0.75rem; font-weight:700; display:flex; align-items:center; justify-content:center; font-family:serif;">in</div>
+            LinkedIn
+          </a>
+          <a href="https://t.me/nuovadidattica" target="_blank" class="social-item">
+            <div class="social-icon si-tg" style="color:white; font-size:0.9rem; display:flex; align-items:center; justify-content:center;">✈</div>
+            Telegram
+          </a>
+        </div>
+        <p class="card-body" style="margin-top:0.8rem; font-size:0.8rem;">Nuovi contenuti ogni settimana. Nessuno spam, solo didattica di qualità.</p>
+      </div>
+    </div>
+
+    <!-- NEWSLETTER CARD -->
+    <div class="card card-newsletter" id="newsletter">
+      <div class="card-inner">
+        <div class="card-tag">Newsletter gratuita</div>
+        <h2 class="card-title" style="font-size:1.4rem;">Unisciti alla community NuovaDidattica</h2>
+        <p class="card-body">Ricevi ogni settimana risorse, video e aggiornamenti su AI e TIC direttamente nella tua email.</p>
+        <div class="newsletter-form">
+          <input type="email" placeholder="la-tua@email.it">
+          <button type="button">Iscriviti →</button>
+        </div>
+        <div class="newsletter-perks">
+          <span class="perk">Risorse esclusive</span>
+          <span class="perk">Guide PDF gratuite</span>
+          <span class="perk">Nessuno spam</span>
+          <span class="perk">Disdici quando vuoi</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUOTE CARD -->
+    <div class="card card-quote">
+      <div class="card-inner">
+        <div class="card-tag" style="color:rgba(255,255,255,0.55); opacity:1;">" "</div>
+        <p class="quote-text">Non si tratta di usare la tecnologia per fare le stesse cose più velocemente. Si tratta di immaginare una didattica che prima era impossibile.</p>
+        <p class="quote-cite">— NuovaDidattica.EU</p>
+      </div>
+    </div>
+
+  </div><!-- /bento -->
+
+  <!-- ABOUT SECTION -->
+  <section class="section-about" id="ai-contenuti">
+    <div class="section-label">Chi siamo</div>
+    <h2 class="section-title">Formazione digitale<br><em>senza confini</em></h2>
+    <p class="section-desc">NuovaDidattica.EU nasce dall'esperienza di un docente di scuola secondaria con la convinzione che TIC e Intelligenza Artificiale non siano il futuro della scuola — sono il presente. Ogni contenuto è progettato per essere pratico, aggiornato e immediatamente applicabile in classe.</p>
+
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon-wrap fi-red">💻</div>
+        <div class="feature-title">TIC in classe</div>
+        <p class="feature-desc">Strumenti digitali testati in contesti reali, dalla LIM agli ambienti di apprendimento online. Tutto quello che funziona davvero.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrap fi-blue">🤖</div>
+        <div class="feature-title">AI per i docenti</div>
+        <p class="feature-desc">Guida pratica all'uso di ChatGPT, Gemini, Copilot e altri strumenti AI nella progettazione didattica e nella valutazione.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrap fi-gold">🎥</div>
+        <div class="feature-title">Video tutorial</div>
+        <p class="feature-desc">Video chiari, aggiornati e accessibili su YouTube. Ogni settimana nuovi contenuti per restare al passo con l'innovazione digitale.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon-wrap fi-green">🌐</div>
+        <div class="feature-title">Google Workspace</div>
+        <p class="feature-desc">Come sfruttare al meglio Google Classroom, Forms, Docs e Meet per creare ambienti di apprendimento collaborativi ed efficaci.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">NuovaDidattica<span>.EU</span></div>
+    <div class="footer-copy" style="margin-top:4px;">Formazione digitale per docenti italiani — © 2025</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Cookie</a></li>
+    <li><a href="#">Contatti</a></li>
+    <li><a href="#">Note legali</a></li>
+  </ul>
+</footer>
+
+<script>
+  // Newsletter form
+  const btn = document.querySelector('.newsletter-form button');
+  const input = document.querySelector('.newsletter-form input');
+  btn.addEventListener('click', () => {
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) {
+      input.style.borderColor = 'rgba(208,2,27,0.6)';
+      input.focus();
+      return;
+    }
+    input.style.borderColor = 'rgba(126,255,178,0.5)';
+    btn.textContent = '✓ Iscritto!';
+    btn.style.background = '#0a6e3f';
+    input.disabled = true;
+    btn.disabled = true;
+  });
+
+  // Smooth reveal on load
+  document.querySelectorAll('.card, .feature-card').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = `opacity 0.5s ease ${i * 0.04}s, transform 0.5s ease ${i * 0.04}s, border-color 0.25s`;
+    setTimeout(() => {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 80 + i * 40);
+  });
+</script>
+
+</body>
+</html>
