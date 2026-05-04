@@ -5,56 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin · Feed Ragionato — NuovaDidattica.eu</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #0A0A0A;
-  color: #F5F3EE;
-  min-height: 100vh;
-}
+body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; min-height: 100vh; }
 :root {
-  --red: #D91B1B;
-  --eu-blue: #003FA5;
-  --eu-yellow: #F5C800;
-  --dark: #0A0A0A;
-  --dark-2: #141414;
-  --dark-3: #1E1E1E;
-  --light: #F5F3EE;
-  --green: #22C55E;
-  --orange: #F97316;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-  --radius: 16px;
-  --gap: 12px;
+  --red: #D91B1B; --eu-blue: #003FA5; --eu-yellow: #F5C800;
+  --dark: #0A0A0A; --dark-2: #141414; --dark-3: #1E1E1E;
+  --green: #22C55E; --orange: #F97316;
+  --font-display: 'Syne', sans-serif; --font-mono: 'DM Mono', monospace;
+  --radius: 16px; --gap: 12px;
 }
-
-/* LAYOUT */
-.admin-layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  min-height: 100vh;
+.config-banner {
+  background: rgba(249,115,22,0.12); border-bottom: 1px solid rgba(249,115,22,0.2);
+  padding: 12px 24px; display: flex; align-items: center; gap: 10px;
+  font-size: 0.82rem; color: var(--orange); font-family: var(--font-mono); letter-spacing: 0.05em;
 }
-
-/* SIDEBAR */
+.config-banner.hidden { display: none; }
+.config-banner strong { color: white; }
+.admin-layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
 .sidebar {
-  background: var(--dark-2);
-  border-right: 1px solid rgba(255,255,255,0.05);
-  padding: 32px 24px;
-  display: flex; flex-direction: column; gap: 32px;
+  background: var(--dark-2); border-right: 1px solid rgba(255,255,255,0.05);
+  padding: 32px 24px; display: flex; flex-direction: column; gap: 32px;
   position: sticky; top: 0; height: 100vh; overflow-y: auto;
 }
-.sidebar-logo {
-  font-family: var(--font-display); font-size: 0.85rem; font-weight: 700;
-  color: white; letter-spacing: -0.01em;
-}
+.sidebar-logo { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; color: white; }
 .sidebar-logo span { color: var(--red); }
 .sidebar-badge {
   font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.15em;
   text-transform: uppercase; background: rgba(217,27,27,0.12);
-  color: var(--red); padding: 3px 8px; border-radius: 100px;
-  display: inline-block; margin-top: 6px;
+  color: var(--red); padding: 3px 8px; border-radius: 100px; display: inline-block; margin-top: 6px;
 }
 .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
 .sidebar-nav-label {
@@ -63,415 +44,256 @@ body {
   padding: 0 12px; margin-bottom: 6px; margin-top: 8px;
 }
 .sidebar-link {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 10px;
-  font-size: 0.85rem; color: rgba(255,255,255,0.55);
-  text-decoration: none; cursor: pointer; border: none;
-  background: none; width: 100%; text-align: left;
-  transition: background 0.15s, color 0.15s;
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+  font-size: 0.85rem; color: rgba(255,255,255,0.55); cursor: pointer;
+  border: none; background: none; width: 100%; text-align: left; transition: background 0.15s, color 0.15s;
 }
 .sidebar-link:hover { background: rgba(255,255,255,0.05); color: white; }
 .sidebar-link.active { background: rgba(217,27,27,0.12); color: var(--red); }
 .sidebar-link .icon { font-size: 1rem; width: 20px; text-align: center; }
 .count-badge {
-  margin-left: auto; background: var(--red);
-  color: white; font-family: var(--font-mono); font-size: 0.6rem;
-  padding: 2px 7px; border-radius: 100px;
+  margin-left: auto; background: var(--red); color: white;
+  font-family: var(--font-mono); font-size: 0.6rem; padding: 2px 7px; border-radius: 100px;
 }
 .count-badge.green { background: var(--green); }
 .sidebar-back {
-  margin-top: auto;
-  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
-  text-transform: uppercase; color: rgba(255,255,255,0.25);
-  text-decoration: none; display: flex; align-items: center; gap: 6px;
-  padding: 10px 12px; border-radius: 10px;
+  margin-top: auto; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.25); text-decoration: none;
+  display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-radius: 10px;
   transition: color 0.2s, background 0.2s;
 }
 .sidebar-back:hover { color: white; background: rgba(255,255,255,0.04); }
-
-/* MAIN */
 .main { padding: 40px 48px; max-width: 1100px; }
 .main-header {
   display: flex; align-items: flex-start; justify-content: space-between;
   margin-bottom: 36px; gap: 24px; flex-wrap: wrap;
 }
-.main-title {
-  font-family: var(--font-display); font-size: 2rem; font-weight: 800;
-  letter-spacing: -0.02em; color: white;
-}
+.main-title { font-family: var(--font-display); font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; color: white; }
 .main-title span { color: var(--red); }
-.main-subtitle {
-  font-size: 0.88rem; color: rgba(255,255,255,0.4); margin-top: 6px; line-height: 1.5;
-}
-
-/* STATS ROW */
-.stats-row {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: var(--gap); margin-bottom: 36px;
-}
-.stat-card {
-  background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
-  border-radius: var(--radius); padding: 20px 24px;
-}
-.stat-card .num {
-  font-family: var(--font-display); font-size: 2rem; font-weight: 800;
-  line-height: 1;
-}
+.main-subtitle { font-size: 0.88rem; color: rgba(255,255,255,0.4); margin-top: 6px; line-height: 1.5; }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap); margin-bottom: 36px; }
+.stat-card { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 20px 24px; }
+.stat-card .num { font-family: var(--font-display); font-size: 2rem; font-weight: 800; line-height: 1; }
 .stat-card .num.red { color: var(--red); }
 .stat-card .num.green { color: var(--green); }
 .stat-card .num.yellow { color: var(--eu-yellow); }
 .stat-card .num.blue { color: #60A5FA; }
-.stat-card .label {
-  font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-top: 4px; line-height: 1.3;
-}
-
-/* ADD FORM */
-.card {
-  background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06);
-  border-radius: var(--radius); padding: 28px; margin-bottom: 20px;
-}
-.card-title {
-  font-family: var(--font-display); font-size: 1rem; font-weight: 700;
-  color: white; margin-bottom: 20px;
-  display: flex; align-items: center; gap: 8px;
-}
-.card-title .ct-icon { opacity: 0.5; }
+.stat-card .label { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-top: 4px; line-height: 1.3; }
+.card { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
+.card-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-full { grid-column: span 2; }
 .field { display: flex; flex-direction: column; gap: 6px; }
-.field label {
-  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.15em;
-  text-transform: uppercase; color: rgba(255,255,255,0.4);
-}
+.field label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
 .field input, .field select, .field textarea {
-  background: var(--dark-3); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 10px; padding: 11px 16px;
-  font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
-  color: white; outline: none; width: 100%;
-  transition: border-color 0.2s;
+  background: var(--dark-3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+  padding: 11px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+  color: white; outline: none; width: 100%; transition: border-color 0.2s;
 }
-.field input:focus, .field select:focus, .field textarea:focus {
-  border-color: rgba(217,27,27,0.4);
-}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(217,27,27,0.4); }
 .field input::placeholder, .field textarea::placeholder { color: rgba(255,255,255,0.2); }
 .field select option { background: var(--dark-3); }
 .field textarea { resize: vertical; min-height: 80px; }
-.form-actions { display: flex; gap: 10px; margin-top: 18px; }
+.form-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
 .btn {
   font-family: var(--font-display); font-size: 0.78rem; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 11px 24px; border-radius: 100px;
-  border: none; cursor: pointer; transition: all 0.2s;
+  letter-spacing: 0.06em; text-transform: uppercase; padding: 11px 24px;
+  border-radius: 100px; border: none; cursor: pointer; transition: all 0.2s;
 }
 .btn-red { background: var(--red); color: white; }
 .btn-red:hover { background: #A51515; }
-.btn-ghost-white {
-  background: transparent; color: rgba(255,255,255,0.45);
-  border: 1px solid rgba(255,255,255,0.1);
-}
+.btn-ghost-white { background: transparent; color: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.1); }
 .btn-ghost-white:hover { color: white; border-color: rgba(255,255,255,0.25); }
 .btn-green { background: var(--green); color: #0A0A0A; }
-.btn-green:hover { background: #16A34A; }
-.btn-outline-red {
-  background: transparent; color: var(--red);
-  border: 1px solid rgba(217,27,27,0.3);
-}
+.btn-outline-red { background: transparent; color: var(--red); border: 1px solid rgba(217,27,27,0.3); }
 .btn-outline-red:hover { background: rgba(217,27,27,0.08); }
 .btn-sm { padding: 7px 16px; font-size: 0.68rem; }
-
-/* FETCH PREVIEW */
-.fetch-preview {
-  margin-top: 16px; padding: 16px 20px;
-  background: var(--dark-3); border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.06);
-  display: none;
-}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.fetch-preview { margin-top: 16px; padding: 16px 20px; background: var(--dark-3); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); display: none; }
 .fetch-preview.visible { display: block; }
-.fetch-preview .fp-label {
-  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.15em;
-  text-transform: uppercase; color: var(--green); margin-bottom: 10px;
-}
-.fetch-preview .fp-title {
-  font-family: var(--font-display); font-size: 0.95rem; font-weight: 700;
-  color: white; margin-bottom: 6px;
-}
-.fetch-preview .fp-desc {
-  font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.5;
-}
-
-/* QUEUE TABLE */
+.fp-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+.fp-title { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 6px; }
+.fp-desc { font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.5; }
 .queue-header {
-  display: grid; grid-template-columns: 1fr 120px 100px 130px;
+  display: grid; grid-template-columns: 1fr 120px 110px 160px;
   gap: 12px; padding: 0 16px 10px;
   font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em;
   text-transform: uppercase; color: rgba(255,255,255,0.25);
   border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 8px;
 }
 .queue-item {
-  display: grid; grid-template-columns: 1fr 120px 100px 130px;
-  gap: 12px; align-items: center;
-  padding: 14px 16px; border-radius: 12px;
+  display: grid; grid-template-columns: 1fr 120px 110px 160px;
+  gap: 12px; align-items: center; padding: 14px 16px; border-radius: 12px;
   transition: background 0.15s; margin-bottom: 4px;
 }
 .queue-item:hover { background: rgba(255,255,255,0.03); }
 .queue-item.pending { border-left: 3px solid var(--orange); padding-left: 13px; }
-.queue-item.approved { border-left: 3px solid var(--green); padding-left: 13px; }
-.queue-item.published { border-left: 3px solid rgba(255,255,255,0.15); padding-left: 13px; }
-.qi-title {
-  font-size: 0.88rem; font-weight: 500; color: white;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.qi-subtitle {
-  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.3); margin-top: 3px;
-}
-.source-pill {
-  font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em;
-  text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
-  display: inline-block;
-}
+.queue-item.published { border-left: 3px solid var(--green); padding-left: 13px; }
+.qi-title { font-size: 0.88rem; font-weight: 500; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qi-sub { font-family: var(--font-mono); font-size: 0.62rem; color: rgba(255,255,255,0.3); margin-top: 3px; }
+.qi-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.source-pill { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; display: inline-block; }
 .sp-yt { background: rgba(255,0,0,0.12); color: #ff6b6b; }
 .sp-art { background: rgba(0,63,165,0.15); color: #60A5FA; }
 .sp-ig { background: rgba(193,53,132,0.12); color: #E879A0; }
 .sp-fb { background: rgba(24,119,242,0.12); color: #60A5FA; }
-.status-pill {
-  font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em;
-  text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
-  display: inline-block;
-}
-.sp-pending { background: rgba(249,115,22,0.12); color: var(--orange); }
-.sp-approved { background: rgba(34,197,94,0.12); color: var(--green); }
-.sp-published { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.35); }
-.qi-actions { display: flex; gap: 6px; }
-
-/* TABS */
-.tabs { display: flex; gap: 4px; margin-bottom: 20px; }
-.tab {
-  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
-  text-transform: uppercase; padding: 8px 16px; border-radius: 100px;
-  border: 1px solid rgba(255,255,255,0.08); background: none;
-  color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s;
-}
-.tab.active { background: white; color: var(--dark); border-color: white; }
-.tab:hover:not(.active) { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
-
-/* SOURCES CONFIG */
-.source-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-}
+.status-pill { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; display: inline-block; }
+.st-pending { background: rgba(249,115,22,0.12); color: var(--orange); }
+.st-published { background: rgba(34,197,94,0.12); color: var(--green); }
+.source-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .source-row:last-child { border-bottom: none; }
 .source-info { display: flex; flex-direction: column; gap: 3px; }
 .source-name { font-size: 0.88rem; font-weight: 500; color: white; }
 .source-url { font-family: var(--font-mono); font-size: 0.62rem; color: rgba(255,255,255,0.3); }
-.source-toggle {
-  position: relative; width: 44px; height: 24px;
-  background: rgba(255,255,255,0.1); border-radius: 100px;
-  cursor: pointer; transition: background 0.2s; border: none;
-  flex-shrink: 0;
-}
-.source-toggle.on { background: var(--green); }
-.source-toggle::after {
-  content: ''; position: absolute; top: 3px; left: 3px;
-  width: 18px; height: 18px; border-radius: 50%; background: white;
-  transition: transform 0.2s;
-}
-.source-toggle.on::after { transform: translateX(20px); }
-
-/* NOTIFICATION TOAST */
+.tog { position: relative; width: 44px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 100px; cursor: pointer; transition: background 0.2s; border: none; flex-shrink: 0; }
+.tog.on { background: var(--green); }
+.tog::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform 0.2s; }
+.tog.on::after { transform: translateX(20px); }
+.empty-state { text-align: center; padding: 48px 0; color: rgba(255,255,255,0.2); }
+.empty-state .es-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-state p { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.skel { background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; height: 48px; margin-bottom: 8px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .toast {
   position: fixed; bottom: 32px; right: 32px;
   background: var(--dark-2); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 14px; padding: 16px 22px;
-  font-size: 0.88rem; color: white;
+  border-radius: 14px; padding: 16px 22px; font-size: 0.88rem; color: white;
   display: flex; align-items: center; gap: 10px;
-  transform: translateY(80px); opacity: 0;
-  transition: all 0.3s ease; z-index: 999;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  transform: translateY(80px); opacity: 0; transition: all 0.3s ease;
+  z-index: 999; box-shadow: 0 20px 60px rgba(0,0,0,0.5); min-width: 260px;
 }
 .toast.visible { transform: translateY(0); opacity: 1; }
-.toast .toast-icon { font-size: 1.1rem; }
+.toast.err { border-color: rgba(217,27,27,0.4); }
+.toast.ok { border-color: rgba(34,197,94,0.3); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 200; backdrop-filter: blur(4px); }
+.modal-overlay.hidden { display: none; }
+.modal { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 40px; max-width: 520px; width: 90%; }
+.modal h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 8px; }
+.modal p { font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 24px; }
 </style>
 </head>
 <body>
 
-<div class="admin-layout">
+<!-- CONFIG MODAL -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal">
+    <h2>⚙️ Configura Supabase</h2>
+    <p>Inserisci le credenziali del tuo progetto Supabase.<br>
+    Trovi tutto in <strong style="color:white">Project Settings → API</strong>.<br>
+    Consulta <strong style="color:white">SETUP_SUPABASE.md</strong> per la guida passo-passo.</p>
+    <div class="field" style="margin-bottom:14px">
+      <label>Project URL</label>
+      <input type="url" id="cfgUrl" placeholder="https://xyzxyzxyz.supabase.co">
+    </div>
+    <div class="field" style="margin-bottom:4px">
+      <label>Anon / Public Key</label>
+      <input type="text" id="cfgKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+    </div>
+    <div class="form-actions" style="margin-top:24px">
+      <button class="btn btn-red" onclick="saveConfig()">Salva e connetti →</button>
+      <button class="btn btn-ghost-white" onclick="useDemoMode()">Modalità demo</button>
+    </div>
+  </div>
+</div>
 
-  <!-- SIDEBAR -->
+<!-- DEMO BANNER -->
+<div class="config-banner hidden" id="demoBanner">
+  ⚠ <strong>Modalità demo</strong> — i dati non vengono salvati su Supabase.
+  <button onclick="document.getElementById('configModal').classList.remove('hidden')" style="background:none;border:none;color:var(--orange);cursor:pointer;font-family:var(--font-mono);font-size:0.75rem;text-decoration:underline;margin-left:8px">Configura ora →</button>
+</div>
+
+<div class="admin-layout">
   <aside class="sidebar">
     <div>
       <div class="sidebar-logo">Nuova<span>Didattica</span>.eu</div>
-      <div class="sidebar-badge">Admin Panel</div>
+      <div class="sidebar-badge">Admin · Feed</div>
     </div>
-
     <nav class="sidebar-nav">
       <div class="sidebar-nav-label">Feed</div>
-      <button class="sidebar-link active" onclick="showPanel('coda')">
+      <button class="sidebar-link active" onclick="showPanel('coda',this)">
         <span class="icon">📥</span> Coda approvazione
-        <span class="count-badge" id="pendingCount">3</span>
+        <span class="count-badge" id="pendingBadge">—</span>
       </button>
-      <button class="sidebar-link" onclick="showPanel('aggiungi')">
+      <button class="sidebar-link" onclick="showPanel('aggiungi',this)">
         <span class="icon">➕</span> Aggiungi manuale
       </button>
-      <button class="sidebar-link" onclick="showPanel('pubblicati')">
+      <button class="sidebar-link" onclick="showPanel('pubblicati',this)">
         <span class="icon">✅</span> Pubblicati
-        <span class="count-badge green" id="publishedCount">6</span>
+        <span class="count-badge green" id="publishedBadge">—</span>
       </button>
-      <div class="sidebar-nav-label">Configurazione</div>
-      <button class="sidebar-link" onclick="showPanel('fonti')">
-        <span class="icon">📡</span> Fonti RSS / URL
+      <div class="sidebar-nav-label">Setup</div>
+      <button class="sidebar-link" onclick="showPanel('fonti',this)">
+        <span class="icon">📡</span> Fonti monitorate
       </button>
-      <button class="sidebar-link" onclick="showPanel('schedule')">
-        <span class="icon">⏰</span> Scansione automatica
+      <button class="sidebar-link" onclick="showPanel('config',this)">
+        <span class="icon">⚙️</span> Impostazioni
       </button>
     </nav>
-
-    <a href="nuovadidattica.html" class="sidebar-back">← Torna al sito</a>
+    <a href="index.html" class="sidebar-back">← Torna al sito</a>
   </aside>
 
-  <!-- MAIN CONTENT -->
-  <main class="main" id="mainContent">
-
-    <!-- STATS -->
+  <main class="main">
     <div class="stats-row">
-      <div class="stat-card">
-        <div class="num red" id="stat-pending">3</div>
-        <div class="label">In attesa di approvazione</div>
-      </div>
-      <div class="stat-card">
-        <div class="num green" id="stat-published">6</div>
-        <div class="label">Contenuti pubblicati</div>
-      </div>
-      <div class="stat-card">
-        <div class="num yellow">8</div>
-        <div class="label">Fonti monitorate</div>
-      </div>
-      <div class="stat-card">
-        <div class="num blue">24h</div>
-        <div class="label">Prossima scansione auto</div>
-      </div>
+      <div class="stat-card"><div class="num red" id="statPend">—</div><div class="label">In attesa approvazione</div></div>
+      <div class="stat-card"><div class="num green" id="statPub">—</div><div class="label">Contenuti pubblicati</div></div>
+      <div class="stat-card"><div class="num yellow">8</div><div class="label">Fonti monitorate</div></div>
+      <div class="stat-card"><div class="num blue">24h</div><div class="label">Prossima scansione</div></div>
     </div>
 
-    <!-- PANEL: CODA -->
+    <!-- CODA -->
     <div id="panel-coda">
       <div class="main-header">
         <div>
           <div class="main-title">Coda di <span>approvazione</span></div>
-          <div class="main-subtitle">Contenuti trovati automaticamente — approva o scarta prima che vadano online.</div>
+          <div class="main-subtitle">Contenuti trovati in attesa del tuo ok — uno click per pubblicare.</div>
         </div>
-        <button class="btn btn-ghost-white" onclick="simulateScan()">🔄 Scansiona ora</button>
+        <button class="btn btn-ghost-white" onclick="loadPending()">↻ Aggiorna</button>
       </div>
-
       <div class="card">
-        <div class="card-title">
-          <span class="ct-icon">📥</span> Contenuti in attesa
-        </div>
-
-        <div class="queue-header">
-          <span>Titolo</span>
-          <span>Fonte</span>
-          <span>Stato</span>
-          <span>Azioni</span>
-        </div>
-
-        <div id="queueList">
-
-          <div class="queue-item pending" id="qi-1">
-            <div>
-              <div class="qi-title">Come usare Gemini per creare quiz personalizzati</div>
-              <div class="qi-subtitle">youtube.com · trovato 2h fa</div>
-            </div>
-            <span class="source-pill sp-yt">▶ YouTube</span>
-            <span class="status-pill sp-pending">In attesa</span>
-            <div class="qi-actions">
-              <button class="btn btn-green btn-sm" onclick="approve('qi-1')">✓</button>
-              <button class="btn btn-outline-red btn-sm" onclick="reject('qi-1')">✕</button>
-            </div>
-          </div>
-
-          <div class="queue-item pending" id="qi-2">
-            <div>
-              <div class="qi-title">AI nella scuola italiana: intervista al MIUR</div>
-              <div class="qi-subtitle">corriere.it · trovato 5h fa</div>
-            </div>
-            <span class="source-pill sp-art">📰 Articolo</span>
-            <span class="status-pill sp-pending">In attesa</span>
-            <div class="qi-actions">
-              <button class="btn btn-green btn-sm" onclick="approve('qi-2')">✓</button>
-              <button class="btn btn-outline-red btn-sm" onclick="reject('qi-2')">✕</button>
-            </div>
-          </div>
-
-          <div class="queue-item pending" id="qi-3">
-            <div>
-              <div class="qi-title">Reel: NotebookLM in 60 secondi per i docenti</div>
-              <div class="qi-subtitle">instagram.com · trovato 8h fa</div>
-            </div>
-            <span class="source-pill sp-ig">📱 Instagram</span>
-            <span class="status-pill sp-pending">In attesa</span>
-            <div class="qi-actions">
-              <button class="btn btn-green btn-sm" onclick="approve('qi-3')">✓</button>
-              <button class="btn btn-outline-red btn-sm" onclick="reject('qi-3')">✕</button>
-            </div>
-          </div>
-
-        </div>
-
-        <div id="emptyQueue" style="display:none; text-align:center; padding: 40px 0; color: rgba(255,255,255,0.25); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">
-          ✓ Coda vuota — tutto approvato
-        </div>
+        <div class="card-title">📥 In attesa</div>
+        <div class="queue-header"><span>Titolo & URL</span><span>Tipo</span><span>Stato</span><span>Azioni</span></div>
+        <div id="pendingList"><div class="skel"></div><div class="skel" style="opacity:.5"></div></div>
       </div>
     </div>
 
-    <!-- PANEL: AGGIUNGI -->
+    <!-- AGGIUNGI -->
     <div id="panel-aggiungi" style="display:none">
       <div class="main-header">
         <div>
-          <div class="main-title">Aggiungi <span>manuale</span></div>
-          <div class="main-subtitle">Incolla un URL e l'agente pre-compila i campi. Tu revisioni e pubblichi.</div>
+          <div class="main-title">Aggiungi <span>contenuto</span></div>
+          <div class="main-subtitle">Incolla un URL — il tipo viene rilevato automaticamente.</div>
         </div>
       </div>
-
       <div class="card">
-        <div class="card-title"><span class="ct-icon">🔗</span> URL del contenuto</div>
-        <div class="form-grid">
-          <div class="field form-full">
-            <label>URL</label>
-            <div style="display:flex; gap:10px;">
-              <input type="url" id="urlInput" placeholder="https://youtube.com/watch?v=... oppure link articolo">
-              <button class="btn btn-red" onclick="fetchUrl()" style="white-space:nowrap; border-radius:10px; padding: 0 20px;">Analizza →</button>
-            </div>
+        <div class="card-title">🔗 URL del contenuto</div>
+        <div class="field">
+          <label>URL</label>
+          <div style="display:flex;gap:10px">
+            <input type="url" id="urlInput" placeholder="https://youtube.com/watch?v=... oppure link articolo">
+            <button class="btn btn-red" onclick="detectSource()" style="white-space:nowrap;border-radius:10px;padding:0 20px">Analizza →</button>
           </div>
         </div>
         <div class="fetch-preview" id="fetchPreview">
-          <div class="fp-label">✓ Contenuto rilevato automaticamente</div>
+          <div class="fp-label">✓ Tipo rilevato</div>
           <div class="fp-title" id="fpTitle">—</div>
           <div class="fp-desc" id="fpDesc">—</div>
         </div>
       </div>
-
       <div class="card">
-        <div class="card-title"><span class="ct-icon">✏️</span> Dettagli del contenuto</div>
+        <div class="card-title">✏️ Dettagli</div>
         <div class="form-grid">
-          <div class="field form-full">
-            <label>Titolo</label>
-            <input type="text" id="fTitle" placeholder="Titolo del contenuto">
-          </div>
-          <div class="field form-full">
-            <label>Descrizione breve</label>
-            <textarea id="fDesc" placeholder="2-3 righe di contesto per il lettore..."></textarea>
-          </div>
-          <div class="field">
-            <label>Fonte</label>
+          <div class="field form-full"><label>Titolo *</label><input type="text" id="fTitle" placeholder="Titolo del contenuto"></div>
+          <div class="field form-full"><label>Descrizione</label><textarea id="fDesc" placeholder="2-3 righe di contesto..."></textarea></div>
+          <div class="field"><label>URL *</label><input type="url" id="fUrl" placeholder="https://..."></div>
+          <div class="field"><label>Fonte</label>
             <select id="fSource">
-              <option value="yt">▶ YouTube</option>
-              <option value="art">📰 Articolo</option>
-              <option value="ig">📱 Instagram</option>
-              <option value="fb">📘 Facebook</option>
+              <option value="youtube">▶ YouTube</option>
+              <option value="articolo">📰 Articolo</option>
+              <option value="instagram">📱 Instagram</option>
+              <option value="facebook">📘 Facebook</option>
             </select>
           </div>
-          <div class="field">
-            <label>Categoria</label>
+          <div class="field form-full"><label>Categoria</label>
             <select id="fCat">
               <option>🎓 Didattica pratica</option>
               <option>⚖️ Etica & Normativa</option>
@@ -483,301 +305,342 @@ body {
           </div>
         </div>
         <div class="form-actions">
-          <button class="btn btn-red" onclick="publishItem()">Pubblica sul sito →</button>
+          <button class="btn btn-red" id="publishBtn" onclick="publishNew()">🚀 Pubblica sul sito</button>
+          <button class="btn btn-ghost-white" onclick="saveAsPending()">Salva in coda</button>
           <button class="btn btn-ghost-white" onclick="clearForm()">Annulla</button>
         </div>
       </div>
     </div>
 
-    <!-- PANEL: PUBBLICATI -->
+    <!-- PUBBLICATI -->
     <div id="panel-pubblicati" style="display:none">
       <div class="main-header">
         <div>
           <div class="main-title">Contenuti <span>pubblicati</span></div>
-          <div class="main-subtitle">Tutti i contenuti attualmente visibili sul sito.</div>
+          <div class="main-subtitle">Visibili sul sito in questo momento.</div>
         </div>
+        <button class="btn btn-ghost-white" onclick="loadPublished()">↻ Aggiorna</button>
       </div>
       <div class="card">
-        <div class="queue-header">
-          <span>Titolo</span>
-          <span>Fonte</span>
-          <span>Data</span>
-          <span>Azioni</span>
-        </div>
-        <div class="queue-item published">
-          <div><div class="qi-title">Come ChatGPT può aiutare nella didattica BES</div><div class="qi-subtitle">youtube.com</div></div>
-          <span class="source-pill sp-yt">▶ YouTube</span>
-          <span class="status-pill sp-published">28 apr</span>
-          <div class="qi-actions"><button class="btn btn-outline-red btn-sm" onclick="unpublish(this)">Rimuovi</button></div>
-        </div>
-        <div class="queue-item published">
-          <div><div class="qi-title">AI Act europeo: cosa cambia per le scuole</div><div class="qi-subtitle">corriere.it</div></div>
-          <span class="source-pill sp-art">📰 Articolo</span>
-          <span class="status-pill sp-published">24 apr</span>
-          <div class="qi-actions"><button class="btn btn-outline-red btn-sm" onclick="unpublish(this)">Rimuovi</button></div>
-        </div>
-        <div class="queue-item published">
-          <div><div class="qi-title">NotebookLM in 60 secondi per docenti</div><div class="qi-subtitle">instagram.com</div></div>
-          <span class="source-pill sp-ig">📱 Instagram</span>
-          <span class="status-pill sp-published">22 apr</span>
-          <div class="qi-actions"><button class="btn btn-outline-red btn-sm" onclick="unpublish(this)">Rimuovi</button></div>
-        </div>
+        <div class="card-title">✅ Online ora</div>
+        <div class="queue-header"><span>Titolo</span><span>Tipo</span><span>Data pub.</span><span>Azioni</span></div>
+        <div id="publishedList"><div class="skel"></div></div>
       </div>
     </div>
 
-    <!-- PANEL: FONTI -->
+    <!-- FONTI -->
     <div id="panel-fonti" style="display:none">
       <div class="main-header">
-        <div>
-          <div class="main-title">Fonti <span>monitorate</span></div>
-          <div class="main-subtitle">RSS feed, canali e siti scansionati automaticamente ogni 24 ore.</div>
-        </div>
-        <button class="btn btn-red" onclick="showToast('✓ Nuova fonte aggiunta')">+ Aggiungi fonte</button>
+        <div><div class="main-title">Fonti <span>monitorate</span></div>
+        <div class="main-subtitle">Canali e RSS scansionati automaticamente ogni 24 ore.</div></div>
       </div>
       <div class="card">
-        <div class="card-title"><span class="ct-icon">📺</span> YouTube Channels</div>
-        <div class="source-row">
-          <div class="source-info">
-            <div class="source-name">Filomena Diodato — Didattica Digitale</div>
-            <div class="source-url">youtube.com/@filomenadiodato</div>
-          </div>
-          <button class="source-toggle on" onclick="toggleSource(this)"></button>
-        </div>
-        <div class="source-row">
-          <div class="source-info">
-            <div class="source-name">AI per la Scuola</div>
-            <div class="source-url">youtube.com/@aiperla scuola</div>
-          </div>
-          <button class="source-toggle on" onclick="toggleSource(this)"></button>
-        </div>
-        <div class="source-row">
-          <div class="source-info">
-            <div class="source-name">Google for Education Italia</div>
-            <div class="source-url">youtube.com/@googleedu</div>
-          </div>
-          <button class="source-toggle" onclick="toggleSource(this)"></button>
-        </div>
+        <div class="card-title">📺 YouTube</div>
+        <div class="source-row"><div class="source-info"><div class="source-name">Filomena Diodato — Didattica Digitale</div><div class="source-url">youtube.com/@filomenadiodato</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="source-row"><div class="source-info"><div class="source-name">Google for Education Italia</div><div class="source-url">youtube.com/@googleforeducation</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="source-row"><div class="source-info"><div class="source-name">AI per la Scuola</div><div class="source-url">youtube.com/@aiperla scuola</div></div><button class="tog" onclick="this.classList.toggle('on')"></button></div>
       </div>
       <div class="card">
-        <div class="card-title"><span class="ct-icon">📰</span> RSS & Blog</div>
-        <div class="source-row">
-          <div class="source-info">
-            <div class="source-name">Agenda Digitale — Scuola</div>
-            <div class="source-url">agendadigitale.eu/feed/scuola</div>
-          </div>
-          <button class="source-toggle on" onclick="toggleSource(this)"></button>
-        </div>
-        <div class="source-row">
-          <div class="source-info">
-            <div class="source-name">Wired Italia — AI</div>
-            <div class="source-url">wired.it/feed/tag/intelligenza-artificiale</div>
-          </div>
-          <button class="source-toggle on" onclick="toggleSource(this)"></button>
-        </div>
-        <div class="source-row">
-          <div class="source-info">
-            <div class="source-name">EdTech Italia Newsletter</div>
-            <div class="source-url">edtechitalia.it/rss</div>
-          </div>
-          <button class="source-toggle" onclick="toggleSource(this)"></button>
-        </div>
+        <div class="card-title">📰 RSS & Blog</div>
+        <div class="source-row"><div class="source-info"><div class="source-name">Agenda Digitale — Scuola</div><div class="source-url">agendadigitale.eu/feed/scuola</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="source-row"><div class="source-info"><div class="source-name">Wired Italia — AI</div><div class="source-url">wired.it/feed/tag/intelligenza-artificiale</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="source-row"><div class="source-info"><div class="source-name">EdTech Italia</div><div class="source-url">edtechitalia.it/rss</div></div><button class="tog" onclick="this.classList.toggle('on')"></button></div>
       </div>
     </div>
 
-    <!-- PANEL: SCHEDULE -->
-    <div id="panel-schedule" style="display:none">
+    <!-- CONFIG -->
+    <div id="panel-config" style="display:none">
       <div class="main-header">
-        <div>
-          <div class="main-title">Scansione <span>automatica</span></div>
-          <div class="main-subtitle">Configura quando e come l'agente scansiona le fonti.</div>
-        </div>
+        <div><div class="main-title">⚙️ <span>Impostazioni</span></div>
+        <div class="main-subtitle">Credenziali Supabase e filtri di scansione.</div></div>
       </div>
       <div class="card">
-        <div class="card-title"><span class="ct-icon">⏰</span> Frequenza di scansione</div>
+        <div class="card-title">🔑 Credenziali Supabase</div>
         <div class="form-grid">
-          <div class="field">
-            <label>Ogni quanto</label>
-            <select><option>Ogni 24 ore</option><option>Ogni 12 ore</option><option>Ogni 6 ore</option><option>Manuale</option></select>
-          </div>
-          <div class="field">
-            <label>Orario preferito</label>
-            <input type="time" value="08:00">
-          </div>
-          <div class="field form-full">
-            <label>Parole chiave obbligatorie (AND)</label>
-            <input type="text" value="AI, intelligenza artificiale, didattica, scuola, docenti, BES, DSA">
-          </div>
-          <div class="field form-full">
-            <label>Parole chiave da escludere (NOT)</label>
-            <input type="text" value="spam, pubblicità, clickbait, gossip">
-          </div>
+          <div class="field form-full"><label>Project URL</label><input type="url" id="cfgUrlEdit" placeholder="https://xyzxyzxyz.supabase.co"></div>
+          <div class="field form-full"><label>Anon / Public Key</label><input type="text" id="cfgKeyEdit" placeholder="eyJhbGci..."></div>
         </div>
-        <div class="form-actions">
-          <button class="btn btn-red" onclick="showToast('✓ Impostazioni salvate')">Salva configurazione</button>
-        </div>
+        <div class="form-actions"><button class="btn btn-red" onclick="saveConfigFromPanel()">Salva e riconnetti</button></div>
       </div>
       <div class="card">
-        <div class="card-title"><span class="ct-icon">📊</span> Log ultima scansione</div>
-        <div style="font-family: var(--font-mono); font-size: 0.72rem; color: rgba(255,255,255,0.4); line-height: 2; padding: 8px 0;">
-          <div style="color: var(--green);">✓ 04/05/2026 08:00 — Scansione completata</div>
-          <div>→ 8 fonti analizzate · 14 articoli trovati · 3 aggiunti alla coda</div>
-          <div style="color: rgba(255,255,255,0.2);">→ 11 scartati (parole chiave non corrispondenti)</div>
-          <div style="color: rgba(255,255,255,0.2); margin-top: 8px;">✓ 03/05/2026 08:00 — Scansione completata · 2 aggiunti</div>
-          <div style="color: rgba(255,255,255,0.2);">✓ 02/05/2026 08:00 — Scansione completata · 1 aggiunto</div>
+        <div class="card-title">🔍 Filtri parole chiave</div>
+        <div class="form-grid">
+          <div class="field"><label>Obbligatorie (AND)</label><input type="text" id="kwReq" value="AI, didattica, scuola, docenti, BES, DSA"></div>
+          <div class="field"><label>Escluse (NOT)</label><input type="text" id="kwExc" value="spam, pubblicità, clickbait"></div>
+        </div>
+        <div class="form-actions"><button class="btn btn-ghost-white" onclick="toast('✓ Filtri salvati','ok')">Salva filtri</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Log ultima scansione</div>
+        <div style="font-family:var(--font-mono);font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:2">
+          <div style="color:var(--green)">✓ 04/05/2026 08:00 — Scansione completata</div>
+          <div>→ 8 fonti · 14 articoli trovati · 3 aggiunti alla coda</div>
+          <div style="color:rgba(255,255,255,0.2)">→ 11 scartati (parole chiave)</div>
+          <div style="color:rgba(255,255,255,0.2);margin-top:8px">✓ 03/05/2026 08:00 — 2 aggiunti</div>
         </div>
       </div>
     </div>
-
   </main>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-icon">✓</span>
-  <span id="toastMsg">Operazione completata</span>
-</div>
+<div class="toast" id="toastEl"><span id="toastMsg">—</span></div>
 
 <script>
-let pendingCount = 3;
-let publishedCount = 6;
+// ── CONFIGURAZIONE ──────────────────────────────────────────
+// Sostituisci questi due valori con le tue credenziali Supabase
+// Oppure usa la modale di configurazione al primo avvio
+const SUPABASE_URL = 'https://sevpxtbrdcnjijldlwvo.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnB4dGJyZGNuamlqbGRsd3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTczNzgsImV4cCI6MjA5MzQ5MzM3OH0.rHLxZzpLfSJlaR8CO9GgRpmhlhWtrNWckdO0I1jMcU8';
+// ────────────────────────────────────────────────────────────
 
-// Panel switching
-function showPanel(id) {
-  ['coda','aggiungi','pubblicati','fonti','schedule'].forEach(p => {
-    document.getElementById('panel-' + p).style.display = p === id ? 'block' : 'none';
-  });
-  document.querySelectorAll('.sidebar-link').forEach((l, i) => {
-    l.classList.remove('active');
-  });
-  event.currentTarget.classList.add('active');
-}
+let sb = null;
+let demoMode = false;
 
-// Approve item
-function approve(id) {
-  const el = document.getElementById(id);
-  el.classList.remove('pending');
-  el.classList.add('approved');
-  el.querySelector('.status-pill').textContent = '✓ Approvato';
-  el.querySelector('.status-pill').className = 'status-pill sp-approved';
-  el.querySelector('.qi-actions').innerHTML = '<button class="btn btn-ghost-white btn-sm" onclick="publish(\'' + id + '\')">Pubblica</button>';
-  pendingCount--;
-  updateCounts();
-  showToast('✓ Contenuto approvato — clicca Pubblica per renderlo visibile');
-}
+const DEMO = [
+  { id:'d1', title:'Come usare Gemini per quiz personalizzati', description:'Tutorial per docenti della secondaria con prompt pronti.', url:'https://youtube.com', source:'youtube', category:'🎓 Didattica pratica', status:'pending', found_at: new Date().toISOString() },
+  { id:'d2', title:'AI Act europeo: cosa cambia per le scuole', description:"Analisi delle norme UE applicate al contesto scolastico.", url:'https://agendadigitale.eu', source:'articolo', category:'⚖️ Etica & Normativa', status:'pending', found_at: new Date().toISOString() },
+  { id:'d3', title:'NotebookLM in 60 secondi per i docenti', description:'Reel virale sul tool Google più sottovalutato del 2025.', url:'https://instagram.com', source:'instagram', category:'🛠 Strumenti', status:'published', published_at: new Date().toISOString() },
+  { id:'d4', title:'BES e DSA: adattare i testi con AI', description:'Come usare Claude e Gemini per l\'inclusione scolastica.', url:'https://youtube.com', source:'youtube', category:'♿ Inclusione', status:'published', published_at: new Date().toISOString() },
+];
+let demoData = [...DEMO];
 
-function publish(id) {
-  const el = document.getElementById(id);
-  el.style.opacity = '0'; el.style.transform = 'translateX(10px)';
-  el.style.transition = 'all 0.3s';
-  setTimeout(() => el.remove(), 300);
-  publishedCount++;
-  updateCounts();
-  checkEmpty();
-  showToast('🚀 Pubblicato sul sito!');
-}
+// INIT
+window.addEventListener('DOMContentLoaded', () => {
+  const su = localStorage.getItem('sb_url');
+  const sk = localStorage.getItem('sb_key');
+  if (su && sk && su !== 'https://sevpxtbrdcnjijldlwvo.supabase.co') {
+    initSB(su, sk);
+  } else if (SUPABASE_URL !== 'https://sevpxtbrdcnjijldlwvo.supabase.co') {
+    initSB(SUPABASE_URL, SUPABASE_KEY);
+  } else {
+    document.getElementById('configModal').classList.remove('hidden');
+  }
+});
 
-// Reject item
-function reject(id) {
-  const el = document.getElementById(id);
-  el.style.opacity = '0'; el.style.transition = 'opacity 0.3s';
-  setTimeout(() => el.remove(), 300);
-  pendingCount--;
-  updateCounts();
-  checkEmpty();
-  showToast('✕ Contenuto scartato');
-}
-
-function unpublish(btn) {
-  const row = btn.closest('.queue-item');
-  row.style.opacity = '0'; row.style.transition = 'opacity 0.3s';
-  setTimeout(() => row.remove(), 300);
-  publishedCount--;
-  updateCounts();
-  showToast('Contenuto rimosso dal sito');
-}
-
-function checkEmpty() {
-  if (pendingCount <= 0) {
-    document.getElementById('emptyQueue').style.display = 'block';
+function initSB(url, key) {
+  try {
+    sb = window.supabase.createClient(url, key);
+    document.getElementById('configModal').classList.add('hidden');
+    document.getElementById('demoBanner').classList.add('hidden');
+    document.getElementById('cfgUrlEdit').value = url;
+    document.getElementById('cfgKeyEdit').value = key;
+    demoMode = false;
+    loadAll();
+    toast('✓ Connesso a Supabase', 'ok');
+  } catch(e) {
+    toast('⚠ Errore connessione Supabase', 'err');
   }
 }
 
-function updateCounts() {
-  document.getElementById('pendingCount').textContent = Math.max(0, pendingCount);
-  document.getElementById('publishedCount').textContent = publishedCount;
-  document.getElementById('stat-pending').textContent = Math.max(0, pendingCount);
-  document.getElementById('stat-published').textContent = publishedCount;
+function saveConfig() {
+  const u = document.getElementById('cfgUrl').value.trim();
+  const k = document.getElementById('cfgKey').value.trim();
+  if (!u || !k) { toast('⚠ Inserisci entrambi i campi', 'err'); return; }
+  localStorage.setItem('sb_url', u); localStorage.setItem('sb_key', k);
+  initSB(u, k);
 }
 
-// Simulate URL fetch
-const fakeData = {
-  title: "Come usare Claude per generare rubriche valutative in 3 minuti",
-  desc: "Tutorial pratico con prompt pronti all'uso per docenti della scuola secondaria. Include esempi per Storia, Italiano e Matematica."
+function saveConfigFromPanel() {
+  const u = document.getElementById('cfgUrlEdit').value.trim();
+  const k = document.getElementById('cfgKeyEdit').value.trim();
+  if (!u || !k) { toast('⚠ Inserisci entrambi i campi', 'err'); return; }
+  localStorage.setItem('sb_url', u); localStorage.setItem('sb_key', k);
+  initSB(u, k);
+}
+
+function useDemoMode() {
+  demoMode = true;
+  document.getElementById('configModal').classList.add('hidden');
+  document.getElementById('demoBanner').classList.remove('hidden');
+  loadAll();
+}
+
+// LOAD
+async function loadAll() { await Promise.all([loadPending(), loadPublished()]); }
+
+async function loadPending() {
+  let items;
+  if (demoMode) {
+    items = demoData.filter(i => i.status === 'pending');
+  } else {
+    const { data, error } = await sb.from('feed_items').select('*').eq('status','pending').order('found_at',{ascending:false});
+    if (error) { toast('⚠ Errore caricamento', 'err'); return; }
+    items = data;
+  }
+  renderPending(items);
+  setCount('pendingBadge','statPend', items.length);
+}
+
+async function loadPublished() {
+  let items;
+  if (demoMode) {
+    items = demoData.filter(i => i.status === 'published');
+  } else {
+    const { data, error } = await sb.from('feed_items').select('*').eq('status','published').order('published_at',{ascending:false});
+    if (error) return;
+    items = data;
+  }
+  renderPublished(items);
+  setCount('publishedBadge','statPub', items.length);
+}
+
+// RENDER
+const srcLabel = {
+  youtube: '<span class="source-pill sp-yt">▶ YouTube</span>',
+  articolo: '<span class="source-pill sp-art">📰 Articolo</span>',
+  instagram: '<span class="source-pill sp-ig">📱 Instagram</span>',
+  facebook: '<span class="source-pill sp-fb">📘 Facebook</span>',
 };
 
-function fetchUrl() {
-  const url = document.getElementById('urlInput').value;
-  if (!url) { showToast('⚠ Inserisci un URL valido'); return; }
-  showToast('🔍 Analisi in corso...');
-  setTimeout(() => {
-    document.getElementById('fpTitle').textContent = fakeData.title;
-    document.getElementById('fpDesc').textContent = fakeData.desc;
-    document.getElementById('fetchPreview').classList.add('visible');
-    document.getElementById('fTitle').value = fakeData.title;
-    document.getElementById('fDesc').value = fakeData.desc;
-    showToast('✓ Contenuto rilevato — controlla i campi');
-  }, 1200);
+function renderPending(items) {
+  const el = document.getElementById('pendingList');
+  if (!items.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">✓</div><p>Coda vuota — tutto approvato</p></div>'; return; }
+  el.innerHTML = items.map(it => `
+    <div class="queue-item pending" id="qi-${it.id}">
+      <div><div class="qi-title"><a href="${it.url}" target="_blank" style="color:white;text-decoration:none">${it.title}</a></div>
+      <div class="qi-sub">${safeHost(it.url)} · ${ago(it.found_at)}</div></div>
+      ${srcLabel[it.source]||srcLabel.articolo}
+      <span class="status-pill st-pending">In attesa</span>
+      <div class="qi-actions">
+        <button class="btn btn-green btn-sm" onclick="approve('${it.id}')">✓ Approva</button>
+        <button class="btn btn-outline-red btn-sm" onclick="reject('${it.id}')">✕</button>
+      </div>
+    </div>`).join('');
 }
 
-function publishItem() {
-  const t = document.getElementById('fTitle').value;
-  if (!t) { showToast('⚠ Inserisci almeno il titolo'); return; }
-  clearForm();
-  publishedCount++;
-  updateCounts();
-  showToast('🚀 Contenuto pubblicato sul sito!');
+function renderPublished(items) {
+  const el = document.getElementById('publishedList');
+  if (!items.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><p>Nessun contenuto pubblicato</p></div>'; return; }
+  el.innerHTML = items.map(it => `
+    <div class="queue-item published" id="qp-${it.id}">
+      <div><div class="qi-title"><a href="${it.url}" target="_blank" style="color:white;text-decoration:none">${it.title}</a></div>
+      <div class="qi-sub">${it.category||''}</div></div>
+      ${srcLabel[it.source]||srcLabel.articolo}
+      <span class="status-pill st-published">${fmtDate(it.published_at)}</span>
+      <div class="qi-actions"><button class="btn btn-outline-red btn-sm" onclick="unpublish('${it.id}')">Rimuovi</button></div>
+    </div>`).join('');
+}
+
+// ACTIONS
+async function approve(id) {
+  if (demoMode) {
+    const i = demoData.find(x=>x.id===id);
+    if(i){ i.status='published'; i.published_at=new Date().toISOString(); }
+    fadeOut('qi-'+id); toast('🚀 Pubblicato!','ok'); await loadAll(); return;
+  }
+  const { error } = await sb.from('feed_items').update({status:'published',published_at:new Date().toISOString()}).eq('id',id);
+  if (error) { toast('⚠ Errore','err'); return; }
+  fadeOut('qi-'+id); toast('🚀 Pubblicato sul sito!','ok'); await loadPublished();
+  adjustCount('pendingBadge','statPend',-1);
+}
+
+async function reject(id) {
+  if (demoMode) {
+    demoData = demoData.filter(x=>x.id!==id);
+    fadeOut('qi-'+id); toast('✕ Scartato',''); await loadPending(); return;
+  }
+  const { error } = await sb.from('feed_items').update({status:'rejected'}).eq('id',id);
+  if (error) { toast('⚠ Errore','err'); return; }
+  fadeOut('qi-'+id); toast('✕ Scartato',''); adjustCount('pendingBadge','statPend',-1);
+}
+
+async function unpublish(id) {
+  if (demoMode) {
+    const i = demoData.find(x=>x.id===id);
+    if(i){ i.status='pending'; delete i.published_at; }
+    fadeOut('qp-'+id); toast('Rimosso dal sito',''); await loadAll(); return;
+  }
+  const { error } = await sb.from('feed_items').update({status:'pending',published_at:null}).eq('id',id);
+  if (error) { toast('⚠ Errore','err'); return; }
+  fadeOut('qp-'+id); toast('Rimosso dal sito',''); adjustCount('publishedBadge','statPub',-1);
+}
+
+async function publishNew() {
+  const title = document.getElementById('fTitle').value.trim();
+  const url = document.getElementById('fUrl').value.trim();
+  if (!title||!url) { toast('⚠ Titolo e URL obbligatori','err'); return; }
+  const item = { title, description: document.getElementById('fDesc').value.trim(), url, source: document.getElementById('fSource').value, category: document.getElementById('fCat').value, status:'published', published_at:new Date().toISOString(), found_at:new Date().toISOString() };
+  if (demoMode) { demoData.push({...item, id:'d'+Date.now()}); clearForm(); toast('🚀 Pubblicato!','ok'); await loadPublished(); return; }
+  const btn = document.getElementById('publishBtn');
+  btn.disabled=true; btn.textContent='Pubblicazione...';
+  const { error } = await sb.from('feed_items').insert(item);
+  btn.disabled=false; btn.textContent='🚀 Pubblica sul sito';
+  if (error) { toast('⚠ '+error.message,'err'); return; }
+  clearForm(); toast('🚀 Pubblicato sul sito!','ok'); await loadPublished();
+}
+
+async function saveAsPending() {
+  const title = document.getElementById('fTitle').value.trim();
+  const url = document.getElementById('fUrl').value.trim();
+  if (!title||!url) { toast('⚠ Titolo e URL obbligatori','err'); return; }
+  const item = { title, description: document.getElementById('fDesc').value.trim(), url, source: document.getElementById('fSource').value, category: document.getElementById('fCat').value, status:'pending', found_at:new Date().toISOString() };
+  if (demoMode) { demoData.push({...item,id:'d'+Date.now()}); clearForm(); toast('✓ Salvato in coda','ok'); await loadPending(); return; }
+  const { error } = await sb.from('feed_items').insert(item);
+  if (error) { toast('⚠ '+error.message,'err'); return; }
+  clearForm(); toast('✓ Salvato in coda','ok'); await loadPending();
+}
+
+// UTILS
+function detectSource() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { toast('⚠ Inserisci un URL','err'); return; }
+  let src = 'articolo';
+  try {
+    const h = new URL(url).hostname;
+    if (h.includes('youtube')||h.includes('youtu.be')) src='youtube';
+    else if (h.includes('instagram')) src='instagram';
+    else if (h.includes('facebook')||h.includes('fb.com')) src='facebook';
+    document.getElementById('fpTitle').textContent = 'Compila il titolo manualmente';
+    document.getElementById('fpDesc').textContent = 'Fonte: '+h+' ('+src+') — inserisci titolo e descrizione e poi pubblica.';
+    document.getElementById('fetchPreview').classList.add('visible');
+    document.getElementById('fUrl').value = url;
+    document.getElementById('fSource').value = src;
+    toast('✓ Fonte rilevata: '+src,'ok');
+  } catch(e) { toast('⚠ URL non valido','err'); }
 }
 
 function clearForm() {
-  ['urlInput','fTitle','fDesc'].forEach(id => document.getElementById(id).value = '');
+  ['urlInput','fTitle','fDesc','fUrl'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('fetchPreview').classList.remove('visible');
 }
 
-// Simulate auto scan
-function simulateScan() {
-  showToast('🔍 Scansione avviata — attendi qualche secondo');
-  setTimeout(() => {
-    const newItem = document.createElement('div');
-    newItem.className = 'queue-item pending';
-    newItem.id = 'qi-new';
-    newItem.innerHTML = `
-      <div><div class="qi-title">Nuovi strumenti AI per la valutazione formativa — EdTech 2025</div><div class="qi-subtitle">edtechitalia.it · appena trovato</div></div>
-      <span class="source-pill sp-art">📰 Articolo</span>
-      <span class="status-pill sp-pending">In attesa</span>
-      <div class="qi-actions">
-        <button class="btn btn-green btn-sm" onclick="approve('qi-new')">✓</button>
-        <button class="btn btn-outline-red btn-sm" onclick="reject('qi-new')">✕</button>
-      </div>`;
-    document.getElementById('queueList').prepend(newItem);
-    pendingCount++;
-    updateCounts();
-    document.getElementById('emptyQueue').style.display = 'none';
-    showToast('✓ Trovato 1 nuovo contenuto — in coda!');
-  }, 2000);
+function showPanel(id, btn) {
+  ['coda','aggiungi','pubblicati','fonti','config'].forEach(p=>{
+    document.getElementById('panel-'+p).style.display = p===id?'block':'none';
+  });
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(id==='pubblicati') loadPublished();
+  if(id==='coda') loadPending();
 }
 
-// Toggle source
-function toggleSource(btn) {
-  btn.classList.toggle('on');
+function setCount(badgeId, statId, n) {
+  document.getElementById(badgeId).textContent = n;
+  document.getElementById(statId).textContent = n;
 }
 
-// Toast
-function showToast(msg) {
-  const t = document.getElementById('toast');
+function adjustCount(badgeId, statId, delta) {
+  const el = document.getElementById(badgeId);
+  const el2 = document.getElementById(statId);
+  const n = Math.max(0,(parseInt(el.textContent)||0)+delta);
+  el.textContent = n; el2.textContent = n;
+}
+
+function fadeOut(id) {
+  const el = document.getElementById(id);
+  if(el){el.style.opacity='0';el.style.transition='opacity 0.3s';setTimeout(()=>el.remove(),300);}
+}
+
+function safeHost(url) { try{return new URL(url).hostname.replace('www.','')}catch{return url;} }
+function ago(d) { if(!d)return'—'; const h=Math.floor((Date.now()-new Date(d))/3600000); return h<1?'poco fa':h<24?h+'h fa':Math.floor(h/24)+'g fa'; }
+function fmtDate(d) { if(!d)return'—'; return new Date(d).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}); }
+
+function toast(msg, type) {
+  const el = document.getElementById('toastEl');
   document.getElementById('toastMsg').textContent = msg;
-  t.classList.add('visible');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => t.classList.remove('visible'), 3000);
+  el.className = 'toast visible'+(type?' '+type:'');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(()=>el.classList.remove('visible'),3500);
 }
 </script>
 </body>

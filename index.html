@@ -98,7 +98,7 @@ nav.scrolled {
   background: var(--dark);
   position: relative;
   display: flex; flex-direction: column; justify-content: center;
-  padding: 120px 48px 80px;
+  padding: 120px 48px 100px;
   overflow: hidden;
 }
 .hero-grid-bg {
@@ -145,23 +145,6 @@ nav.scrolled {
   animation: fadeUp 0.8s 0.4s forwards;
 }
 .hero-headline .accent { color: var(--red); }
-.hero-claim {
-  background: rgba(217,27,27,0.08);
-  border: 1px solid rgba(217,27,27,0.2);
-  border-left: 3px solid var(--red);
-  border-radius: var(--radius-sm);
-  padding: 24px 32px;
-  max-width: 680px;
-  margin-bottom: 52px;
-  opacity: 0; transform: translateY(20px);
-  animation: fadeUp 0.8s 0.6s forwards;
-}
-.hero-claim p {
-  font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
-  color: #CCCCCC; line-height: 1.5;
-  font-style: italic;
-}
-.hero-claim span { color: var(--red); font-style: normal; }
 .hero-actions {
   display: flex; align-items: center; gap: 24px;
   opacity: 0; transform: translateY(20px);
@@ -210,12 +193,6 @@ nav.scrolled {
   width: clamp(200px, 22vw, 340px);
   opacity: 0; animation: fadeIn 1.2s 0.9s forwards;
   filter: drop-shadow(0 0 60px rgba(217,27,27,0.15));
-}
-
-/* ===== SECTION TRANSITION ===== */
-.section-transition {
-  height: 120px;
-  background: linear-gradient(to bottom, var(--dark) 0%, var(--light) 100%);
 }
 
 /* ===== SECTION SHARED ===== */
@@ -901,12 +878,6 @@ footer {
     Non sprecata.
   </h1>
 
-  <div class="hero-claim">
-    <p>
-      <span>«</span> Usare l'AI per fare i compiti è come avere i poteri dell'<span>Uomo Ragno</span> e usarli per fare l'antennista. <span>»</span>
-    </p>
-  </div>
-
   <div class="hero-actions">
     <a href="#filosofia" class="btn-primary">Scopri il metodo</a>
     <a href="#casi" class="btn-ghost">Vedi le applicazioni</a>
@@ -920,7 +891,7 @@ footer {
   </div>
 </section>
 
-<div class="section-transition"></div>
+
 
 <!-- MOTTO SECTION -->
 <div id="motto">
@@ -1173,6 +1144,7 @@ footer {
 </section>
 
 <!-- FEED RAGIONATO -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <section id="feed">
   <div class="section-label reveal">Feed Ragionato</div>
   <h2 class="section-title reveal reveal-delay-1">Contenuti selezionati.<br>Niente rumore.</h2>
@@ -1180,14 +1152,11 @@ footer {
 
   <div class="bento bento-feed">
 
-    <div class="feed-filters reveal reveal-delay-1">
-      <button class="filter-pill active">Tutti</button>
-      <button class="filter-pill">📺 YouTube</button>
-      <button class="filter-pill">📰 Articoli</button>
-      <button class="filter-pill">📱 Social</button>
-      <button class="filter-pill">🎓 Didattica</button>
-      <button class="filter-pill">⚖️ Etica AI</button>
-      <button class="filter-pill">🛠 Strumenti</button>
+    <div class="feed-filters reveal reveal-delay-1" id="feedFilters">
+      <button class="filter-pill active" data-filter="all">Tutti</button>
+      <button class="filter-pill" data-filter="youtube">📺 YouTube</button>
+      <button class="filter-pill" data-filter="articolo">📰 Articoli</button>
+      <button class="filter-pill" data-filter="social">📱 Social</button>
     </div>
 
     <a href="#" class="feed-card feed-card-wide reveal reveal-delay-1">
@@ -1280,9 +1249,16 @@ footer {
       </div>
     </a>
 
+    <div id="feedGrid" style="display:contents">
+      <!-- Cards caricate dinamicamente da Supabase -->
+      <div class="feed-card feed-card-wide reveal" style="background:white;min-height:200px;display:flex;align-items:center;justify-content:center;">
+        <span style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Caricamento contenuti...</span>
+      </div>
+    </div>
+
     <div class="feed-cta-card reveal reveal-delay-1">
       <p>Hai trovato un contenuto utile sull'AI per la scuola? Segnalacelo — potrebbe finire qui.</p>
-      <a href="admin-feed.html">→ Pannello Admin</a>
+      <a href="admin-feed.html">Gestisci il feed →</a>
     </div>
 
   </div>
@@ -1413,11 +1389,101 @@ const observer = new IntersectionObserver((entries) => {
 
 reveals.forEach(el => observer.observe(el));
 
+// ===== SUPABASE FEED CONFIG =====
+// Sostituisci con le tue credenziali Supabase (stesse dell'admin panel)
+const SB_URL = 'https://sevpxtbrdcnjijldlwvo.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnB4dGJyZGNuamlqbGRsd3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTczNzgsImV4cCI6MjA5MzQ5MzM3OH0.rHLxZzpLfSJlaR8CO9GgRpmhlhWtrNWckdO0I1jMcU8';
+
+const SRC_BADGE = {
+  youtube: '<span class="feed-source-badge badge-yt">▶ YouTube</span>',
+  articolo: '<span class="feed-source-badge badge-art">📰 Articolo</span>',
+  instagram: '<span class="feed-source-badge badge-ig">📱 Instagram</span>',
+  facebook: '<span class="feed-source-badge badge-fb">📘 Facebook</span>',
+};
+const CARD_SIZES = ['feed-card-wide','feed-card-mid','feed-card-small','feed-card-small','feed-card-mid','feed-card-wide'];
+let allItems = [];
+let currentFilter = 'all';
+
+async function loadFeed() {
+  const grid = document.getElementById('feedGrid');
+  if (!grid) return;
+
+  // Fallback statico se Supabase non configurato
+  if (SB_URL === 'https://sevpxtbrdcnjijldlwvo.supabase.co') {
+    renderFeedStatic();
+    return;
+  }
+
+  try {
+    const sb = window.supabase.createClient(SB_URL, SB_KEY);
+    const { data, error } = await sb
+      .from('feed_items')
+      .select('*')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(6);
+    if (error || !data) { renderFeedStatic(); return; }
+    allItems = data;
+    renderFeed(data);
+  } catch(e) {
+    renderFeedStatic();
+  }
+}
+
+function renderFeed(items) {
+  const grid = document.getElementById('feedGrid');
+  if (!items.length) {
+    grid.innerHTML = '<div class="feed-card feed-card-wide reveal visible" style="background:white;display:flex;align-items:center;justify-content:center;min-height:180px"><span style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Nessun contenuto ancora pubblicato</span></div>';
+    return;
+  }
+  grid.innerHTML = items.map((item, i) => {
+    const size = CARD_SIZES[i % CARD_SIZES.length];
+    const badge = SRC_BADGE[item.source] || SRC_BADGE.articolo;
+    const date = item.published_at ? new Date(item.published_at).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'2-digit'}) : '';
+    return `<a href="${item.url}" target="_blank" rel="noopener" class="feed-card ${size} reveal visible" data-source="${item.source}" data-cat="${item.category||''}">
+      <div>
+        <div class="feed-source-row">${badge}<span class="feed-date">${date}</span></div>
+        <h4>${item.title}</h4>
+        ${item.description ? `<p>${item.description}</p>` : ''}
+      </div>
+      <div class="feed-card-footer">
+        <span class="feed-category">${item.category||''}</span>
+        <span class="feed-arrow">→</span>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+// Fallback statico (usato se Supabase non configurato)
+function renderFeedStatic() {
+  const STATIC = [
+    { title:'Come usare ChatGPT per creare verifiche differenziate', description:'Guida pratica per docenti della secondaria con prompt testati in classe.', url:'#', source:'youtube', category:'🎓 Didattica pratica', published_at: new Date().toISOString() },
+    { title:'AI Act europeo: cosa cambia per scuole e docenti?', description:'Analisi accessibile delle nuove norme UE applicate al contesto scolastico.', url:'#', source:'articolo', category:'⚖️ Etica & Normativa', published_at: new Date().toISOString() },
+    { title:'NotebookLM in 60 secondi per i docenti', description:'Reel virale sul tool Google più sottovalutato del 2025.', url:'#', source:'instagram', category:'🛠 Strumenti', published_at: new Date().toISOString() },
+    { title:'BES e DSA: adattare i testi con AI in automatico', description:'Tutorial su come usare Gemini per l\'inclusione scolastica senza sforzo.', url:'#', source:'youtube', category:'♿ Inclusione', published_at: new Date().toISOString() },
+    { title:'I 5 prompt più condivisi tra docenti nel 2025', description:'La community ha parlato — questi sono i prompt che funzionano davvero.', url:'#', source:'facebook', category:'✍️ Prompt Engineering', published_at: new Date().toISOString() },
+    { title:'Perché i prompt generici non funzionano', description:'Analisi dei meccanismi LLM spiegata con il linguaggio dei docenti.', url:'#', source:'articolo', category:'🎓 Prompt Engineering', published_at: new Date().toISOString() },
+  ];
+  allItems = STATIC;
+  renderFeed(STATIC);
+}
+
 // ===== FEED FILTER PILLS =====
-document.querySelectorAll('.filter-pill').forEach(pill => {
-  pill.addEventListener('click', () => {
-    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-    pill.classList.add('active');
+document.addEventListener('DOMContentLoaded', () => {
+  loadFeed();
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentFilter = pill.dataset.filter || 'all';
+      if (currentFilter === 'all') {
+        renderFeed(allItems);
+      } else if (currentFilter === 'social') {
+        renderFeed(allItems.filter(i => ['instagram','facebook'].includes(i.source)));
+      } else {
+        renderFeed(allItems.filter(i => i.source === currentFilter));
+      }
+    });
   });
 });
 
