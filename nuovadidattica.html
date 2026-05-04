@@ -708,6 +708,144 @@ footer {
   100% { left: 100%; }
 }
 
+/* ===== MOTTO SECTION ===== */
+#motto {
+  background: var(--light);
+  padding: 80px 48px;
+  display: flex; align-items: center; justify-content: center;
+}
+.motto-inner {
+  max-width: 860px; width: 100%;
+  display: flex; align-items: center; gap: 48px;
+  padding: 52px 60px;
+  border-radius: var(--radius);
+  border: 1px solid var(--light-3);
+  position: relative; overflow: hidden;
+  background: white;
+}
+.motto-inner::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; background: var(--red);
+  border-radius: 4px 0 0 4px;
+}
+.motto-glyph {
+  font-size: 4.5rem; line-height: 1;
+  flex-shrink: 0; opacity: 0.15;
+  font-family: var(--font-display); font-weight: 800;
+  color: var(--red); user-select: none;
+}
+.motto-content { flex: 1; }
+.motto-label {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.motto-label::before {
+  content: ''; display: block; width: 18px; height: 1px; background: var(--red);
+}
+.motto-text {
+  font-family: var(--font-display); font-size: clamp(1.1rem, 2vw, 1.45rem);
+  font-weight: 700; line-height: 1.4; color: var(--text-dark);
+  letter-spacing: -0.01em;
+}
+.motto-text .highlight { color: var(--red); }
+.motto-author {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-muted); margin-top: 18px;
+}
+
+/* ===== FEED SECTION ===== */
+#feed { background: var(--light-2); }
+#feed .section-label { color: var(--eu-blue); }
+#feed .section-label::before { background: var(--eu-blue); }
+.bento-feed { grid-template-columns: repeat(12, 1fr); }
+.feed-filters {
+  grid-column: span 12;
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.filter-pill {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; padding: 8px 18px; border-radius: 100px;
+  border: 1px solid var(--light-3); background: white; color: var(--text-mid);
+  cursor: none; transition: all 0.2s;
+}
+.filter-pill.active, .filter-pill:hover {
+  background: var(--eu-blue); color: white; border-color: var(--eu-blue);
+}
+.feed-card {
+  background: white; border-radius: var(--radius);
+  padding: 28px; min-height: 200px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none; color: inherit;
+}
+.feed-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.07); }
+.feed-card-wide { grid-column: span 5; }
+.feed-card-mid { grid-column: span 4; }
+.feed-card-small { grid-column: span 3; }
+.feed-source-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.feed-source-badge {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
+  font-weight: 500;
+}
+.badge-yt { background: rgba(255,0,0,0.08); color: #cc0000; }
+.badge-fb { background: rgba(24,119,242,0.08); color: #1877F2; }
+.badge-ig { background: rgba(193,53,132,0.08); color: #C13584; }
+.badge-art { background: rgba(0,63,165,0.08); color: var(--eu-blue); }
+.feed-date {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.1em; color: var(--text-muted);
+}
+.feed-card h4 {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 700;
+  line-height: 1.25; color: var(--text-dark); margin-bottom: 8px;
+  flex: 1;
+}
+.feed-card p {
+  font-size: 0.83rem; line-height: 1.55; color: var(--text-mid);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.feed-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 20px;
+}
+.feed-category {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.feed-arrow {
+  font-size: 0.9rem; color: var(--red); opacity: 0;
+  transition: opacity 0.2s, transform 0.2s; transform: translateX(-4px);
+}
+.feed-card:hover .feed-arrow { opacity: 1; transform: translateX(0); }
+.feed-cta-card {
+  grid-column: span 12; background: var(--eu-blue);
+  border-radius: var(--radius); padding: 36px 48px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  flex-wrap: wrap;
+}
+.feed-cta-card p {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  color: white; max-width: 500px; line-height: 1.4;
+}
+.feed-cta-card a {
+  font-family: var(--font-display); font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--eu-yellow); color: var(--dark);
+  padding: 13px 28px; border-radius: 100px;
+  text-decoration: none; white-space: nowrap;
+  transition: transform 0.2s;
+}
+.feed-cta-card a:hover { transform: scale(1.04); }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
   nav { padding: 16px 24px; }
@@ -743,6 +881,7 @@ footer {
     <li><a href="#casi">Applicazioni</a></li>
     <li><a href="#etica">Etica</a></li>
     <li><a href="#toolbox">Toolbox</a></li>
+    <li><a href="#feed">Feed</a></li>
     <li><a href="#community">Community</a></li>
   </ul>
   <a href="#community" class="nav-cta">Unisciti</a>
@@ -782,6 +921,20 @@ footer {
 </section>
 
 <div class="section-transition"></div>
+
+<!-- MOTTO SECTION -->
+<div id="motto">
+  <div class="motto-inner reveal">
+    <div class="motto-glyph">"</div>
+    <div class="motto-content">
+      <div class="motto-label">Il claim fondante</div>
+      <p class="motto-text">
+        Usare l'AI per fare i compiti è come avere i poteri dell'<span class="highlight">Uomo Ragno</span> e usarli per fare <span class="highlight">l'antennista</span>.
+      </p>
+      <p class="motto-author">— Principio guida · NuovaDidattica.eu</p>
+    </div>
+  </div>
+</div>
 
 <!-- FILOSOFIA & VIDEO -->
 <section id="filosofia">
@@ -1019,6 +1172,122 @@ footer {
   </div>
 </section>
 
+<!-- FEED RAGIONATO -->
+<section id="feed">
+  <div class="section-label reveal">Feed Ragionato</div>
+  <h2 class="section-title reveal reveal-delay-1">Contenuti selezionati.<br>Niente rumore.</h2>
+  <p class="section-subtitle reveal reveal-delay-2">Una selezione curata di articoli, video e risorse sull'AI per la scuola. Trovati, valutati e approvati — solo il meglio arriva qui.</p>
+
+  <div class="bento bento-feed">
+
+    <div class="feed-filters reveal reveal-delay-1">
+      <button class="filter-pill active">Tutti</button>
+      <button class="filter-pill">📺 YouTube</button>
+      <button class="filter-pill">📰 Articoli</button>
+      <button class="filter-pill">📱 Social</button>
+      <button class="filter-pill">🎓 Didattica</button>
+      <button class="filter-pill">⚖️ Etica AI</button>
+      <button class="filter-pill">🛠 Strumenti</button>
+    </div>
+
+    <a href="#" class="feed-card feed-card-wide reveal reveal-delay-1">
+      <div>
+        <div class="feed-source-row">
+          <span class="feed-source-badge badge-yt">▶ YouTube</span>
+          <span class="feed-date">28 apr 2025</span>
+        </div>
+        <h4>Come usare ChatGPT per creare verifiche differenziate in 10 minuti</h4>
+        <p>Una guida pratica passo dopo passo per docenti della secondaria, con esempi reali e prompt testati in classe.</p>
+      </div>
+      <div class="feed-card-footer">
+        <span class="feed-category">🎓 Didattica pratica</span>
+        <span class="feed-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="#" class="feed-card feed-card-mid reveal reveal-delay-2">
+      <div>
+        <div class="feed-source-row">
+          <span class="feed-source-badge badge-art">📰 Articolo</span>
+          <span class="feed-date">24 apr 2025</span>
+        </div>
+        <h4>AI Act europeo: cosa cambia per scuole e docenti?</h4>
+        <p>Un'analisi accessibile delle nuove norme UE sull'intelligenza artificiale applicate al contesto scolastico.</p>
+      </div>
+      <div class="feed-card-footer">
+        <span class="feed-category">⚖️ Etica & Normativa</span>
+        <span class="feed-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="#" class="feed-card feed-card-small reveal reveal-delay-3">
+      <div>
+        <div class="feed-source-row">
+          <span class="feed-source-badge badge-ig">📱 Instagram</span>
+          <span class="feed-date">22 apr 2025</span>
+        </div>
+        <h4>NotebookLM: il tool che i prof non conoscono ancora</h4>
+        <p>Reel virale con 200k visualizzazioni che spiega NotebookLM in 60 secondi.</p>
+      </div>
+      <div class="feed-card-footer">
+        <span class="feed-category">🛠 Strumenti</span>
+        <span class="feed-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="#" class="feed-card feed-card-small reveal reveal-delay-1">
+      <div>
+        <div class="feed-source-row">
+          <span class="feed-source-badge badge-fb">📘 Facebook</span>
+          <span class="feed-date">19 apr 2025</span>
+        </div>
+        <h4>Gruppo docenti digitali: i 5 prompt più condivisi di aprile</h4>
+        <p>La community ha parlato — questi sono i prompt che funzionano davvero.</p>
+      </div>
+      <div class="feed-card-footer">
+        <span class="feed-category">✍️ Prompt</span>
+        <span class="feed-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="#" class="feed-card feed-card-mid reveal reveal-delay-2">
+      <div>
+        <div class="feed-source-row">
+          <span class="feed-source-badge badge-yt">▶ YouTube</span>
+          <span class="feed-date">15 apr 2025</span>
+        </div>
+        <h4>BES e DSA con l'AI: adattare i testi in automatico</h4>
+        <p>Tutorial completo su come usare Gemini e Claude per l'inclusione scolastica senza sforzo.</p>
+      </div>
+      <div class="feed-card-footer">
+        <span class="feed-category">♿ Inclusione</span>
+        <span class="feed-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="#" class="feed-card feed-card-wide reveal reveal-delay-3">
+      <div>
+        <div class="feed-source-row">
+          <span class="feed-source-badge badge-art">📰 Articolo</span>
+          <span class="feed-date">10 apr 2025</span>
+        </div>
+        <h4>Perché i prompt generici non funzionano — e come scrivere quelli giusti</h4>
+        <p>Un'analisi approfondita dei meccanismi dei LLM spiegata con il linguaggio dei docenti, non degli ingegneri.</p>
+      </div>
+      <div class="feed-card-footer">
+        <span class="feed-category">🎓 Prompt Engineering</span>
+        <span class="feed-arrow">→</span>
+      </div>
+    </a>
+
+    <div class="feed-cta-card reveal reveal-delay-1">
+      <p>Hai trovato un contenuto utile sull'AI per la scuola? Segnalacelo — potrebbe finire qui.</p>
+      <a href="admin-feed.html">→ Pannello Admin</a>
+    </div>
+
+  </div>
+</section>
+
 <!-- COMMUNITY -->
 <section id="community">
   <div class="section-label reveal">Community & Networking</div>
@@ -1143,6 +1412,14 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.12 });
 
 reveals.forEach(el => observer.observe(el));
+
+// ===== FEED FILTER PILLS =====
+document.querySelectorAll('.filter-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  });
+});
 
 // ===== STARS BACKGROUND =====
 const starsBg = document.getElementById('starsBg');
