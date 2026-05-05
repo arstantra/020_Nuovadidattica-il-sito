@@ -803,6 +803,70 @@ footer {
   transition: opacity 0.2s, transform 0.2s; transform: translateX(-4px);
 }
 .feed-card:hover .feed-arrow { opacity: 1; transform: translateX(0); }
+.feed-list-wrap {
+  grid-column: span 12;
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 4px;
+}
+.feed-list-header {
+  padding: 16px 24px 12px;
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--text-muted);
+  border-bottom: 1px solid var(--light-3);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.feed-list-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 16px; align-items: center;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--light-2);
+  text-decoration: none; color: inherit;
+  transition: background 0.15s;
+}
+.feed-list-item:last-child { border-bottom: none; }
+.feed-list-item:hover { background: var(--light-2); }
+.fli-badge { flex-shrink: 0; }
+.fli-title {
+  font-size: 0.88rem; font-weight: 500; color: var(--text-dark);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fli-cat {
+  font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted); white-space: nowrap;
+}
+.fli-date {
+  font-family: var(--font-mono); font-size: 0.58rem;
+  color: var(--text-muted); white-space: nowrap;
+}
+.fli-arrow {
+  font-size: 0.8rem; color: var(--red); opacity: 0;
+  transition: opacity 0.2s; margin-left: 4px;
+}
+.feed-list-item:hover .fli-arrow { opacity: 1; }
+.load-more-wrap {
+  grid-column: span 12;
+  display: flex; justify-content: center; padding-top: 8px;
+}
+.load-more-btn {
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: white; color: var(--text-mid);
+  border: 1px solid var(--light-3); border-radius: 100px;
+  padding: 12px 28px; cursor: pointer; transition: all 0.2s;
+}
+.load-more-btn:hover {
+  border-color: var(--eu-blue); color: var(--eu-blue);
+}
+.load-more-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.feed-empty {
+  grid-column: span 12; background: white; border-radius: var(--radius);
+  padding: 48px; text-align: center;
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-muted);
+}
 .feed-cta-card {
   grid-column: span 12; background: var(--eu-blue);
   border-radius: var(--radius); padding: 36px 48px;
@@ -1159,106 +1223,21 @@ footer {
       <button class="filter-pill" data-filter="social">📱 Social</button>
     </div>
 
-    <a href="#" class="feed-card feed-card-wide reveal reveal-delay-1">
-      <div>
-        <div class="feed-source-row">
-          <span class="feed-source-badge badge-yt">▶ YouTube</span>
-          <span class="feed-date">28 apr 2025</span>
-        </div>
-        <h4>Come usare ChatGPT per creare verifiche differenziate in 10 minuti</h4>
-        <p>Una guida pratica passo dopo passo per docenti della secondaria, con esempi reali e prompt testati in classe.</p>
-      </div>
-      <div class="feed-card-footer">
-        <span class="feed-category">🎓 Didattica pratica</span>
-        <span class="feed-arrow">→</span>
-      </div>
-    </a>
+    <!-- 4 card bento in evidenza -->
+    <div id="feedCards" style="display:contents"></div>
 
-    <a href="#" class="feed-card feed-card-mid reveal reveal-delay-2">
-      <div>
-        <div class="feed-source-row">
-          <span class="feed-source-badge badge-art">📰 Articolo</span>
-          <span class="feed-date">24 apr 2025</span>
-        </div>
-        <h4>AI Act europeo: cosa cambia per scuole e docenti?</h4>
-        <p>Un'analisi accessibile delle nuove norme UE sull'intelligenza artificiale applicate al contesto scolastico.</p>
+    <!-- Lista compatta per il resto -->
+    <div id="feedListWrap" class="feed-list-wrap" style="display:none">
+      <div class="feed-list-header">
+        <span>Altri contenuti</span>
+        <span id="feedListCount"></span>
       </div>
-      <div class="feed-card-footer">
-        <span class="feed-category">⚖️ Etica & Normativa</span>
-        <span class="feed-arrow">→</span>
-      </div>
-    </a>
-
-    <a href="#" class="feed-card feed-card-small reveal reveal-delay-3">
-      <div>
-        <div class="feed-source-row">
-          <span class="feed-source-badge badge-ig">📱 Instagram</span>
-          <span class="feed-date">22 apr 2025</span>
-        </div>
-        <h4>NotebookLM: il tool che i prof non conoscono ancora</h4>
-        <p>Reel virale con 200k visualizzazioni che spiega NotebookLM in 60 secondi.</p>
-      </div>
-      <div class="feed-card-footer">
-        <span class="feed-category">🛠 Strumenti</span>
-        <span class="feed-arrow">→</span>
-      </div>
-    </a>
-
-    <a href="#" class="feed-card feed-card-small reveal reveal-delay-1">
-      <div>
-        <div class="feed-source-row">
-          <span class="feed-source-badge badge-fb">📘 Facebook</span>
-          <span class="feed-date">19 apr 2025</span>
-        </div>
-        <h4>Gruppo docenti digitali: i 5 prompt più condivisi di aprile</h4>
-        <p>La community ha parlato — questi sono i prompt che funzionano davvero.</p>
-      </div>
-      <div class="feed-card-footer">
-        <span class="feed-category">✍️ Prompt</span>
-        <span class="feed-arrow">→</span>
-      </div>
-    </a>
-
-    <a href="#" class="feed-card feed-card-mid reveal reveal-delay-2">
-      <div>
-        <div class="feed-source-row">
-          <span class="feed-source-badge badge-yt">▶ YouTube</span>
-          <span class="feed-date">15 apr 2025</span>
-        </div>
-        <h4>BES e DSA con l'AI: adattare i testi in automatico</h4>
-        <p>Tutorial completo su come usare Gemini e Claude per l'inclusione scolastica senza sforzo.</p>
-      </div>
-      <div class="feed-card-footer">
-        <span class="feed-category">♿ Inclusione</span>
-        <span class="feed-arrow">→</span>
-      </div>
-    </a>
-
-    <a href="#" class="feed-card feed-card-wide reveal reveal-delay-3">
-      <div>
-        <div class="feed-source-row">
-          <span class="feed-source-badge badge-art">📰 Articolo</span>
-          <span class="feed-date">10 apr 2025</span>
-        </div>
-        <h4>Perché i prompt generici non funzionano — e come scrivere quelli giusti</h4>
-        <p>Un'analisi approfondita dei meccanismi dei LLM spiegata con il linguaggio dei docenti, non degli ingegneri.</p>
-      </div>
-      <div class="feed-card-footer">
-        <span class="feed-category">🎓 Prompt Engineering</span>
-        <span class="feed-arrow">→</span>
-      </div>
-    </a>
-
-    <div id="feedGrid" style="display:contents">
-      <!-- Cards caricate dinamicamente da Supabase -->
-      <div class="feed-card feed-card-wide reveal" style="background:white;min-height:200px;display:flex;align-items:center;justify-content:center;">
-        <span style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Caricamento contenuti...</span>
-      </div>
+      <div id="feedList"></div>
     </div>
 
-    <div class="feed-cta-card reveal reveal-delay-1">
-      <p>Hai trovato un contenuto utile sull'AI per la scuola? Segnalacelo — potrebbe finire qui.</p>
-      <a href="admin-feed.html">Gestisci il feed →</a>
+    <!-- Carica altri -->
+    <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
+      <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">Carica altri →</button>
     </div>
 
   </div>
@@ -1389,58 +1368,73 @@ const observer = new IntersectionObserver((entries) => {
 
 reveals.forEach(el => observer.observe(el));
 
-// ===== SUPABASE FEED CONFIG =====
-// Sostituisci con le tue credenziali Supabase (stesse dell'admin panel)
+// ===== SUPABASE FEED =====
 const SB_URL = 'https://sevpxtbrdcnjijldlwvo.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnB4dGJyZGNuamlqbGRsd3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTczNzgsImV4cCI6MjA5MzQ5MzM3OH0.rHLxZzpLfSJlaR8CO9GgRpmhlhWtrNWckdO0I1jMcU8';
 
-const SRC_BADGE = {
-  youtube: '<span class="feed-source-badge badge-yt">▶ YouTube</span>',
-  articolo: '<span class="feed-source-badge badge-art">📰 Articolo</span>',
-  instagram: '<span class="feed-source-badge badge-ig">📱 Instagram</span>',
-  facebook: '<span class="feed-source-badge badge-fb">📘 Facebook</span>',
-};
 const CARD_SIZES = ['feed-card-wide','feed-card-mid','feed-card-small','feed-card-small','feed-card-mid','feed-card-wide'];
-let allItems = [];
-let currentFilter = 'all';
+const SRC_BADGE = {
+  youtube:   '<span class="feed-source-badge badge-yt">▶ YouTube</span>',
+  articolo:  '<span class="feed-source-badge badge-art">📰 Articolo</span>',
+  instagram: '<span class="feed-source-badge badge-ig">📱 Instagram</span>',
+  facebook:  '<span class="feed-source-badge badge-fb">📘 Facebook</span>',
+};
+const SRC_BADGE_SM = {
+  youtube:   '<span class="feed-source-badge badge-yt" style="font-size:0.55rem;padding:3px 8px">▶ YT</span>',
+  articolo:  '<span class="feed-source-badge badge-art" style="font-size:0.55rem;padding:3px 8px">📰</span>',
+  instagram: '<span class="feed-source-badge badge-ig" style="font-size:0.55rem;padding:3px 8px">📱 IG</span>',
+  facebook:  '<span class="feed-source-badge badge-fb" style="font-size:0.55rem;padding:3px 8px">📘 FB</span>',
+};
+
+let allItems   = [];   // tutti i contenuti dal DB
+let filtered   = [];   // dopo filtro corrente
+let listOffset = 0;    // quanti righe lista già visibili
+const CARDS_N  = 4;    // card bento in evidenza
+const LIST_PAGE = 8;   // righe lista per "carica altri"
 
 async function loadFeed() {
-  const grid = document.getElementById('feedGrid');
-  if (!grid) return;
-
-  // Fallback statico se Supabase non configurato
-  if (SB_URL === 'https://sevpxtbrdcnjijldlwvo.supabase.co') {
-    renderFeedStatic();
-    return;
-  }
-
   try {
     const sb = window.supabase.createClient(SB_URL, SB_KEY);
     const { data, error } = await sb
       .from('feed_items')
       .select('*')
       .eq('status', 'published')
-      .order('published_at', { ascending: false })
-      .limit(6);
-    if (error || !data) { renderFeedStatic(); return; }
+      .order('published_at', { ascending: false });
+    if (error || !data) { showFeedEmpty(); return; }
     allItems = data;
-    renderFeed(data);
+    applyFilter('all');
   } catch(e) {
-    renderFeedStatic();
+    showFeedEmpty();
   }
 }
 
-function renderFeed(items) {
-  const grid = document.getElementById('feedGrid');
-  if (!items.length) {
-    grid.innerHTML = '<div class="feed-card feed-card-wide reveal visible" style="background:white;display:flex;align-items:center;justify-content:center;min-height:180px"><span style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Nessun contenuto ancora pubblicato</span></div>';
-    return;
+function applyFilter(f) {
+  if (f === 'all') {
+    filtered = allItems;
+  } else if (f === 'social') {
+    filtered = allItems.filter(i => ['instagram','facebook'].includes(i.source));
+  } else {
+    filtered = allItems.filter(i => i.source === f);
   }
-  grid.innerHTML = items.map((item, i) => {
-    const size = CARD_SIZES[i % CARD_SIZES.length];
+  listOffset = 0;
+  renderAll();
+}
+
+function renderAll() {
+  if (!filtered.length) { showFeedEmpty(); return; }
+
+  const cards  = filtered.slice(0, CARDS_N);
+  const rest   = filtered.slice(CARDS_N);
+
+  // ── Bento cards ──
+  const cardsEl = document.getElementById('feedCards');
+  cardsEl.innerHTML = cards.map((item, i) => {
+    const size  = CARD_SIZES[i % CARD_SIZES.length];
     const badge = SRC_BADGE[item.source] || SRC_BADGE.articolo;
-    const date = item.published_at ? new Date(item.published_at).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'2-digit'}) : '';
-    return `<a href="${item.url}" target="_blank" rel="noopener" class="feed-card ${size} reveal visible" data-source="${item.source}" data-cat="${item.category||''}">
+    const date  = fmtDate(item.published_at);
+    return `<a href="${item.url}" target="_blank" rel="noopener"
+               class="feed-card ${size} reveal visible"
+               data-source="${item.source}">
       <div>
         <div class="feed-source-row">${badge}<span class="feed-date">${date}</span></div>
         <h4>${item.title}</h4>
@@ -1452,20 +1446,70 @@ function renderFeed(items) {
       </div>
     </a>`;
   }).join('');
+
+  // ── Lista compatta ──
+  const listWrap = document.getElementById('feedListWrap');
+  const listEl   = document.getElementById('feedList');
+  const loadWrap = document.getElementById('loadMoreWrap');
+  const loadBtn  = document.getElementById('loadMoreBtn');
+  const countEl  = document.getElementById('feedListCount');
+
+  if (!rest.length) {
+    listWrap.style.display = 'none';
+    loadWrap.style.display = 'none';
+    return;
+  }
+
+  listWrap.style.display = 'block';
+  const slice = rest.slice(0, LIST_PAGE);
+  listOffset  = slice.length;
+  countEl.textContent = rest.length + ' contenuti';
+
+  listEl.innerHTML = renderListRows(slice);
+
+  if (rest.length > LIST_PAGE) {
+    loadWrap.style.display = 'flex';
+    loadBtn.disabled = false;
+    loadBtn.textContent = 'Carica altri →';
+  } else {
+    loadWrap.style.display = 'none';
+  }
 }
 
-// Fallback statico (usato se Supabase non configurato)
-function renderFeedStatic() {
-  const STATIC = [
-    { title:'Come usare ChatGPT per creare verifiche differenziate', description:'Guida pratica per docenti della secondaria con prompt testati in classe.', url:'#', source:'youtube', category:'🎓 Didattica pratica', published_at: new Date().toISOString() },
-    { title:'AI Act europeo: cosa cambia per scuole e docenti?', description:'Analisi accessibile delle nuove norme UE applicate al contesto scolastico.', url:'#', source:'articolo', category:'⚖️ Etica & Normativa', published_at: new Date().toISOString() },
-    { title:'NotebookLM in 60 secondi per i docenti', description:'Reel virale sul tool Google più sottovalutato del 2025.', url:'#', source:'instagram', category:'🛠 Strumenti', published_at: new Date().toISOString() },
-    { title:'BES e DSA: adattare i testi con AI in automatico', description:'Tutorial su come usare Gemini per l\'inclusione scolastica senza sforzo.', url:'#', source:'youtube', category:'♿ Inclusione', published_at: new Date().toISOString() },
-    { title:'I 5 prompt più condivisi tra docenti nel 2025', description:'La community ha parlato — questi sono i prompt che funzionano davvero.', url:'#', source:'facebook', category:'✍️ Prompt Engineering', published_at: new Date().toISOString() },
-    { title:'Perché i prompt generici non funzionano', description:'Analisi dei meccanismi LLM spiegata con il linguaggio dei docenti.', url:'#', source:'articolo', category:'🎓 Prompt Engineering', published_at: new Date().toISOString() },
-  ];
-  allItems = STATIC;
-  renderFeed(STATIC);
+function loadMore() {
+  const rest  = filtered.slice(CARDS_N);
+  const slice = rest.slice(listOffset, listOffset + LIST_PAGE);
+  if (!slice.length) return;
+  document.getElementById('feedList').insertAdjacentHTML('beforeend', renderListRows(slice));
+  listOffset += slice.length;
+  if (listOffset >= rest.length) {
+    document.getElementById('loadMoreWrap').style.display = 'none';
+  }
+}
+
+function renderListRows(items) {
+  return items.map(item => {
+    const badge = SRC_BADGE_SM[item.source] || SRC_BADGE_SM.articolo;
+    const date  = fmtDate(item.published_at);
+    return `<a href="${item.url}" target="_blank" rel="noopener" class="feed-list-item">
+      <div class="fli-badge">${badge}</div>
+      <div class="fli-title">${item.title}</div>
+      <div class="fli-cat">${item.category||''}</div>
+      <div class="fli-date">${date}<span class="fli-arrow">→</span></div>
+    </a>`;
+  }).join('');
+}
+
+function showFeedEmpty() {
+  document.getElementById('feedCards').innerHTML =
+    '<div class="feed-empty">Nessun contenuto ancora pubblicato — torna presto.</div>';
+  document.getElementById('feedListWrap').style.display = 'none';
+  document.getElementById('loadMoreWrap').style.display = 'none';
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('it-IT', {day:'2-digit', month:'short'});
 }
 
 // ===== FEED FILTER PILLS =====
@@ -1475,14 +1519,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pill.addEventListener('click', () => {
       document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
-      currentFilter = pill.dataset.filter || 'all';
-      if (currentFilter === 'all') {
-        renderFeed(allItems);
-      } else if (currentFilter === 'social') {
-        renderFeed(allItems.filter(i => ['instagram','facebook'].includes(i.source)));
-      } else {
-        renderFeed(allItems.filter(i => i.source === currentFilter));
-      }
+      applyFilter(pill.dataset.filter || 'all');
     });
   });
 });
