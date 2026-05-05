@@ -5,7 +5,123 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin · Feed Ragionato — NuovaDidattica.eu</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+
+// ===== BLOG ADMIN =====
+async function loadBlogAdmin() {
+  const { data } = await sb.from('blog_posts').select('*').order('created_at',{ascending:false});
+  const el = document.getElementById('blogList');
+  document.getElementById('blogBadge').textContent = data ? data.filter(p=>p.published).length : 0;
+  if (!data || !data.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">✍️</div><p>Nessun articolo ancora</p></div>'; return; }
+  el.innerHTML = data.map(p => `
+    <div class="queue-item ${p.published ? 'published' : 'pending'}" id="bp-${p.id}" style="grid-template-columns:1fr 120px 110px 130px">
+      <div><div class="qi-title">${p.title}</div><div class="qi-sub">${fmtDate(p.published_at)||'Bozza'}</div></div>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.category||''}</span>
+      <span class="status-pill ${p.published ? 'st-published' : 'st-pending'}">${p.published ? 'Online' : 'Bozza'}</span>
+      <div class="qi-actions">
+        ${p.published
+          ? '<button class="btn btn-outline-red btn-sm" onclick="togglePost(''+p.id+'',false)">Ritira</button>'
+          : '<button class="btn btn-green btn-sm" onclick="togglePost(''+p.id+'',true)">Pubblica</button>'}
+        <button class="btn btn-ghost-white btn-sm" onclick="deletePost(''+p.id+'')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+async function publishPost() {
+  const title = document.getElementById('bTitle').value.trim();
+  const body  = document.getElementById('bBody').value.trim();
+  if (!title || !body) { toast('⚠ Titolo e corpo obbligatori','err'); return; }
+  const { error } = await sb.from('blog_posts').insert({
+    title, body,
+    excerpt:  document.getElementById('bExcerpt').value.trim(),
+    category: document.getElementById('bCat').value,
+    author:   document.getElementById('bAuthor').value.trim(),
+    published: true, published_at: new Date().toISOString()
+  });
+  if (error) { toast('⚠ ' + error.message,'err'); return; }
+  ['bTitle','bBody','bExcerpt','bAuthor'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('panel-new-post').style.display='none';
+  toast('🚀 Articolo pubblicato!','ok'); loadBlogAdmin();
+}
+
+async function savePostDraft() {
+  const title = document.getElementById('bTitle').value.trim();
+  if (!title) { toast('⚠ Inserisci almeno il titolo','err'); return; }
+  const { error } = await sb.from('blog_posts').insert({
+    title, body: document.getElementById('bBody').value.trim(),
+    excerpt: document.getElementById('bExcerpt').value.trim(),
+    category: document.getElementById('bCat').value,
+    author: document.getElementById('bAuthor').value.trim(),
+    published: false
+  });
+  if (error) { toast('⚠ ' + error.message,'err'); return; }
+  document.getElementById('panel-new-post').style.display='none';
+  toast('✓ Bozza salvata','ok'); loadBlogAdmin();
+}
+
+async function togglePost(id, publish) {
+  const { error } = await sb.from('blog_posts').update({
+    published: publish,
+    published_at: publish ? new Date().toISOString() : null
+  }).eq('id', id);
+  if (error) { toast('⚠ Errore','err'); return; }
+  toast(publish ? '🚀 Articolo pubblicato!' : '✓ Ritirato dalla pubblicazione','ok');
+  loadBlogAdmin();
+}
+
+async function deletePost(id) {
+  if (!confirm('Eliminare definitivamente questo articolo?')) return;
+  await sb.from('blog_posts').delete().eq('id', id);
+  toast('✕ Articolo eliminato','');
+  loadBlogAdmin();
+}
+
+// ===== PUBBLICAZIONI ADMIN =====
+async function loadPubAdmin() {
+  const { data } = await sb.from('pubblicazioni').select('*').order('published_at',{ascending:false});
+  const el = document.getElementById('pubList');
+  document.getElementById('pubBadge').textContent = data ? data.length : 0;
+  if (!data || !data.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">📚</div><p>Nessuna pubblicazione ancora</p></div>'; return; }
+  el.innerHTML = data.map(p => `
+    <div class="queue-item published" style="grid-template-columns:1fr 100px 100px 130px">
+      <div><div class="qi-title">${p.title}</div><div class="qi-sub">${fmtDate(p.published_at)}</div></div>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.tipo === 'quaderno' ? '📓 N.'+p.numero : '📄 Scritto'}</span>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.pages ? p.pages+' pp.' : '—'}</span>
+      <div class="qi-actions">
+        <a href="${p.drive_url}" target="_blank" class="btn btn-ghost-white btn-sm">Apri →</a>
+        <button class="btn btn-outline-red btn-sm" onclick="deletePub('${p.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+async function publishPub() {
+  const title = document.getElementById('pTitle').value.trim();
+  const drive = document.getElementById('pDrive').value.trim();
+  if (!title || !drive) { toast('⚠ Titolo e link Drive obbligatori','err'); return; }
+  const dateVal = document.getElementById('pDate').value;
+  const { error } = await sb.from('pubblicazioni').insert({
+    title,
+    tipo:    document.getElementById('pTipo').value,
+    numero:  document.getElementById('pNumero').value || null,
+    drive_url: drive,
+    pages:   document.getElementById('pPages').value || null,
+    excerpt: document.getElementById('pExcerpt').value.trim(),
+    published: true,
+    published_at: dateVal ? new Date(dateVal).toISOString() : new Date().toISOString()
+  });
+  if (error) { toast('⚠ ' + error.message,'err'); return; }
+  document.getElementById('pub-form').style.display='none';
+  ['pTitle','pDrive','pNumero','pPages','pExcerpt'].forEach(id => document.getElementById(id).value='');
+  toast('✓ Pubblicazione aggiunta!','ok'); loadPubAdmin();
+}
+
+async function deletePub(id) {
+  if (!confirm('Rimuovere questa pubblicazione?')) return;
+  await sb.from('pubblicazioni').delete().eq('id', id);
+  toast('✕ Rimossa',''); loadPubAdmin();
+}
+
+</script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
@@ -221,6 +337,15 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
         <span class="icon">✅</span> Pubblicati
         <span class="count-badge green" id="publishedBadge">—</span>
       </button>
+      <div class="sidebar-nav-label">Contenuti</div>
+      <button class="sidebar-link" onclick="showPanel('blog',this)">
+        <span class="icon">✍️</span> Articoli Blog
+        <span class="count-badge green" id="blogBadge">—</span>
+      </button>
+      <button class="sidebar-link" onclick="showPanel('pubblicazioni',this)">
+        <span class="icon">📚</span> Pubblicazioni
+        <span class="count-badge green" id="pubBadge">—</span>
+      </button>
       <div class="sidebar-nav-label">Setup</div>
       <button class="sidebar-link" onclick="showPanel('fonti',this)">
         <span class="icon">📡</span> Fonti monitorate
@@ -380,6 +505,93 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
         </div>
       </div>
     </div>
+  
+    <!-- PANEL: BLOG -->
+    <div id="panel-blog" style="display:none">
+      <div class="main-header">
+        <div>
+          <div class="main-title">Articoli <span>Blog</span></div>
+          <div class="main-subtitle">Scrivi e pubblica articoli leggibili online dal drawer del sito.</div>
+        </div>
+        <button class="btn btn-red" onclick="showPanel('new-post',this)">+ Nuovo articolo</button>
+      </div>
+
+      <!-- New post form -->
+      <div id="panel-new-post" style="display:none">
+        <div class="card">
+          <div class="card-title">✏️ Nuovo articolo</div>
+          <div class="form-grid">
+            <div class="field form-full"><label>Titolo *</label><input type="text" id="bTitle" placeholder="Titolo dell'articolo"></div>
+            <div class="field"><label>Categoria</label>
+              <select id="bCat">
+                <option>Didattica & AI</option><option>Riflessioni</option><option>Guide pratiche</option>
+                <option>Etica & Società</option><option>Ricerca</option>
+              </select>
+            </div>
+            <div class="field"><label>Autore</label><input type="text" id="bAuthor" placeholder="Nome Cognome"></div>
+            <div class="field form-full"><label>Abstract (mostrato nella card)</label><textarea id="bExcerpt" placeholder="2-3 righe che invogliano alla lettura..." style="min-height:60px"></textarea></div>
+            <div class="field form-full">
+              <label>Corpo dell'articolo (HTML supportato: &lt;p&gt; &lt;h2&gt; &lt;h3&gt; &lt;blockquote&gt;)</label>
+              <textarea id="bBody" placeholder="&lt;p&gt;Il testo del tuo articolo...&lt;/p&gt;" style="min-height:260px;font-family:var(--font-mono);font-size:0.8rem"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-red" onclick="publishPost()">Pubblica articolo →</button>
+            <button class="btn btn-ghost-white" onclick="savePostDraft()">Salva bozza</button>
+            <button class="btn btn-ghost-white" onclick="document.getElementById('panel-new-post').style.display='none'">Annulla</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📝 Articoli pubblicati</div>
+        <div class="queue-header" style="grid-template-columns:1fr 120px 110px 130px"><span>Titolo</span><span>Categoria</span><span>Stato</span><span>Azioni</span></div>
+        <div id="blogList"><div class="skel"></div></div>
+      </div>
+    </div>
+
+    <!-- PANEL: PUBBLICAZIONI -->
+    <div id="panel-pubblicazioni" style="display:none">
+      <div class="main-header">
+        <div>
+          <div class="main-title">Scritti & <span>Quaderni</span></div>
+          <div class="main-subtitle">Carica PDF da Google Drive e aggiungili all'archivio.</div>
+        </div>
+        <button class="btn btn-red" onclick="document.getElementById('pub-form').style.display='block'">+ Aggiungi</button>
+      </div>
+
+      <div class="card" id="pub-form" style="display:none">
+        <div class="card-title">📄 Nuova pubblicazione</div>
+        <div class="form-grid">
+          <div class="field form-full"><label>Titolo *</label><input type="text" id="pTitle" placeholder="Titolo dello scritto o quaderno"></div>
+          <div class="field"><label>Tipo</label>
+            <select id="pTipo">
+              <option value="scritto">📄 Scritto / Saggio</option>
+              <option value="quaderno">📓 Quaderno periodico</option>
+            </select>
+          </div>
+          <div class="field"><label>N° quaderno (solo per quaderni)</label><input type="number" id="pNumero" placeholder="1, 2, 3..."></div>
+          <div class="field form-full">
+            <label>Link Google Drive (condivisione pubblica) *</label>
+            <input type="url" id="pDrive" placeholder="https://drive.google.com/file/d/XXXX/view?usp=sharing">
+          </div>
+          <div class="field"><label>N° pagine</label><input type="number" id="pPages" placeholder="es. 24"></div>
+          <div class="field"><label>Data pubblicazione</label><input type="date" id="pDate"></div>
+          <div class="field form-full"><label>Abstract</label><textarea id="pExcerpt" placeholder="Breve descrizione del contenuto..."></textarea></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-red" onclick="publishPub()">Pubblica →</button>
+          <button class="btn btn-ghost-white" onclick="document.getElementById('pub-form').style.display='none'">Annulla</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📚 Archivio</div>
+        <div class="queue-header" style="grid-template-columns:1fr 100px 100px 130px"><span>Titolo</span><span>Tipo</span><span>Pagine</span><span>Azioni</span></div>
+        <div id="pubList"><div class="skel"></div></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -453,6 +665,8 @@ function useDemoMode() {
   document.getElementById('configModal').classList.add('hidden');
   document.getElementById('demoBanner').classList.remove('hidden');
   loadAll();
+  loadBlogAdmin();
+  loadPubAdmin();
 }
 
 // LOAD
@@ -605,13 +819,15 @@ function clearForm() {
 }
 
 function showPanel(id, btn) {
-  ['coda','aggiungi','pubblicati','fonti','config'].forEach(p=>{
+  ['coda','aggiungi','pubblicati','fonti','config','blog','pubblicazioni'].forEach(p=>{
     document.getElementById('panel-'+p).style.display = p===id?'block':'none';
   });
   document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
   if(btn) btn.classList.add('active');
   if(id==='pubblicati') loadPublished();
   if(id==='coda') loadPending();
+  if(id==='blog') loadBlogAdmin();
+  if(id==='pubblicazioni') loadPubAdmin();
 }
 
 function setCount(badgeId, statId, n) {
