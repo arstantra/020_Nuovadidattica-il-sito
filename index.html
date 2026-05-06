@@ -1074,7 +1074,7 @@ footer {
   .caso-inclusione { grid-column: span 1; }
   .caso-lezioni    { grid-column: span 1; }
   .caso-tutoring   { grid-column: span 1; }
-  .caso-ada        { grid-column: span 2; }
+  .caso-ada        { grid-column: span 2 !important; }
 
   .bento-filosofia { grid-template-columns: repeat(2, 1fr); }
   .card-hero-video, .card-filosofia { grid-column: span 1; }
@@ -1794,7 +1794,7 @@ const SRC_BADGE_SM = {
 let allItems   = [];   // tutti i contenuti dal DB
 let filtered   = [];   // dopo filtro corrente
 let listOffset = 0;    // quanti righe lista già visibili
-const CARDS_N  = 4;    // card bento in evidenza
+const CARDS_N  = 3;    // card bento in evidenza
 const LIST_PAGE = 8;   // righe lista per "carica altri"
 
 async function loadFeed() {
