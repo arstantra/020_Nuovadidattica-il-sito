@@ -310,7 +310,7 @@ section { padding: 100px 48px; }
   color: rgba(255,255,255,0.12); line-height: 1;
 }
 .card-tre {
-  grid-column: span 5;
+  grid-column: span 4;
   background: var(--eu-blue);
   min-height: 220px;
   padding: 36px;
@@ -330,7 +330,7 @@ section { padding: 100px 48px; }
   content: '→'; position: absolute; left: 0; color: var(--eu-yellow); font-size: 0.9rem;
 }
 .card-stat {
-  grid-column: span 3;
+  grid-column: span 4;
   background: var(--light-2);
   min-height: 220px;
   padding: 36px;
@@ -344,15 +344,15 @@ section { padding: 100px 48px; }
   font-size: 0.88rem; font-weight: 400; color: var(--text-mid); line-height: 1.4;
 }
 .card-claim-box {
-  grid-column: span 4;
+  grid-column: span 12;
   background: var(--dark);
   min-height: 220px;
   padding: 36px;
   display: flex; flex-direction: column; justify-content: center;
 }
 .card-claim-box blockquote {
-  font-family: var(--font-display); font-size: 1.05rem; font-weight: 700;
-  color: white; line-height: 1.4; font-style: italic;
+  font-family: var(--font-display); font-size: clamp(1.1rem, 2.2vw, 1.5rem); font-weight: 700;
+  color: white; line-height: 1.4; font-style: italic; max-width: 700px;
 }
 .card-claim-box blockquote span { color: var(--red); }
 .card-claim-box cite {
@@ -888,215 +888,329 @@ footer {
 .feed-cta-card a:hover { transform: scale(1.04); }
 
 /* ===== RESPONSIVE ===== */
+
+/* ===== HAMBURGER MOBILE ===== */
+.hamburger {
+  display: none; flex-direction: column; justify-content: center;
+  gap: 5px; width: 36px; height: 36px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+  z-index: 200;
+}
+.hamburger span {
+  display: block; width: 100%; height: 2px;
+  background: var(--text-light); border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s, width 0.3s;
+  transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* MOBILE MENU DRAWER */
+.mobile-menu {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--dark); z-index: 150;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center; gap: 4px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.mobile-menu.open { opacity: 1; pointer-events: all; }
+.mobile-menu a {
+  font-family: var(--font-display); font-size: clamp(1rem, 4vw, 1.4rem);
+  font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); text-decoration: none;
+  transition: color 0.2s, transform 0.2s, letter-spacing 0.2s;
+  transform: translateY(8px);
+}
+.mobile-menu.open a { transform: translateY(0); }
+.mobile-menu a:hover { color: white; letter-spacing: 0.08em; }
+.mobile-menu .mobile-cta {
+  margin-top: 20px; font-size: 0.72rem !important; font-weight: 700 !important;
+  background: var(--red); color: white !important;
+  padding: 12px 32px; border-radius: 100px;
+  letter-spacing: 0.1em !important;
+  opacity: 1 !important; transform: none !important;
+}
+.mobile-menu-footer {
+  position: absolute; bottom: 32px;
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: rgba(255,255,255,0.2);
+}
+
+/* ===== BENTO INTERACTIVE ===== */
+.bento-card.interactive {
+  cursor: pointer; position: relative;
+}
+.bento-card.interactive::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius);
+  border: 2px solid transparent;
+  transition: border-color 0.25s;
+  pointer-events: none;
+}
+.bento-card.interactive:hover::after { border-color: rgba(255,255,255,0.15); }
+.card-filosofia.interactive:hover::after,
+.card-tre.interactive:hover::after { border-color: rgba(255,255,255,0.2); }
+
+/* Inline expansion panel */
+.bento-expand {
+  grid-column: span 12;
+  border-radius: var(--radius);
+  padding: 0; max-height: 0; overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), padding 0.3s;
+  background: white;
+}
+.bento-expand.open {
+  max-height: 600px;
+  padding: 36px 40px;
+}
+.bento-expand-inner { display: flex; gap: 40px; align-items: flex-start; }
+.bento-expand h4 {
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;
+  color: var(--text-dark); margin-bottom: 14px; line-height: 1.15;
+}
+.bento-expand p {
+  font-size: 0.92rem; line-height: 1.7; color: var(--text-mid);
+}
+.bento-expand-num {
+  font-family: var(--font-display); font-size: 4rem; font-weight: 800;
+  color: rgba(0,0,0,0.06); line-height: 1; flex-shrink: 0;
+  align-self: center;
+}
+.bento-expand-close {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--text-muted);
+  background: none; border: 1px solid var(--light-3); border-radius: 100px;
+  padding: 7px 16px; cursor: pointer; margin-top: 20px;
+  transition: all 0.2s;
+}
+.bento-expand-close:hover { border-color: var(--red); color: var(--red); }
+
+/* Filter link on practical cards */
+.card-caso.interactive { cursor: pointer; }
+.caso-hint {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em;
+  text-transform: uppercase; margin-top: 14px;
+  display: flex; align-items: center; gap: 6px; opacity: 0.55;
+  transition: opacity 0.2s;
+}
+.bento-card.interactive:hover .caso-hint { opacity: 1; }
+.caso-hint::after { content: '→'; }
+
 @media (max-width: 900px) {
   nav { padding: 16px 24px; }
   .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .nav-cta { display: none; }
   #hero { padding: 100px 24px 60px; }
   .hero-nd-logo { display: none; }
   section { padding: 70px 24px; }
-  .bento-filosofia, .bento-casi, .bento-etica, .bento-toolbox, .bento-community {
+
+  /* All bentos → single column */
+  .bento-filosofia, .bento-casi, .bento-etica, .bento-toolbox,
+  .bento-community, .bento-feed, .bento-blog, .bento-pub {
     grid-template-columns: 1fr;
   }
+
+  /* All cards → full width */
   .card-hero-video, .card-filosofia, .card-tre, .card-stat, .card-claim-box,
   .caso-verifiche, .caso-inclusione, .caso-lezioni, .caso-tutoring, .caso-ada,
   .tool-classroom, .tool-notebooklm, .tool-drive, .tool-prompts, .tool-pdf, .tool-ada,
-  .etica-main, .etica-side, .etica-highlight,
-  .comm-main, .comm-side { grid-column: span 1; }
+  .etica-main, .etica-side, .etica-highlight, .etica-card,
+  .comm-main, .comm-side,
+  .feed-card, .feed-card-wide, .feed-card-mid, .feed-card-small,
+  .feed-list-wrap, .load-more-wrap, .feed-filters,
+  .blog-card, .blog-card-featured, .blog-card-sm, .blog-card-third,
+  .blog-card-full, .blog-card-half,
+  .pub-card, .pub-empty,
+  .bento-expand { grid-column: span 1 !important; }
+
+  /* Fix heights for mobile */
+  .card-hero-video { min-height: 280px; }
+  .card-filosofia  { min-height: auto; }
+  .card-tre        { min-height: auto; }
+  .card-stat       { min-height: 120px; }
+  .card-claim-box  { min-height: auto; padding: 28px; }
+
+  /* Blog full card → vertical on mobile */
+  .blog-card-full { flex-direction: column; }
+  .blog-card-full .blog-cover-placeholder { width: 100%; min-height: 160px; aspect-ratio: 16/7; }
+
+  /* Feed filters → scrollable row */
+  .feed-filters { display: flex; overflow-x: auto; flex-wrap: nowrap;
+    padding-bottom: 8px; gap: 6px; scrollbar-width: none; }
+  .feed-filters::-webkit-scrollbar { display: none; }
+  .filter-pill { flex-shrink: 0; }
+
+  /* Feed list items → 2 column layout */
+  .feed-list-item { grid-template-columns: auto 1fr; gap: 10px; }
+  .fli-cat, .fli-date { display: none; }
+
+  /* Community form → stack */
+  .comm-form { flex-direction: column; }
+  .comm-form input, .comm-form button { width: 100%; }
+  .comm-info { grid-template-columns: 1fr 1fr; }
+
+  /* Expand panels */
+  .bento-expand-inner { flex-direction: column; gap: 16px; }
+  .bento-expand-num { font-size: 2.5rem; }
+  .bento-expand.open { padding: 24px; }
+
   footer { flex-direction: column; align-items: flex-start; }
   .footer-right { text-align: left; }
 }
 
-/* ===== BLOG SECTION ===== */
+/* Tablet — 3-col grids where it makes sense */
+@media (min-width: 601px) and (max-width: 900px) {
+  .bento-toolbox { grid-template-columns: repeat(3, 1fr); }
+  .tool-classroom, .tool-notebooklm, .tool-drive { grid-column: span 1; }
+  .tool-prompts { grid-column: span 2; }
+  .tool-pdf, .tool-ada { grid-column: span 1; }
+
+  /* casi tablet: 2 col, last card full width — no orphan */
+  .bento-casi { grid-template-columns: repeat(2, 1fr); }
+  .caso-verifiche  { grid-column: span 1; }
+  .caso-inclusione { grid-column: span 1; }
+  .caso-lezioni    { grid-column: span 1; }
+  .caso-tutoring   { grid-column: span 1; }
+  .caso-ada        { grid-column: span 2; }
+
+  .bento-filosofia { grid-template-columns: repeat(2, 1fr); }
+  .card-hero-video, .card-filosofia { grid-column: span 1; }
+  .card-tre, .card-stat, .card-claim-box { grid-column: span 1; }
+}
+
+/* ===== BLOG ===== */
 #blog { background: var(--light); }
 .bento-blog { grid-template-columns: repeat(12, 1fr); }
-
-.blog-card {
-  background: white; border-radius: var(--radius);
-  overflow: hidden; text-decoration: none; color: inherit;
-  display: flex; flex-direction: column;
-  transition: transform 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-}
+.blog-card { background: white; border-radius: var(--radius); overflow: hidden;
+  text-decoration: none; color: inherit; display: flex; flex-direction: column;
+  transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
 .blog-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
 .blog-card-featured { grid-column: span 7; min-height: 360px; }
 .blog-card-sm       { grid-column: span 5; min-height: 220px; }
 .blog-card-third    { grid-column: span 4; min-height: 200px; }
+.blog-card-full  { grid-column: span 12; min-height: 280px; flex-direction: row; }
+.blog-card-full .blog-cover-placeholder { width: 340px; flex-shrink: 0; aspect-ratio: auto; min-height: 100%; }
+.blog-card-full .blog-title { font-size: 1.6rem; }
+.blog-card-half  { grid-column: span 6; min-height: 280px; }
+.blog-card-half .blog-title { font-size: 1.3rem; }
 
 .blog-cover-placeholder {
   width: 100%; aspect-ratio: 16/9;
   background: linear-gradient(135deg, var(--dark) 0%, var(--dark-3) 100%);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .blog-card-featured .blog-cover-placeholder { aspect-ratio: 16/7; }
-.blog-cover-placeholder span {
-  font-family: var(--font-display); font-size: 3.5rem; font-weight: 800;
-  color: rgba(255,255,255,0.06); letter-spacing: -0.04em;
-}
+.blog-cover-placeholder span { font-family: var(--font-display); font-size: 3.5rem;
+  font-weight: 800; color: rgba(255,255,255,0.06); letter-spacing: -0.04em; }
 .blog-body { padding: 28px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-.blog-tag {
-  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.16em;
+.blog-tag { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.16em;
   text-transform: uppercase; color: var(--red); margin-bottom: 10px;
-  display: flex; align-items: center; gap: 6px;
-}
+  display: flex; align-items: center; gap: 6px; }
 .blog-tag::before { content: ''; display: block; width: 14px; height: 1px; background: var(--red); }
-.blog-title {
-  font-family: var(--font-display); font-weight: 800;
-  line-height: 1.1; color: var(--text-dark); margin-bottom: 10px;
-}
+.blog-title { font-family: var(--font-display); font-weight: 800; line-height: 1.1;
+  color: var(--text-dark); margin-bottom: 10px; }
 .blog-card-featured .blog-title { font-size: 1.6rem; }
-.blog-card-sm .blog-title,
-.blog-card-third .blog-title { font-size: 1.05rem; }
+.blog-card-sm .blog-title, .blog-card-third .blog-title { font-size: 1.05rem; }
 .blog-excerpt { font-size: 0.88rem; line-height: 1.6; color: var(--text-mid); margin-bottom: 18px; }
-.blog-meta {
-  display: flex; align-items: center; justify-content: space-between;
+.blog-meta { display: flex; align-items: center; justify-content: space-between;
   font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text-muted);
-}
+  text-transform: uppercase; color: var(--text-muted); }
 .blog-read { color: var(--red); display: flex; align-items: center; gap: 4px; }
 .blog-read-arrow { transition: transform 0.2s; }
 .blog-card:hover .blog-read-arrow { transform: translateX(4px); }
 
 /* ===== BLOG DRAWER ===== */
-.blog-drawer-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+.blog-drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5);
   z-index: 500; opacity: 0; pointer-events: none;
-  transition: opacity 0.35s ease; backdrop-filter: blur(4px);
-}
+  transition: opacity 0.35s ease; backdrop-filter: blur(4px); }
 .blog-drawer-overlay.open { opacity: 1; pointer-events: all; }
-.blog-drawer {
-  position: fixed; top: 0; right: -100%; bottom: 0;
-  width: min(720px, 95vw); background: var(--light);
-  z-index: 501; overflow-y: auto;
-  transition: right 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-  display: flex; flex-direction: column;
-}
+.blog-drawer { position: fixed; top: 0; right: -100%; bottom: 0;
+  width: min(720px, 95vw); background: var(--light); z-index: 501;
+  overflow-y: auto; transition: right 0.4s cubic-bezier(0.32,0.72,0,1);
+  display: flex; flex-direction: column; }
 .blog-drawer.open { right: 0; }
-.drawer-header {
-  position: sticky; top: 0; z-index: 1;
+.drawer-header { position: sticky; top: 0; z-index: 1;
   background: var(--light); border-bottom: 1px solid var(--light-3);
-  padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
-}
-.drawer-close {
-  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+.drawer-close { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--text-muted);
   background: none; border: 1px solid var(--light-3); border-radius: 100px;
-  padding: 8px 18px; cursor: pointer; transition: all 0.2s;
-}
+  padding: 8px 18px; cursor: pointer; transition: all 0.2s; }
 .drawer-close:hover { border-color: var(--text-dark); color: var(--text-dark); }
-.drawer-site-label {
-  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.15em;
-  text-transform: uppercase; color: var(--text-muted);
-}
+.drawer-site-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--text-muted); }
 .drawer-content { padding: 48px; flex: 1; }
-.drawer-tag {
-  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.18em;
+.drawer-tag { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.18em;
   text-transform: uppercase; color: var(--red);
-  display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
-}
+  display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
 .drawer-tag::before { content: ''; display: block; width: 20px; height: 1px; background: var(--red); }
-.drawer-title {
-  font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.8rem);
+.drawer-title { font-family: var(--font-display); font-size: clamp(1.8rem,4vw,2.8rem);
   font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
-  color: var(--text-dark); margin-bottom: 20px;
-}
-.drawer-meta {
-  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em;
+  color: var(--text-dark); margin-bottom: 20px; }
+.drawer-meta { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--text-muted);
   padding-bottom: 28px; border-bottom: 1px solid var(--light-3);
-  display: flex; gap: 24px; margin-bottom: 36px;
-}
+  display: flex; gap: 24px; margin-bottom: 36px; }
 .drawer-body { font-size: 1rem; line-height: 1.75; color: var(--text-dark); }
 .drawer-body p { margin-bottom: 1.4em; }
-.drawer-body h2 {
-  font-family: var(--font-display); font-size: 1.4rem; font-weight: 800;
-  margin: 2em 0 0.6em; color: var(--text-dark);
-}
-.drawer-body h3 {
-  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
-  margin: 1.6em 0 0.5em; color: var(--text-dark);
-}
-.drawer-body blockquote {
-  border-left: 3px solid var(--red); padding: 12px 24px;
+.drawer-body h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800;
+  margin: 2em 0 0.6em; }
+.drawer-body h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  margin: 1.6em 0 0.5em; }
+.drawer-body blockquote { border-left: 3px solid var(--red); padding: 12px 24px;
   margin: 1.5em 0; background: var(--light-2); border-radius: 0 8px 8px 0;
-  font-style: italic; color: var(--text-mid);
-}
-.drawer-loading {
-  display: flex; align-items: center; justify-content: center;
+  font-style: italic; color: var(--text-mid); }
+.drawer-loading { display: flex; align-items: center; justify-content: center;
   min-height: 200px; color: var(--text-muted);
-  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; }
 
 /* ===== PUBBLICAZIONI ===== */
 #pubblicazioni { background: var(--light-2); }
-.pub-tabs {
-  display: flex; gap: 0; margin-bottom: 40px;
+.pub-tabs { display: flex; margin-bottom: 40px;
   border: 1px solid var(--light-3); border-radius: 100px;
-  width: fit-content; padding: 4px; background: white;
-}
-.pub-tab {
-  font-family: var(--font-display); font-size: 0.78rem; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 10px 24px; border-radius: 100px;
-  border: none; background: none; color: var(--text-muted);
-  cursor: pointer; transition: all 0.2s;
-}
+  width: fit-content; padding: 4px; background: white; }
+.pub-tab { font-family: var(--font-display); font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 24px;
+  border-radius: 100px; border: none; background: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
 .pub-tab.active { background: var(--dark); color: white; }
-.pub-tab:hover:not(.active) { color: var(--text-dark); }
 .bento-pub { grid-template-columns: repeat(12, 1fr); }
-.pub-card {
-  background: white; border-radius: var(--radius); overflow: hidden;
+.pub-card { background: white; border-radius: var(--radius); overflow: hidden;
   display: flex; flex-direction: column; grid-column: span 4;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
+  transition: transform 0.3s, box-shadow 0.3s; }
 .pub-card:hover { transform: translateY(-4px); box-shadow: 0 16px 50px rgba(0,0,0,0.08); }
-.pub-cover {
-  aspect-ratio: 3/4; width: 100%;
+.pub-cover { aspect-ratio: 3/4; width: 100%;
   background: linear-gradient(160deg, var(--dark) 0%, var(--dark-3) 100%);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 32px; position: relative; overflow: hidden;
-}
-.pub-cover-num {
-  font-family: var(--font-display); font-size: 5rem; font-weight: 800;
-  color: rgba(255,255,255,0.06); position: absolute; bottom: -10px; right: 8px; line-height: 1;
-}
-.pub-cover-label {
-  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em;
-  text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 12px;
-}
-.pub-cover-title {
-  font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
-  color: white; text-align: center; line-height: 1.2; position: relative; z-index: 1;
-}
+  padding: 32px; position: relative; overflow: hidden; }
+.pub-cover-num { font-family: var(--font-display); font-size: 5rem; font-weight: 800;
+  color: rgba(255,255,255,0.06); position: absolute; bottom: -10px; right: 8px; line-height: 1; }
+.pub-cover-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
+.pub-cover-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
+  color: white; text-align: center; line-height: 1.2; position: relative; z-index: 1; }
 .pub-cover-accent { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--red); }
 .pub-body { padding: 24px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
 .pub-meta-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.pub-type {
-  font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--text-muted);
-}
+.pub-type { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-muted); }
 .pub-pages { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-muted); }
-.pub-title {
-  font-family: var(--font-display); font-size: 1rem; font-weight: 800;
-  line-height: 1.2; color: var(--text-dark); margin-bottom: 8px;
-}
+.pub-title { font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+  line-height: 1.2; color: var(--text-dark); margin-bottom: 8px; }
 .pub-desc { font-size: 0.82rem; line-height: 1.55; color: var(--text-mid); margin-bottom: 18px; }
-.pub-download {
-  display: inline-flex; align-items: center; gap: 8px;
+.pub-download { display: inline-flex; align-items: center; gap: 8px;
   font-family: var(--font-display); font-size: 0.72rem; font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase;
   background: var(--dark); color: white;
   padding: 11px 20px; border-radius: 100px; text-decoration: none; width: fit-content;
-  transition: background 0.2s, transform 0.2s;
-}
+  transition: background 0.2s, transform 0.2s; }
 .pub-download:hover { background: var(--red); transform: scale(1.03); }
 .pub-download svg { width: 13px; height: 13px; fill: white; flex-shrink: 0; }
-.pub-empty {
-  grid-column: span 12; background: white; border-radius: var(--radius);
+.pub-empty { grid-column: span 12; background: white; border-radius: var(--radius);
   padding: 48px; text-align: center;
   font-family: var(--font-mono); font-size: 0.65rem;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);
-}
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -1120,7 +1234,23 @@ footer {
     <li><a href="#community">Community</a></li>
   </ul>
   <a href="#community" class="nav-cta">Unisciti</a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#filosofia" onclick="toggleMenu()">Filosofia</a>
+  <a href="#casi" onclick="toggleMenu()">Applicazioni</a>
+  <a href="#etica" onclick="toggleMenu()">Etica</a>
+  <a href="#toolbox" onclick="toggleMenu()">Toolbox</a>
+  <a href="#feed" onclick="toggleMenu()">Feed</a>
+  <a href="#blog" onclick="toggleMenu()">Blog</a>
+  <a href="#pubblicazioni" onclick="toggleMenu()">Pubblicazioni</a>
+  <a href="#community" onclick="toggleMenu()" class="mobile-cta">Unisciti</a>
+  <div class="mobile-menu-footer">NuovaDidattica.eu</div>
+</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -1186,7 +1316,7 @@ footer {
       </div>
     </div>
 
-    <div class="bento-card card-filosofia reveal reveal-delay-2">
+    <div class="bento-card card-filosofia interactive reveal reveal-delay-2" onclick="toggleExpand('exp-01')">
       <div class="card-number">01</div>
       <div>
         <h3>Potenziare l'insegnamento, non automatizzarlo</h3>
@@ -1194,7 +1324,7 @@ footer {
       </div>
     </div>
 
-    <div class="bento-card card-tre reveal reveal-delay-3">
+    <div class="bento-card card-tre interactive reveal reveal-delay-3" onclick="toggleExpand('exp-tre')">
       <h3>3 cose che puoi fare<br>subito in classe</h3>
       <ul>
         <li>Genera verifiche differenziate in 5 minuti</li>
@@ -1203,7 +1333,7 @@ footer {
       </ul>
     </div>
 
-    <div class="bento-card card-stat reveal reveal-delay-1">
+    <div class="bento-card card-stat interactive reveal reveal-delay-1" onclick="toggleExpand('exp-stat1')">
       <div class="stat-num">73%</div>
       <div class="stat-label">dei docenti non sa cosa sia un prompt efficace</div>
     </div>
@@ -1213,13 +1343,54 @@ footer {
       <div class="stat-label">più veloce la preparazione con AI ben usata</div>
     </div>
 
-    <div class="bento-card card-claim-box reveal reveal-delay-3">
+    <div class="bento-card card-claim-box interactive reveal reveal-delay-3" onclick="toggleExpand('exp-claim')">
       <blockquote>
         "Il problema non è l'AI. È il <span>prompt generico</span> che non porta da nessuna parte."
         <cite>— NuovaDidattica.eu</cite>
       </blockquote>
     </div>
 
+  <!-- Inline expand panels (Pattern B) -->
+  <div class="bento-expand" id="exp-01">
+    <div class="bento-expand-inner">
+      <div class="bento-expand-num">01</div>
+      <div>
+        <h4>Potenziare l'insegnamento, non automatizzarlo</h4>
+        <p>L'AI non sostituisce il docente — lo amplifica. Un insegnante esperto con AI produce risultati che un AI da solo non può raggiungere, perché manca del contesto, della relazione e del giudizio professionale. Il rischio vero non è che l'AI sostituisca i docenti, ma che i docenti che non la usano vengano sostituiti da quelli che la usano bene. Il punto di partenza è sempre la competenza disciplinare: l'AI è uno strumento, non una risposta.</p>
+        <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-01')">✕ Chiudi</button>
+      </div>
+    </div>
+  </div>
+  <div class="bento-expand" id="exp-tre">
+    <div class="bento-expand-inner">
+      <div class="bento-expand-num">↑3</div>
+      <div>
+        <h4>3 cose concrete che cambia da domani</h4>
+        <p><strong>1. Verifiche differenziate:</strong> invece di creare tre versioni dello stesso test manualmente, descrivi la tua classe e lascia che l'AI generi varianti per livelli diversi. Revisioni e aggiustamenti restano tuoi.<br><br><strong>2. Adattamento BES/DSA:</strong> copia un testo, specifica il profilo dello studente, ottieni una versione adattata in pochi secondi. Il docente verifica, non riscrive.<br><br><strong>3. Unità didattiche:</strong> parti dagli obiettivi di apprendimento e ottieni una struttura completa — attività, tempi, materiali — da personalizzare. Risparmio stimato: 2-3 ore per unità.</p>
+        <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-tre')">✕ Chiudi</button>
+      </div>
+    </div>
+  </div>
+  <div class="bento-expand" id="exp-stat1">
+    <div class="bento-expand-inner">
+      <div class="bento-expand-num">73%</div>
+      <div>
+        <h4>Il problema non è la tecnologia — è la formazione</h4>
+        <p>Secondo una ricerca OCSE 2024, il 73% degli insegnanti europei dichiara di non saper scrivere un prompt efficace. Non è mancanza di intelligenza o volontà: è semplicemente che nessuno li ha mai formati. Un prompt efficace non è magia — è una competenza che si impara con metodo. NuovaDidattica.eu nasce esattamente per questo: colmare il gap tra lo strumento disponibile e la capacità di usarlo davvero.</p>
+        <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-stat1')">✕ Chiudi</button>
+      </div>
+    </div>
+  </div>
+  <div class="bento-expand" id="exp-claim">
+    <div class="bento-expand-inner">
+      <div class="bento-expand-num">"</div>
+      <div>
+        <h4>Il prompt generico: il nemico invisibile</h4>
+        <p>«Scrivimi una lezione sull'Illuminismo» è un prompt generico. Il risultato sarà generico. «Scrivi una lezione sull'Illuminismo per una seconda liceo scientifico con competenze eterogenee, focalizzata sul confronto tra Voltaire e Rousseau, della durata di 50 minuti, con una attività laboratoriale finale» è un prompt contestualizzato. Il risultato sarà utile. La differenza tra i due non è l'AI — è il docente che la usa. Questa è la base di tutto.</p>
+        <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-claim')">✕ Chiudi</button>
+      </div>
+    </div>
+  </div>
   </div>
 </section>
 
@@ -1231,40 +1402,44 @@ footer {
 
   <div class="bento bento-casi">
 
-    <div class="bento-card card-caso caso-verifiche reveal reveal-delay-1">
+    <div class="bento-card card-caso caso-verifiche interactive reveal reveal-delay-1" onclick="goToFeed('articolo')">
       <div>
         <div class="caso-icon">📝</div>
         <h3>Verifiche & Valutazioni</h3>
         <p>Crea test differenziati, rubriche di valutazione e griglia di correzione in pochi minuti, personalizzate per classe e livello.</p>
       </div>
       <span class="tag-pill">Valutazione</span>
+      <span class="caso-hint">Esplora risorse nel feed</span>
     </div>
 
-    <div class="bento-card card-caso caso-inclusione reveal reveal-delay-2">
+    <div class="bento-card card-caso caso-inclusione interactive reveal reveal-delay-2" onclick="goToFeed('all')">
       <div>
         <div class="caso-icon">♿</div>
         <h3>Inclusione BES/DSA</h3>
         <p>Adatta automaticamente testi, consegne e materiali per studenti con bisogni educativi speciali. Senza ore di lavoro manuale.</p>
       </div>
       <span class="tag-pill">Inclusione</span>
+      <span class="caso-hint">Vedi contenuti correlati</span>
     </div>
 
-    <div class="bento-card card-caso caso-lezioni reveal reveal-delay-3">
+    <div class="bento-card card-caso caso-lezioni interactive reveal reveal-delay-3" onclick="goToPubblicazioni()">
       <div>
         <div class="caso-icon">🎓</div>
         <h3>Unità Didattiche</h3>
         <p>Genera lezioni complete con obiettivi, attività, materiali e criteri di valutazione allineati alle indicazioni nazionali.</p>
       </div>
       <span class="tag-pill">Progettazione</span>
+      <span class="caso-hint">Scarica materiali pronti</span>
     </div>
 
-    <div class="bento-card card-caso caso-tutoring reveal reveal-delay-1">
+    <div class="bento-card card-caso caso-tutoring interactive reveal reveal-delay-1" onclick="goToBlog()">
       <div>
         <div class="caso-icon">🤝</div>
         <h3>Tutoring Personalizzato</h3>
         <p>Usa l'AI come supporto individuale per gli studenti: spiegazioni su misura, esercizi adattivi e percorsi di recupero autonomi fuori dall'aula.</p>
       </div>
       <span class="tag-pill">Supporto studenti</span>
+      <span class="caso-hint">Leggi gli approfondimenti</span>
     </div>
 
     <div class="bento-card card-caso caso-ada reveal reveal-delay-2">
@@ -1602,7 +1777,7 @@ reveals.forEach(el => observer.observe(el));
 const SB_URL = 'https://sevpxtbrdcnjijldlwvo.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnB4dGJyZGNuamlqbGRsd3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTczNzgsImV4cCI6MjA5MzQ5MzM3OH0.rHLxZzpLfSJlaR8CO9GgRpmhlhWtrNWckdO0I1jMcU8';
 
-const CARD_SIZES = ['feed-card-wide','feed-card-mid','feed-card-small'];
+const CARD_SIZES = ['feed-card-wide','feed-card-mid','feed-card-small','feed-card-small','feed-card-mid','feed-card-wide'];
 const SRC_BADGE = {
   youtube:   '<span class="feed-source-badge badge-yt">▶ YouTube</span>',
   articolo:  '<span class="feed-source-badge badge-art">📰 Articolo</span>',
@@ -1619,7 +1794,7 @@ const SRC_BADGE_SM = {
 let allItems   = [];   // tutti i contenuti dal DB
 let filtered   = [];   // dopo filtro corrente
 let listOffset = 0;    // quanti righe lista già visibili
-const CARDS_N  = 3;    // card bento in evidenza
+const CARDS_N  = 4;    // card bento in evidenza
 const LIST_PAGE = 8;   // righe lista per "carica altri"
 
 async function loadFeed() {
@@ -1755,7 +1930,57 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ===== BLOG + PUBBLICAZIONI =====
+// ===== HAMBURGER =====
+function toggleMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn  = document.getElementById('hamburger');
+  const open = menu.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+// Close menu on escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+
+// ===== BENTO EXPAND (Pattern B) =====
+function toggleExpand(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Close all other panels first
+  document.querySelectorAll('.bento-expand.open').forEach(e => {
+    if (e.id !== id) e.classList.remove('open');
+  });
+  el.classList.toggle('open');
+  if (el.classList.contains('open')) {
+    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+}
+
+// ===== BENTO NAV HELPERS (Pattern C) =====
+function goToFeed(filter) {
+  document.getElementById('feed').scrollIntoView({ behavior: 'smooth' });
+  // Activate the matching filter pill after scroll
+  setTimeout(() => {
+    const pill = document.querySelector(`.filter-pill[data-filter="${filter}"]`);
+    if (pill) pill.click();
+  }, 600);
+}
+function goToPubblicazioni() {
+  const el = document.getElementById('pubblicazioni');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+function goToBlog() {
+  const el = document.getElementById('blog');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+
+// ===== SUPABASE CLIENT (shared) =====
 const SB = window.supabase.createClient(SB_URL, SB_KEY);
 
 function gdriveDirect(url) {
@@ -1765,7 +1990,7 @@ function gdriveDirect(url) {
 }
 function fmtDateLong(d) {
   if (!d) return '';
-  return new Date(d).toLocaleDateString('it-IT', {day:'2-digit', month:'long', year:'numeric'});
+  return new Date(d).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'});
 }
 function readTime(body) {
   if (!body) return '1 min';
@@ -1773,28 +1998,35 @@ function readTime(body) {
 }
 const BLOG_SIZES = ['blog-card-featured','blog-card-sm','blog-card-third','blog-card-third','blog-card-third'];
 
-// ── Blog ──
 async function loadBlog() {
   const grid = document.getElementById('blogGrid');
+  if (!grid) return;
   try {
-    const { data, error } = await SB
-      .from('blog_posts').select('*')
-      .eq('published', true)
-      .order('published_at', { ascending: false })
-      .limit(5);
-    if (error || !data || !data.length) {
-      grid.innerHTML = '<div style="grid-column:span 12;background:white;border-radius:var(--radius);padding:48px;text-align:center;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Nessun articolo ancora pubblicato — torna presto.</div>';
+    const { data } = await SB.from('blog_posts').select('*')
+      .eq('published',true).order('published_at',{ascending:false}).limit(5);
+    if (!data || !data.length) {
+      grid.innerHTML = '<div style="grid-column:span 12;background:white;border-radius:var(--radius);padding:48px;text-align:center;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Nessun articolo ancora — torna presto.</div>';
       return;
     }
-    grid.innerHTML = data.map((post, i) => {
-      const size = BLOG_SIZES[i] || 'blog-card-third';
+    // Dynamic spans — never orphan
+    const n = data.length;
+    const getBlogSize = (i, total) => {
+      if (total === 1) return 'blog-card-full';
+      if (total === 2) return 'blog-card-half';
+      if (total === 3) return 'blog-card-third';
+      if (i === 0) return 'blog-card-featured';
+      if (total === 4 && i > 0) return 'blog-card-third'; // 12+4+4+4
+      return BLOG_SIZES[i] || 'blog-card-third';
+    };
+    grid.innerHTML = data.map((post,i) => {
+      const size = getBlogSize(i, n);
       return `<div class="blog-card ${size} reveal visible" onclick="openDrawer(${post.id})">
         <div class="blog-cover-placeholder"><span>${(post.title||'').substring(0,2).toUpperCase()}</span></div>
         <div class="blog-body">
           <div>
-            <div class="blog-tag">${post.category || 'Approfondimento'}</div>
+            <div class="blog-tag">${post.category||'Approfondimento'}</div>
             <h3 class="blog-title">${post.title}</h3>
-            <p class="blog-excerpt">${post.excerpt || ''}</p>
+            <p class="blog-excerpt">${post.excerpt||''}</p>
           </div>
           <div class="blog-meta">
             <span>${fmtDateLong(post.published_at)}</span>
@@ -1803,67 +2035,61 @@ async function loadBlog() {
         </div>
       </div>`;
     }).join('');
-  } catch(e) {
-    grid.innerHTML = '<div style="grid-column:span 12;padding:40px;text-align:center;color:var(--text-muted);font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase">Errore caricamento.</div>';
-  }
+  } catch(e) {}
 }
 
 async function openDrawer(id) {
   document.getElementById('drawerOverlay').classList.add('open');
   document.getElementById('blogDrawer').classList.add('open');
   document.body.style.overflow = 'hidden';
-  document.getElementById('drawerContent').innerHTML = '<div class="drawer-loading">Caricamento articolo…</div>';
+  document.getElementById('drawerContent').innerHTML = '<div class="drawer-loading">Caricamento…</div>';
   try {
-    const { data } = await SB.from('blog_posts').select('*').eq('id', id).single();
+    const { data } = await SB.from('blog_posts').select('*').eq('id',id).single();
     if (!data) throw new Error();
     document.getElementById('drawerContent').innerHTML = `
-      <div class="drawer-tag">${data.category || 'Approfondimento'}</div>
+      <div class="drawer-tag">${data.category||'Approfondimento'}</div>
       <h1 class="drawer-title">${data.title}</h1>
       <div class="drawer-meta">
         <span>${fmtDateLong(data.published_at)}</span>
         <span>${readTime(data.body)} di lettura</span>
-        ${data.author ? '<span>di ' + data.author + '</span>' : ''}
+        ${data.author?'<span>di '+data.author+'</span>':''}
       </div>
-      <div class="drawer-body">${data.body || ''}</div>`;
+      <div class="drawer-body">${data.body||''}</div>`;
   } catch(e) {
     document.getElementById('drawerContent').innerHTML = '<div class="drawer-loading">Errore caricamento.</div>';
   }
 }
-
 function closeDrawer() {
   document.getElementById('drawerOverlay').classList.remove('open');
   document.getElementById('blogDrawer').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
 
-// ── Pubblicazioni ──
 let allPubs = [];
 async function loadPubblicazioni() {
   try {
     const { data } = await SB.from('pubblicazioni').select('*')
-      .eq('published', true).order('published_at', { ascending: false });
+      .eq('published',true).order('published_at',{ascending:false});
     allPubs = data || [];
     renderPubs(allPubs.filter(p => p.tipo === 'scritto'));
   } catch(e) { renderPubs([]); }
 }
-
 function filterPub(tipo, btn) {
   document.querySelectorAll('.pub-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   renderPubs(allPubs.filter(p => p.tipo === tipo));
 }
-
 function renderPubs(items) {
   const grid = document.getElementById('pubGrid');
-  if (!items.length) {
-    grid.innerHTML = '<div class="pub-empty">Nessun contenuto ancora pubblicato — torna presto.</div>';
-    return;
-  }
-  grid.innerHTML = items.map((pub, i) => `
-    <div class="pub-card reveal visible">
+  if (!items.length) { grid.innerHTML = '<div class="pub-empty">Nessun contenuto pubblicato — torna presto.</div>'; return; }
+  // Dynamic spans
+  const pubSpan = items.length === 1 ? 'style="grid-column:span 4;margin:0 auto"'
+                : items.length === 2 ? 'style="grid-column:span 6"'
+                : 'style="grid-column:span 4"';
+  grid.innerHTML = items.map((pub,i) => `
+    <div class="pub-card reveal visible" ${pubSpan}>
       <div class="pub-cover">
-        <div class="pub-cover-label">${pub.tipo === 'quaderno' ? 'Quaderno N.' + (pub.numero||'') : 'Scritto'}</div>
+        <div class="pub-cover-label">${pub.tipo==='quaderno'?'Quaderno N.'+(pub.numero||''):'Scritto'}</div>
         <div class="pub-cover-title">${pub.title}</div>
         <div class="pub-cover-num">${String(i+1).padStart(2,'0')}</div>
         <div class="pub-cover-accent"></div>
@@ -1871,11 +2097,11 @@ function renderPubs(items) {
       <div class="pub-body">
         <div>
           <div class="pub-meta-row">
-            <span class="pub-type">${pub.tipo === 'quaderno' ? '📓 Quaderno periodico' : '📄 Saggio'}</span>
-            ${pub.pages ? '<span class="pub-pages">' + pub.pages + ' pp.</span>' : ''}
+            <span class="pub-type">${pub.tipo==='quaderno'?'📓 Quaderno periodico':'📄 Saggio'}</span>
+            ${pub.pages?'<span class="pub-pages">'+pub.pages+' pp.</span>':''}
           </div>
           <div class="pub-title">${pub.title}</div>
-          <p class="pub-desc">${pub.excerpt || ''}</p>
+          <p class="pub-desc">${pub.excerpt||''}</p>
         </div>
         <a href="${gdriveDirect(pub.drive_url)}" target="_blank" rel="noopener" class="pub-download">
           <svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg>
