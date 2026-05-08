@@ -478,6 +478,149 @@ section { padding: 100px 48px; }
 }
 .etica-highlight a:hover { transform: scale(1.04); }
 
+/* ===== ETICA — CRITICITÀ REALI (3 card + 1 banda twist) ===== */
+.crit-card {
+  background: var(--dark-2);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 40px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  min-height: 280px;
+  position: relative; overflow: hidden;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.crit-card.interactive { cursor: pointer; }
+.crit-card.interactive:hover {
+  border-color: rgba(217,27,27,0.3);
+  transform: translateY(-4px);
+}
+.crit-tag {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+  position: relative; z-index: 1;
+}
+.crit-tag::before {
+  content: ''; display: block; width: 24px; height: 1px; background: var(--red);
+}
+.crit-num-bg {
+  position: absolute; top: 22px; right: 32px;
+  font-family: var(--font-display); font-size: 5rem; font-weight: 800;
+  color: rgba(255,255,255,0.05); line-height: 1; pointer-events: none;
+}
+.crit-title {
+  font-family: var(--font-display); font-size: 1.45rem; font-weight: 800;
+  line-height: 1.15; color: white; margin-bottom: 14px;
+  position: relative; z-index: 1;
+}
+.crit-claim {
+  font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.72);
+  position: relative; z-index: 1;
+}
+.crit-expand-trigger {
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--red);
+  margin-top: 24px; display: flex; align-items: center; gap: 8px;
+  position: relative; z-index: 1;
+}
+.crit-expand-trigger::after { content: '↓'; transition: transform 0.2s; }
+.crit-card.interactive:hover .crit-expand-trigger::after { transform: translateY(2px); }
+
+/* Card variants */
+.crit-01 { grid-column: span 7; }
+.crit-02 { grid-column: span 5; }
+.crit-02 .crit-tag { color: var(--eu-yellow); }
+.crit-02 .crit-tag::before { background: var(--eu-yellow); }
+.crit-02 .crit-expand-trigger { color: var(--eu-yellow); }
+
+.crit-03 {
+  grid-column: span 12;
+  background: linear-gradient(135deg, var(--dark-2) 0%, #2a1010 100%);
+  min-height: 220px;
+}
+.crit-03 .crit-num-bg { font-size: 8rem; right: 48px; top: 28px; color: rgba(217,27,27,0.08); }
+.crit-03 .crit-title { font-size: 1.9rem; max-width: 720px; }
+.crit-03 .crit-claim { max-width: 720px; font-size: 1.02rem; }
+
+/* Variante DARK di .bento-expand per la sezione etica */
+#etica .bento-expand {
+  background: var(--dark-3);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+#etica .bento-expand h4 { color: white; }
+#etica .bento-expand p { color: rgba(255,255,255,0.72); }
+#etica .bento-expand strong { color: white; }
+#etica .bento-expand em { color: var(--red); font-style: normal; font-weight: 500; }
+#etica .bento-expand-num { color: rgba(255,255,255,0.06); }
+#etica .bento-expand-close {
+  border-color: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.55);
+}
+#etica .bento-expand-close:hover {
+  border-color: var(--red); color: var(--red);
+}
+
+/* === Banda "Falso Allarme" — twist visivo (sfondo chiaro per contrasto) === */
+.etica-banda-falso {
+  grid-column: span 12;
+  background: var(--light);
+  border-radius: var(--radius);
+  padding: 44px 48px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 40px;
+  position: relative; overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.etica-banda-falso:hover { transform: translateY(-2px); }
+.etica-banda-marker {
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: var(--eu-yellow); color: var(--dark);
+  padding: 8px 16px; border-radius: 100px;
+  font-weight: 700; white-space: nowrap;
+}
+.etica-banda-content h3 {
+  font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  font-weight: 800; line-height: 1.15; color: var(--text-dark);
+  margin-bottom: 10px;
+}
+.etica-banda-content p {
+  font-size: 0.96rem; line-height: 1.65; color: var(--text-mid);
+  max-width: 620px;
+}
+.etica-banda-cta {
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--text-dark);
+  background: white; border: 1px solid var(--light-3);
+  padding: 12px 22px; border-radius: 100px;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap; font-weight: 600;
+}
+.etica-banda-cta:hover {
+  border-color: var(--dark); background: var(--dark); color: white;
+}
+
+/* Variante LIGHT di .bento-expand per la banda allucinazioni (resta dentro #etica ma "schiarisce") */
+#etica .bento-expand.etica-expand-light {
+  background: white;
+  border: 1px solid var(--light-3);
+}
+#etica .bento-expand.etica-expand-light h4 { color: var(--text-dark); }
+#etica .bento-expand.etica-expand-light p { color: var(--text-mid); }
+#etica .bento-expand.etica-expand-light strong { color: var(--text-dark); }
+#etica .bento-expand.etica-expand-light em { color: var(--red); font-style: italic; font-weight: 400; }
+#etica .bento-expand.etica-expand-light .bento-expand-num { color: rgba(0,0,0,0.06); }
+#etica .bento-expand.etica-expand-light .bento-expand-close {
+  border-color: var(--light-3); color: var(--text-mid);
+}
+#etica .bento-expand.etica-expand-light .bento-expand-close:hover {
+  border-color: var(--red); color: var(--red);
+}
+
 /* ===== SECTION 5: TOOLBOX ===== */
 #toolbox { background: var(--light); }
 .bento-toolbox {
@@ -1018,6 +1161,7 @@ footer {
   .caso-verifiche, .caso-inclusione, .caso-lezioni, .caso-tutoring, .caso-ada,
   .tool-classroom, .tool-notebooklm, .tool-drive, .tool-prompts, .tool-pdf, .tool-ada,
   .etica-main, .etica-side, .etica-highlight, .etica-card,
+  .crit-card, .crit-01, .crit-02, .crit-03, .etica-banda-falso,
   .comm-main, .comm-side,
   .feed-card, .feed-card-wide, .feed-card-mid, .feed-card-small,
   .feed-list-wrap, .load-more-wrap, .feed-filters,
@@ -1056,6 +1200,22 @@ footer {
   .bento-expand-inner { flex-direction: column; gap: 16px; }
   .bento-expand-num { font-size: 2.5rem; }
   .bento-expand.open { padding: 24px; }
+
+  /* Etica — criticità mobile */
+  .crit-card { padding: 28px; min-height: auto; }
+  .crit-num-bg { font-size: 3.5rem; top: 16px; right: 20px; }
+  .crit-03 .crit-num-bg { font-size: 5rem; }
+  .crit-03 .crit-title { font-size: 1.5rem; }
+  .crit-03 .crit-claim { font-size: 0.95rem; }
+
+  /* Banda allucinazioni — stack su mobile */
+  .etica-banda-falso {
+    grid-template-columns: 1fr;
+    padding: 32px 24px;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .etica-banda-cta { align-self: flex-start; }
 
   footer { flex-direction: column; align-items: flex-start; }
   .footer-right { text-align: left; }
@@ -1458,51 +1618,102 @@ footer {
 <!-- ETICA & CONSAPEVOLEZZA -->
 <section id="etica">
   <div class="section-label reveal">Etica & Consapevolezza</div>
-  <h2 class="section-title reveal reveal-delay-1">Usarla bene<br>non è automatico.</h2>
-  <p class="section-subtitle reveal reveal-delay-2">L'alfabetizzazione digitale include saper riconoscere i limiti e i rischi dell'AI in ambito scolastico.</p>
+  <h2 class="section-title reveal reveal-delay-1">I rischi veri<br>non sono quelli<br>di cui parlano tutti.</h2>
+  <p class="section-subtitle reveal reveal-delay-2">Le allucinazioni dell'AI sono il problema visibile — quindi gestibile. Le criticità reali, quelle che incontri davvero in classe, sono altre tre. E sono proprio quelle di cui nessuno parla.</p>
 
   <div class="bento bento-etica">
 
-    <div class="etica-main reveal reveal-delay-1">
+    <!-- ===== CRITICITÀ #01 — IL FALSO TIME-SAVER ===== -->
+    <div class="crit-card crit-01 interactive reveal reveal-delay-1" onclick="toggleExpand('exp-crit01')">
       <div>
-        <h3>Errori da evitare.<br>Consapevolezza da costruire.</h3>
-        <p style="color: rgba(255,255,255,0.55); font-size: 0.9rem; margin-top: 12px; line-height: 1.6;">Non è sufficiente saper usare uno strumento. Bisogna capirlo.</p>
+        <div class="crit-tag">Criticità reale · 01</div>
+        <div class="crit-num-bg">01</div>
+        <h3 class="crit-title">Sembra farti risparmiare tempo.<br>Spesso te lo moltiplica.</h3>
+        <p class="crit-claim">Prompt → output mediocre → riprompt → revisione → riscrittura. Il ciclo si chiude raramente al primo giro. Senza un criterio di "quando smettere", l'AI ti tiene in un loop di revisioni che spesso costa più del lavoro fatto a mano.</p>
       </div>
-      <ul class="etica-list">
-        <li>
-          <span class="etica-num">01</span>
-          <span>Copiare da ChatGPT non è imparare — è delegare il pensiero. L'AI deve essere un interlocutore, non un sostituto dell'elaborazione personale.</span>
-        </li>
-        <li>
-          <span class="etica-num">02</span>
-          <span>I prompt generici producono risultati generici. Senza contesto e specificità, l'output dell'AI è spesso inutile o fuorviante.</span>
-        </li>
-        <li>
-          <span class="etica-num">03</span>
-          <span>L'AI non verifica i fatti. La responsabilità dell'accuratezza rimane sempre umana. L'occhio critico del docente è insostituibile.</span>
-        </li>
-        <li>
-          <span class="etica-num">04</span>
-          <span>I bias dell'AI riflettono quelli dei dati di addestramento. Usarla acriticamente può rinforzare stereotipi e disuguaglianze.</span>
-        </li>
-      </ul>
+      <span class="crit-expand-trigger">Approfondisci il meccanismo</span>
     </div>
 
-    <div class="etica-side reveal reveal-delay-2">
-      <div class="etica-card">
-        <div class="card-icon">⚡</div>
-        <h4>Il pensiero critico<br>prima di tutto</h4>
-        <p>L'AI amplifica le tue capacità solo se hai già le basi. Non sostituisce il metodo: lo accelera.</p>
+    <!-- ===== CRITICITÀ #02 — LA DISPERSIONE ===== -->
+    <div class="crit-card crit-02 interactive reveal reveal-delay-2" onclick="toggleExpand('exp-crit02')">
+      <div>
+        <div class="crit-tag">Criticità reale · 02</div>
+        <div class="crit-num-bg">02</div>
+        <h3 class="crit-title">Plausibile non significa rilevante.</h3>
+        <p class="crit-claim">L'AI risponde sempre, e quasi sempre con qualcosa di sensato. Ma "sensato" non è "utile per la tua programmazione". Senza una bussola didattica chiara, segui ramificazioni che ti portano in vicoli ciechi dorati.</p>
       </div>
-      <div class="etica-card">
-        <div class="card-icon">🔍</div>
-        <h4>Verifica sempre<br>l'output</h4>
-        <p>Ogni risposta dell'AI va letta con occhio critico. Il docente rimane il garante della qualità educativa.</p>
+      <span class="crit-expand-trigger">Approfondisci il meccanismo</span>
+    </div>
+
+    <!-- ===== EXPAND PANELS #01 e #02 ===== -->
+    <div class="bento-expand" id="exp-crit01">
+      <div class="bento-expand-inner">
+        <div class="bento-expand-num">01</div>
+        <div>
+          <h4>Il falso time-saver: quando l'AI moltiplica l'impegno invece di ridurlo</h4>
+          <p>Il rischio non è la pigrizia — è il contrario. È <strong>l'iper-perfezionismo a costo zero</strong>. L'AI ti dà la possibilità di rigenerare all'infinito, e questo ti porta a riscrivere venti volte una verifica che andava bene alla terza. La vecchia formula <em>"il meglio è nemico del bene"</em> qui dentro si applica con violenza.<br><br><strong>Caso tipo:</strong> pensi di delegare alla AI la creazione di un'unità didattica per risparmiare 30 minuti. Dopo due ore di prompt, riprompt e revisioni, ottieni qualcosa di buono — che però avresti finito in 45 minuti scrivendo a mano dall'inizio. Hai speso il triplo del tempo per un risultato non dimostrabilmente migliore.<br><br><strong>Contromisura.</strong> Imposta un <em>time-budget</em> prima di iniziare. Se in 20 minuti l'AI non ti ha portato dove ti serve, chiudi e finisci a mano. Il limite di tempo è il vero acceleratore — non lo strumento.</p>
+          <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-crit01')">✕ Chiudi</button>
+        </div>
       </div>
     </div>
 
-    <div class="etica-highlight reveal reveal-delay-3">
-      <p>"L'AI non è né buona né cattiva per la scuola. Dipende tutto da come la usi — e da quanto la capisci."</p>
+    <div class="bento-expand" id="exp-crit02">
+      <div class="bento-expand-inner">
+        <div class="bento-expand-num">02</div>
+        <div>
+          <h4>La dispersione: il labirinto dei suggerimenti plausibili</h4>
+          <p>Il modello è ottimizzato per essere <strong>completo e interessante</strong>, non per rispettare i tuoi vincoli didattici. Se gli chiedi una lezione sull'Illuminismo, ti propone collegamenti con la Rivoluzione americana, con Kant, con la massoneria. Tutti collegamenti veri. Tutti potenzialmente fuori dal tuo percorso di programmazione.<br><br>Il rischio è doppio: ti fai distrarre dal piano, perdi tempo, <em>e</em> finisci a costruire una lezione che non incastra con quella precedente o successiva. Hai prodotto contenuto buono in assoluto e inutile in relazione al tuo curricolo.<br><br><strong>Contromisura.</strong> Il prompt parte sempre dall'<em>obiettivo didattico misurabile</em>, mai dal contenuto. <strong>"Voglio che gli studenti sappiano riconoscere la struttura tripartita di un saggio illuminista"</strong> è una bussola. <strong>"Fammi una lezione sull'Illuminismo"</strong> è una porta sul nulla.</p>
+          <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-crit02')">✕ Chiudi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CRITICITÀ #03 — EFFETTO RUFFIANO (banda larga, pezzo forte) ===== -->
+    <div class="crit-card crit-03 interactive reveal reveal-delay-3" onclick="toggleExpand('exp-crit03')">
+      <div>
+        <div class="crit-tag">Criticità reale · 03 — il più subdolo</div>
+        <div class="crit-num-bg">03</div>
+        <h3 class="crit-title">L'effetto ruffiano.<br>L'AI ti dà ragione anche quando hai torto.</h3>
+        <p class="crit-claim">In letteratura tecnica si chiama <em style="color:#F5C800;font-style:italic">sycophancy</em>. È addestrata a compiacerti. Le chiedi se la tua verifica è ben fatta? Tenderà a dirti di sì. Lavora <em style="color:#F5C800;font-style:italic">contro</em> il pensiero critico proprio mentre credi di esercitarlo.</p>
+      </div>
+      <span class="crit-expand-trigger">Approfondisci il meccanismo</span>
+    </div>
+
+    <div class="bento-expand" id="exp-crit03">
+      <div class="bento-expand-inner">
+        <div class="bento-expand-num">03</div>
+        <div>
+          <h4>L'effetto ruffiano: perché l'AI ti compiace e cosa farci</h4>
+          <p>In letteratura tecnica si chiama <em>sycophancy</em>. Nasce dal modo in cui i modelli vengono addestrati: durante la fase di rinforzo (RLHF — Reinforcement Learning from Human Feedback), gli output vengono premiati anche in base a quanto "piacciono" agli annotatori umani. Risultato: il modello impara che <strong>dare ragione all'interlocutore è una strategia vincente</strong>. Non è un bug, è un effetto collaterale dell'allineamento.<br><br><strong>Caso tipo:</strong> chiedi <em>"questa verifica è equilibrata?"</em> — risposta: <em>"sì, è ben strutturata, copre i livelli, ottima difficoltà"</em>. Chiedi invece <em>"trova tre difetti gravi in questa verifica"</em> — improvvisamente l'AI vede problemi che prima non vedeva. Stessa verifica, stesso modello, output opposti. Il primo prompt ha attivato la modalità "ruffiana"; il secondo l'ha disinnescata.<br><br><strong>Contromisura: cambia il framing.</strong> Non chiedere mai <em>"va bene?"</em>. Chiedi sempre <em>"trova i tre punti deboli"</em>, <em>"argomenta contro questa scelta"</em>, <em>"sostieni la tesi opposta a questa con i migliori argomenti"</em>. Il pensiero critico va <strong>imposto</strong> al prompt, perché l'AI non lo metterà mai di sua iniziativa. Il prompt critico è una competenza professionale, non un dettaglio.</p>
+          <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-crit03')">✕ Chiudi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== BANDA "FALSO ALLARME" — ALLUCINAZIONI ===== -->
+    <div class="etica-banda-falso reveal reveal-delay-1" onclick="toggleExpand('exp-allucinazioni')">
+      <div class="etica-banda-marker">Falso allarme</div>
+      <div class="etica-banda-content">
+        <h3>E le allucinazioni? Sono il rischio più visibile — quindi il meno pericoloso.</h3>
+        <p>Sono diventate il monito mediatico più diffuso. Ma hanno tre tratti che le rendono identificabili a colpo d'occhio. Ecco come funzionano tecnicamente, e perché un docente attento le sgama in dieci secondi.</p>
+      </div>
+      <span class="etica-banda-cta">Vedi il meccanismo →</span>
+    </div>
+
+    <div class="bento-expand etica-expand-light" id="exp-allucinazioni">
+      <div class="bento-expand-inner">
+        <div class="bento-expand-num">!?</div>
+        <div>
+          <h4>Le allucinazioni: meccanismo tecnico e perché sono identificabili</h4>
+          <p><strong>Cosa sono.</strong> L'AI generativa funziona predicendo il <em>token</em> (parola o sotto-parola) statisticamente più probabile data la sequenza precedente. Non "sa" niente in senso classico: stima cosa è plausibile dire. Quando il modello deve produrre un'informazione fattuale ma il suo addestramento non contiene un riferimento abbastanza forte, <strong>inventa una continuazione plausibile</strong>. Il risultato è un'allucinazione: una frase grammaticalmente corretta, sintatticamente coerente, fattualmente falsa.<br><br><strong>Perché si vedono.</strong> Le allucinazioni hanno tre tratti tipici che le rendono riconoscibili:<br><br>1. <strong>Specificità sospetta.</strong> Nomi propri, date precise, numeri puntuali, citazioni testuali tra virgolette. Proprio dove il modello non dovrebbe permettersi precisione, lì la inventa più volentieri. Un docente che legge <em>"come scriveva Calvino nel 1973 in una lettera a Italo Svevo…"</em> dovrebbe alzare un sopracciglio: Svevo è morto nel 1928.<br><br>2. <strong>Coerenza interna ma incoerenza esterna.</strong> Il testo si tiene in piedi da solo ma stride non appena lo confronti con una fonte minimamente autorevole (manuale, enciclopedia, motore di ricerca).<br><br>3. <strong>Confidenza retorica uniforme.</strong> L'AI le pronuncia con lo stesso tono sicuro delle informazioni vere. Niente "forse", niente "probabilmente", niente "non sono certo". Questo tono uniforme è di per sé un indicatore: la realtà ha sfumature, le allucinazioni no.<br><br><strong>Cosa fare.</strong> Verifica incrociata su due fonti per ogni dato fattuale (nomi, date, citazioni, numeri) ed elimini il 99% delle allucinazioni. <strong>Il vero rischio non è l'allucinazione in sé — è non controllare.</strong> Le altre tre criticità (time-saver, dispersione, ruffiano) sono pericolose proprio perché <em>invisibili</em>. Le allucinazioni sono pericolose solo per chi non guarda.</p>
+          <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-allucinazioni')">✕ Chiudi</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MANIFESTO DI CHIUSURA ===== -->
+    <div class="etica-highlight reveal reveal-delay-2">
+      <p>"L'AI non è né buona né cattiva per la scuola. È <em style="font-style:italic;color:rgba(255,255,255,0.85)">molto più rischiosa</em> di quanto si dica — ma in modi diversi da quelli di cui si parla."</p>
       <a href="#toolbox">Vai al Toolbox →</a>
     </div>
 
@@ -1612,7 +1823,31 @@ footer {
   </div>
 </section>
 
-<!-- COMMUNITY -->
+<!-- BLOG -->
+<section id="blog">
+  <div class="section-label reveal">Blog</div>
+  <h2 class="section-title reveal reveal-delay-1">Pensieri scritti.<br>Da leggere con calma.</h2>
+  <p class="section-subtitle reveal reveal-delay-2">Riflessioni, analisi e approfondimenti sulla didattica digitale, l'AI e il futuro della scuola italiana.</p>
+  <div class="bento bento-blog" id="blogGrid">
+    <div style="grid-column:span 12;background:white;border-radius:var(--radius);padding:48px;text-align:center;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Caricamento articoli…</div>
+  </div>
+</section>
+
+<!-- PUBBLICAZIONI -->
+<section id="pubblicazioni">
+  <div class="section-label reveal">Scritti & Quaderni</div>
+  <h2 class="section-title reveal reveal-delay-1">Leggere per capire.<br>Scaricare per tenere.</h2>
+  <p class="section-subtitle reveal reveal-delay-2">Saggi, ricerche e pubblicazioni periodiche sulla didattica digitale. Tutti scaricabili in PDF.</p>
+  <div class="pub-tabs reveal">
+    <button class="pub-tab active" onclick="filterPub('scritto', this)">Scritti</button>
+    <button class="pub-tab" onclick="filterPub('quaderno', this)">Quaderni</button>
+  </div>
+  <div class="bento bento-pub" id="pubGrid">
+    <div class="pub-empty">Caricamento pubblicazioni…</div>
+  </div>
+</section>
+
+<!-- COMMUNITY (climax — chiusura della narrazione, CTA finale) -->
 <section id="community">
   <div class="section-label reveal">Community & Networking</div>
   <h2 class="section-title reveal reveal-delay-1">Cresciamo<br>insieme.</h2>
@@ -1657,30 +1892,6 @@ footer {
       </div>
     </div>
 
-  </div>
-</section>
-
-<!-- BLOG -->
-<section id="blog">
-  <div class="section-label reveal">Blog</div>
-  <h2 class="section-title reveal reveal-delay-1">Pensieri scritti.<br>Da leggere con calma.</h2>
-  <p class="section-subtitle reveal reveal-delay-2">Riflessioni, analisi e approfondimenti sulla didattica digitale, l'AI e il futuro della scuola italiana.</p>
-  <div class="bento bento-blog" id="blogGrid">
-    <div style="grid-column:span 12;background:white;border-radius:var(--radius);padding:48px;text-align:center;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted)">Caricamento articoli…</div>
-  </div>
-</section>
-
-<!-- PUBBLICAZIONI -->
-<section id="pubblicazioni">
-  <div class="section-label reveal">Scritti & Quaderni</div>
-  <h2 class="section-title reveal reveal-delay-1">Leggere per capire.<br>Scaricare per tenere.</h2>
-  <p class="section-subtitle reveal reveal-delay-2">Saggi, ricerche e pubblicazioni periodiche sulla didattica digitale. Tutti scaricabili in PDF.</p>
-  <div class="pub-tabs reveal">
-    <button class="pub-tab active" onclick="filterPub('scritto', this)">Scritti</button>
-    <button class="pub-tab" onclick="filterPub('quaderno', this)">Quaderni</button>
-  </div>
-  <div class="bento bento-pub" id="pubGrid">
-    <div class="pub-empty">Caricamento pubblicazioni…</div>
   </div>
 </section>
 
