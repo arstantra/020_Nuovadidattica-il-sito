@@ -692,6 +692,131 @@ section { padding: 100px 48px; }
 }
 .tool-icon { font-size: 2rem; margin-bottom: 14px; }
 
+/* ===== NOTEBOOKLM GENERATOR CARD ===== */
+.tool-nlm-generator {
+  grid-column: span 12;
+  background: var(--eu-blue);
+  border-radius: var(--radius);
+  padding: 44px 52px;
+  min-height: 200px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 48px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.tool-nlm-generator:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 60px rgba(0,63,165,0.25);
+}
+.tool-nlm-generator::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+.tool-nlm-generator::after {
+  content: '';
+  position: absolute; top: -80px; right: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(245,200,0,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.nlm-gen-left { position: relative; z-index: 1; }
+.nlm-gen-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.62rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--eu-yellow);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.nlm-gen-eyebrow::before {
+  content: ''; display: block;
+  width: 22px; height: 1px; background: var(--eu-yellow);
+}
+.nlm-gen-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800; color: white;
+  line-height: 1.05; letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+.nlm-gen-desc {
+  font-size: 0.92rem; line-height: 1.65;
+  color: rgba(255,255,255,0.65);
+  max-width: 520px; margin-bottom: 28px;
+}
+.nlm-steps-pills {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.nlm-step-pill {
+  font-family: var(--font-mono);
+  font-size: 0.62rem; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+  padding: 6px 14px; border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 6px;
+}
+.nlm-step-pill .pill-num {
+  background: var(--eu-yellow); color: var(--dark);
+  width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; font-weight: 700;
+}
+.nlm-steps-sep { color: rgba(255,255,255,0.2); font-size: 0.8rem; }
+.nlm-gen-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-top: 28px;
+  font-family: var(--font-display);
+  font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--eu-yellow); color: var(--dark);
+  padding: 13px 26px; border-radius: 100px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: none;
+}
+.nlm-gen-cta:hover {
+  transform: scale(1.04);
+  box-shadow: 0 4px 20px rgba(245,200,0,0.35);
+}
+.nlm-gen-cta::after { content: ' →'; }
+.nlm-gen-terminal {
+  position: relative; z-index: 1;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 22px 24px;
+  min-width: 300px; max-width: 360px;
+  backdrop-filter: blur(8px);
+}
+.term-bar {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 18px;
+}
+.term-dot { width: 10px; height: 10px; border-radius: 50%; }
+.td-r { background: rgba(217,27,27,0.6); }
+.td-y { background: rgba(245,200,0,0.5); }
+.td-g { background: rgba(80,200,80,0.4); }
+.term-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: rgba(255,255,255,0.2); margin-left: 6px;
+}
+.term-lines { display: flex; flex-direction: column; gap: 5px; }
+.tl { font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.4; color: rgba(255,255,255,0.5); }
+.tl-prompt { color: var(--eu-yellow); }
+.tl-green { color: #4ade80; }
+.tl-dim { color: rgba(255,255,255,0.22) !important; }
+.tl-red { color: #f87171; }
+
 /* ===== SECTION 6: COMMUNITY ===== */
 #community { background: var(--light-2); }
 .bento-community {
@@ -1159,7 +1284,7 @@ footer {
   /* All cards → full width */
   .card-hero-video, .card-filosofia, .card-tre, .card-stat, .card-claim-box,
   .caso-verifiche, .caso-inclusione, .caso-lezioni, .caso-tutoring, .caso-ada,
-  .tool-classroom, .tool-notebooklm, .tool-drive, .tool-prompts, .tool-pdf, .tool-ada,
+  .tool-nlm-generator, .tool-classroom, .tool-notebooklm, .tool-drive, .tool-prompts, .tool-pdf, .tool-ada,
   .etica-main, .etica-side, .etica-highlight, .etica-card,
   .crit-card, .crit-01, .crit-02, .crit-03, .etica-banda-falso,
   .comm-main, .comm-side,
@@ -1169,6 +1294,10 @@ footer {
   .blog-card-full, .blog-card-half,
   .pub-card, .pub-empty,
   .bento-expand { grid-column: span 1 !important; }
+
+  /* Stacks the generator card on mobile */
+  .tool-nlm-generator { grid-template-columns: 1fr; gap: 28px; padding: 32px 28px; }
+  .nlm-gen-terminal { min-width: 0; max-width: 100%; }
 
   /* Fix heights for mobile */
   .card-hero-video { min-height: 280px; }
@@ -1727,6 +1856,43 @@ footer {
   <p class="section-subtitle reveal reveal-delay-2">Tutto ciò che ti serve per integrare Google Workspace e AI nella tua classe. Scaricabile, pronto all'uso.</p>
 
   <div class="bento bento-toolbox">
+
+    <div class="tool-card tool-nlm-generator reveal" onclick="window.location='notebooklm-generator.html'">
+      <div class="nlm-gen-left">
+        <div class="nlm-gen-eyebrow">Strumento Interattivo</div>
+        <h3 class="nlm-gen-title">NotebookLM<br>Prompt Generator</h3>
+        <p class="nlm-gen-desc">Un percorso guidato in 3 step per usare NotebookLM in modo metodologicamente corretto: dalle criticità delle fonti ai prompt didattici pronti all'uso.</p>
+        <div class="nlm-steps-pills">
+          <div class="nlm-step-pill"><div class="pill-num">1</div> Prepara le Fonti</div>
+          <div class="nlm-steps-sep">→</div>
+          <div class="nlm-step-pill"><div class="pill-num">2</div> Interroga le Fonti</div>
+          <div class="nlm-steps-sep">→</div>
+          <div class="nlm-step-pill"><div class="pill-num">3</div> Genera Output</div>
+        </div>
+        <a href="notebooklm-generator.html" class="nlm-gen-cta" onclick="event.stopPropagation()">Usa il Generatore</a>
+      </div>
+      <div class="nlm-gen-terminal">
+        <div class="term-bar">
+          <div class="term-dot td-r"></div>
+          <div class="term-dot td-y"></div>
+          <div class="term-dot td-g"></div>
+          <div class="term-label">prompt_output.txt</div>
+        </div>
+        <div class="term-lines">
+          <div class="tl"><span class="tl-prompt">$ </span><span class="tl-green">materia</span> → Storia · Triennio</div>
+          <div class="tl"><span class="tl-prompt">$ </span><span class="tl-green">obiettivo</span> → Preparazione verifica</div>
+          <div class="tl tl-dim">──────────────────────────</div>
+          <div class="tl"><span class="tl-red">PROMPT 1</span> · Domande su 3 livelli</div>
+          <div class="tl tl-dim">Sei un esperto di Storia per il</div>
+          <div class="tl tl-dim">triennio. Genera 9 domande…</div>
+          <div class="tl tl-dim">──────────────────────────</div>
+          <div class="tl"><span class="tl-red">PROMPT 2</span> · Simulazione orale</div>
+          <div class="tl tl-dim">Simula un'interrogazione…</div>
+          <div class="tl tl-dim">──────────────────────────</div>
+          <div class="tl"><span class="tl-green">✓ </span><span class="tl-dim">2 prompt generati · Copia →</span></div>
+        </div>
+      </div>
+    </div>
 
     <div class="bento-card tool-card tool-classroom reveal reveal-delay-1">
       <div>
