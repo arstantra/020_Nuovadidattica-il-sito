@@ -778,6 +778,7 @@ async function publishPub() {
   });
   if (error) { toast('⚠ ' + error.message,'err'); return; }
   document.getElementById('pub-form').style.display='none';
+  document.getElementById('btnAddPub').style.display='';
   ['pTitle','pDrive','pNumero','pPages','pExcerpt'].forEach(id => document.getElementById(id).value='');
   toast('✓ Pubblicazione aggiunta!','ok');
   loadPubAdmin();
@@ -1064,7 +1065,11 @@ function showPanel(id, btn) {
   if(id==='pubblicati') loadPublished();
   if(id==='coda') loadPending();
   if(id==='blog') loadBlogAdmin();
-  if(id==='pubblicazioni') loadPubAdmin();
+  if(id==='pubblicazioni') {
+    loadPubAdmin();
+    document.getElementById('pub-form').style.display='none';
+    document.getElementById('btnAddPub').style.display='';
+  }
   if(id==='fonti') loadFonti();
 }
 
