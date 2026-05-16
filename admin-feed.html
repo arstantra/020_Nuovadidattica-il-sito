@@ -647,6 +647,7 @@ async function loadBlogAdmin() {
       <span class="status-pill ${p.published ? 'st-published' : 'st-pending'}">${p.published ? 'Online' : 'Bozza'}</span>
       <div class="qi-actions">
         ${p.drive_url ? `<a href="${escHtml(p.drive_url)}" target="_blank" class="btn btn-ghost-white btn-sm">Drive →</a>` : ''}
+        <button class="btn btn-ghost-white btn-sm" onclick="editPost(${JSON.stringify(p)})">✏ Modifica</button>
         ${p.published
           ? `<button class="btn btn-outline-red btn-sm" onclick="togglePost('${p.id}',false)">Ritira</button>`
           : `<button class="btn btn-green btn-sm" onclick="togglePost('${p.id}',true)">Pubblica</button>`}
@@ -717,6 +718,59 @@ async function deletePost(id) {
   loadBlogAdmin();
 }
 
+// ── MODIFICA ARTICOLO BLOG ────────────────────────────────────
+let _editPostId = null;
+function editPost(p) {
+  _editPostId = p.id;
+  // Popola i campi del form con i dati esistenti
+  document.getElementById('bTitle').value   = p.title || '';
+  document.getElementById('bExcerpt').value = p.excerpt || '';
+  document.getElementById('bBody').value    = p.body || '';
+  document.getElementById('bAuthor').value  = p.author || '';
+  document.getElementById('bDriveUrl').value = p.drive_url || '';
+  const catSel = document.getElementById('bCat');
+  for (let o of catSel.options) { if (o.value === p.category || o.text === p.category) { catSel.value = o.value; break; } }
+  // Mostra il form e aggiorna il titolo e il pulsante
+  const panel = document.getElementById('panel-new-post');
+  panel.style.display = 'block';
+  panel.querySelector('.card-title').textContent = '✏️ Modifica articolo';
+  const pubBtn = panel.querySelector('button.btn-red');
+  pubBtn.textContent = 'Salva modifiche →';
+  pubBtn.onclick = updatePost;
+  // Scroll al form
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  toast('Articolo caricato — modifica e salva.', 'ok');
+}
+
+async function updatePost() {
+  if (!_editPostId) return;
+  const title   = document.getElementById('bTitle').value.trim();
+  const excerpt = document.getElementById('bExcerpt').value.trim();
+  if (!title || !excerpt) { toast('⚠ Titolo e abstract obbligatori','err'); return; }
+  const body     = document.getElementById('bBody').value.trim();
+  const driveUrl = document.getElementById('bDriveUrl').value.trim();
+  if (!body && !driveUrl) { toast('⚠ Inserisci il testo oppure un link Drive','err'); return; }
+  if (demoMode) { toast('⚠ Non disponibile in demo','err'); return; }
+  const { error } = await sb.from('blog_posts').update({
+    title, body, excerpt,
+    drive_url: driveUrl || null,
+    category: document.getElementById('bCat').value,
+    author:   document.getElementById('bAuthor').value.trim(),
+  }).eq('id', _editPostId);
+  if (error) { toast('⚠ ' + error.message,'err'); return; }
+  _editPostId = null;
+  // Ripristina form allo stato "nuovo"
+  clearBlogForm();
+  const panel = document.getElementById('panel-new-post');
+  panel.style.display = 'none';
+  panel.querySelector('.card-title').textContent = '✏️ Nuovo articolo';
+  const pubBtn = panel.querySelector('button.btn-red');
+  pubBtn.textContent = 'Pubblica articolo →';
+  pubBtn.onclick = publishPost;
+  toast('✓ Articolo aggiornato!', 'ok');
+  loadBlogAdmin();
+}
+
 function clearBlogForm() {
   ['bTitle','bBody','bExcerpt','bAuthor','bDriveUrl'].forEach(id => {
     const el = document.getElementById(id);
@@ -729,7 +783,17 @@ function clearBlogForm() {
 function toggleNewPost() {
   const panel = document.getElementById('panel-new-post');
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-  if (panel.style.display === 'none') clearBlogForm();
+  if (panel.style.display === 'none') {
+    clearBlogForm();
+    // Ripristina form in modalità "nuovo" se era in modalità "modifica"
+    if (_editPostId) {
+      _editPostId = null;
+      panel.querySelector('.card-title').textContent = '✏️ Nuovo articolo';
+      const pubBtn = panel.querySelector('button.btn-red');
+      pubBtn.textContent = 'Pubblica articolo →';
+      pubBtn.onclick = publishPost;
+    }
+  }
 }
 
 // ── PUBBLICAZIONI ADMIN ───────────────────────────────────────
@@ -755,6 +819,7 @@ async function loadPubAdmin() {
       <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.pages ? p.pages+' pp.' : '—'}</span>
       <div class="qi-actions">
         <a href="${escHtml(p.drive_url)}" target="_blank" class="btn btn-ghost-white btn-sm">Apri →</a>
+        <button class="btn btn-ghost-white btn-sm" onclick="editPub(${JSON.stringify(p)})">✏ Modifica</button>
         <button class="btn btn-outline-red btn-sm" onclick="deletePub('${p.id}')">✕</button>
       </div>
     </div>`).join('');
@@ -789,6 +854,63 @@ async function deletePub(id) {
   if (demoMode) { toast('⚠ Non disponibile in demo','err'); return; }
   await sb.from('pubblicazioni').delete().eq('id', id);
   toast('✕ Rimossa','');
+  loadPubAdmin();
+}
+
+// ── MODIFICA PUBBLICAZIONE ────────────────────────────────────
+let _editPubId = null;
+function editPub(p) {
+  _editPubId = p.id;
+  // Mostra il form e popola i campi
+  document.getElementById('pub-form').style.display = 'block';
+  document.getElementById('btnAddPub').style.display = 'none';
+  document.getElementById('pTitle').value   = p.title || '';
+  document.getElementById('pTipo').value    = p.tipo || 'scritto';
+  document.getElementById('pNumero').value  = p.numero || '';
+  document.getElementById('pDrive').value   = p.drive_url || '';
+  document.getElementById('pPages').value   = p.pages || '';
+  document.getElementById('pExcerpt').value = p.excerpt || '';
+  if (p.published_at) {
+    document.getElementById('pDate').value = p.published_at.substring(0,10);
+  }
+  // Aggiorna titolo e pulsante
+  const form = document.getElementById('pub-form');
+  form.querySelector('.card-title').textContent = '✏️ Modifica pubblicazione';
+  const pubBtn = form.querySelector('button.btn-red');
+  pubBtn.textContent = 'Salva modifiche →';
+  pubBtn.onclick = updatePub;
+  form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  toast('Pubblicazione caricata — modifica e salva.', 'ok');
+}
+
+async function updatePub() {
+  if (!_editPubId) return;
+  const title = document.getElementById('pTitle').value.trim();
+  const drive = document.getElementById('pDrive').value.trim();
+  if (!title || !drive) { toast('⚠ Titolo e link Drive obbligatori','err'); return; }
+  if (demoMode) { toast('⚠ Non disponibile in demo','err'); return; }
+  const dateVal = document.getElementById('pDate').value;
+  const { error } = await sb.from('pubblicazioni').update({
+    title,
+    tipo:    document.getElementById('pTipo').value,
+    numero:  document.getElementById('pNumero').value || null,
+    drive_url: drive,
+    pages:   document.getElementById('pPages').value || null,
+    excerpt: document.getElementById('pExcerpt').value.trim(),
+    published_at: dateVal ? new Date(dateVal).toISOString() : undefined
+  }).eq('id', _editPubId);
+  if (error) { toast('⚠ ' + error.message,'err'); return; }
+  _editPubId = null;
+  // Ripristina form
+  ['pTitle','pDrive','pNumero','pPages','pExcerpt'].forEach(id => document.getElementById(id).value='');
+  const form = document.getElementById('pub-form');
+  form.style.display = 'none';
+  form.querySelector('.card-title').textContent = '📄 Nuova pubblicazione';
+  const pubBtn = form.querySelector('button.btn-red');
+  pubBtn.textContent = 'Pubblica →';
+  pubBtn.onclick = publishPub;
+  document.getElementById('btnAddPub').style.display = '';
+  toast('✓ Pubblicazione aggiornata!', 'ok');
   loadPubAdmin();
 }
 

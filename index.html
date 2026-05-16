@@ -697,12 +697,8 @@ section { padding: 100px 48px; }
   grid-column: span 12;
   background: var(--eu-blue);
   border-radius: var(--radius);
-  padding: 44px 52px;
-  min-height: 200px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 48px;
+  padding: 28px 36px;
+  display: block;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -742,15 +738,15 @@ section { padding: 100px 48px; }
 }
 .nlm-gen-title {
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
   font-weight: 800; color: white;
   line-height: 1.05; letter-spacing: -0.02em;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 .nlm-gen-desc {
-  font-size: 0.92rem; line-height: 1.65;
+  font-size: 0.88rem; line-height: 1.6;
   color: rgba(255,255,255,0.65);
-  max-width: 520px; margin-bottom: 28px;
+  max-width: 680px; margin-bottom: 20px;
 }
 .nlm-steps-pills {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
@@ -1233,6 +1229,14 @@ footer {
   max-height: 600px;
   padding: 36px 40px;
 }
+/* Wrapper per i 3 pannelli etica-crit: un solo elemento nella grid,
+   così non genera 3 gap-row vuoti quando chiusi */
+.etica-crit-expands {
+  grid-column: span 12;
+  flex-direction: column;
+  gap: 0;
+  /* display:none/flex gestito da JS */
+}
 .bento-expand-inner { display: flex; gap: 40px; align-items: flex-start; }
 .bento-expand h4 {
   font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;
@@ -1295,9 +1299,8 @@ footer {
   .pub-card, .pub-empty,
   .bento-expand { grid-column: span 1 !important; }
 
-  /* Stacks the generator card on mobile */
-  .tool-nlm-generator { grid-template-columns: 1fr; gap: 28px; padding: 32px 28px; }
-  .nlm-gen-terminal { min-width: 0; max-width: 100%; }
+  /* Generator su mobile: padding ridotto */
+  .tool-nlm-generator { padding: 24px 20px; }
 
   /* Fix heights for mobile */
   .card-hero-video { min-height: 280px; }
@@ -1499,16 +1502,17 @@ footer {
   display: flex; flex-direction: column; grid-column: span 4;
   transition: transform 0.3s, box-shadow 0.3s; }
 .pub-card:hover { transform: translateY(-4px); box-shadow: 0 16px 50px rgba(0,0,0,0.08); }
-.pub-cover { height: 140px; width: 100%;
+.pub-cover { height: 80px; width: 100%;
   background: linear-gradient(160deg, var(--dark) 0%, var(--dark-3) 100%);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 24px 32px; position: relative; overflow: hidden; }
-.pub-cover-num { font-family: var(--font-display); font-size: 5rem; font-weight: 800;
-  color: rgba(255,255,255,0.06); position: absolute; bottom: -10px; right: 8px; line-height: 1; }
-.pub-cover-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em;
-  text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
-.pub-cover-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
-  color: white; text-align: center; line-height: 1.2; position: relative; z-index: 1; }
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  padding: 14px 24px; position: relative; overflow: hidden; }
+.pub-cover-num { font-family: var(--font-display); font-size: 3rem; font-weight: 800;
+  color: rgba(255,255,255,0.06); position: absolute; bottom: -6px; right: 16px; line-height: 1; }
+.pub-cover-label { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+.pub-cover-title { font-family: var(--font-display); font-size: 0.95rem; font-weight: 800;
+  color: white; text-align: left; line-height: 1.2; position: relative; z-index: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 48px); }
 .pub-cover-accent { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--red); }
 .pub-body { padding: 24px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
 .pub-meta-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -1815,7 +1819,8 @@ footer {
       <span class="crit-expand-trigger">Approfondisci il meccanismo</span>
     </div>
 
-    <!-- ===== EXPAND PANELS #01, #02, #03 ===== -->
+    <!-- ===== EXPAND PANELS #01, #02, #03 — wrapper unico per evitare gap-row vuoti ===== -->
+    <div class="etica-crit-expands" id="eticaCritExpands" style="display:none">
     <div class="bento-expand" id="exp-crit01">
       <div class="bento-expand-inner">
         <div class="bento-expand-num">01</div>
@@ -1848,6 +1853,7 @@ footer {
         </div>
       </div>
     </div>
+    </div><!-- /etica-crit-expands -->
 
     <!-- ===== BANDA "FALSO ALLARME" — ALLUCINAZIONI ===== -->
     <div class="etica-banda-falso reveal reveal-delay-1" onclick="toggleExpand('exp-allucinazioni')">
@@ -1900,27 +1906,6 @@ footer {
           <div class="nlm-step-pill"><div class="pill-num">3</div> Genera Output</div>
         </div>
         <a href="notebooklm-generator.html" class="nlm-gen-cta" onclick="event.stopPropagation()">Usa il Generatore</a>
-      </div>
-      <div class="nlm-gen-terminal">
-        <div class="term-bar">
-          <div class="term-dot td-r"></div>
-          <div class="term-dot td-y"></div>
-          <div class="term-dot td-g"></div>
-          <div class="term-label">prompt_output.txt</div>
-        </div>
-        <div class="term-lines">
-          <div class="tl"><span class="tl-prompt">$ </span><span class="tl-green">materia</span> → Storia · Triennio</div>
-          <div class="tl"><span class="tl-prompt">$ </span><span class="tl-green">obiettivo</span> → Preparazione verifica</div>
-          <div class="tl tl-dim">──────────────────────────</div>
-          <div class="tl"><span class="tl-red">PROMPT 1</span> · Domande su 3 livelli</div>
-          <div class="tl tl-dim">Sei un esperto di Storia per il</div>
-          <div class="tl tl-dim">triennio. Genera 9 domande…</div>
-          <div class="tl tl-dim">──────────────────────────</div>
-          <div class="tl"><span class="tl-red">PROMPT 2</span> · Simulazione orale</div>
-          <div class="tl tl-dim">Simula un'interrogazione…</div>
-          <div class="tl tl-dim">──────────────────────────</div>
-          <div class="tl"><span class="tl-green">✓ </span><span class="tl-dim">2 prompt generati · Copia →</span></div>
-        </div>
       </div>
     </div>
 
@@ -2363,6 +2348,27 @@ function toggleExpand(id) {
     if (e.id !== id) e.classList.remove('open');
   });
   el.classList.toggle('open');
+
+  // Gestione wrapper etica-crit-expands: mostra/nascondi per evitare gap-row vuoti
+  const critIds = ['exp-crit01', 'exp-crit02', 'exp-crit03'];
+  if (critIds.includes(id)) {
+    const wrapper = document.getElementById('eticaCritExpands');
+    if (wrapper) {
+      if (el.classList.contains('open')) {
+        wrapper.style.display = 'flex'; // mostra subito prima dell'animazione
+      } else {
+        // Nascondi dopo che l'animazione di chiusura è completata (500ms + margine)
+        setTimeout(() => {
+          const anyOpen = critIds.some(cid => {
+            const c = document.getElementById(cid);
+            return c && c.classList.contains('open');
+          });
+          if (!anyOpen) wrapper.style.display = 'none';
+        }, 560);
+      }
+    }
+  }
+
   if (el.classList.contains('open')) {
     setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
   }
