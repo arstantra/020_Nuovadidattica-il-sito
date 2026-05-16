@@ -1350,11 +1350,36 @@ footer {
   .footer-right { text-align: left; }
 }
 
+/* ===== TABLET LANDSCAPE FIX (901px–1280px) ===== */
+@media (min-width: 901px) and (max-width: 1280px) {
+  /* Nav: riduce padding e gap per evitare affollamento */
+  nav { padding: 16px 32px; }
+  nav.scrolled { padding: 12px 32px; }
+  .nav-links { gap: 20px; }
+
+  /* Hero logo: riduce dimensione e avvicina al bordo per non toccare il titolo */
+  .hero-nd-logo {
+    width: clamp(130px, 12vw, 180px);
+    right: 32px;
+  }
+
+  /* Titolo hero: limita la larghezza massima per liberare spazio al logo */
+  .hero-headline { max-width: 700px; }
+
+  /* Toolbox: generator resta full-width, le 6 card in 2 righe da 3 */
+  .tool-prompts    { grid-column: span 4; }
+  .tool-pdf        { grid-column: span 4; }
+  .tool-ada        { grid-column: span 4; }
+}
+
 /* Tablet — 3-col grids where it makes sense */
 @media (min-width: 601px) and (max-width: 900px) {
   .bento-toolbox { grid-template-columns: repeat(3, 1fr); }
+  /* Generator: full-width (span 3 su griglia a 3 col), override !important del mobile */
+  .tool-nlm-generator { grid-column: span 3 !important; }
+  /* 6 card restanti: 2 righe da 3 uguali */
   .tool-classroom, .tool-notebooklm, .tool-drive { grid-column: span 1; }
-  .tool-prompts { grid-column: span 2; }
+  .tool-prompts { grid-column: span 1; }
   .tool-pdf, .tool-ada { grid-column: span 1; }
 
   /* casi tablet: 2 col, last card full width — no orphan */

@@ -5,123 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin · Feed Ragionato — NuovaDidattica.eu</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-
-// ===== BLOG ADMIN =====
-async function loadBlogAdmin() {
-  const { data } = await sb.from('blog_posts').select('*').order('created_at',{ascending:false});
-  const el = document.getElementById('blogList');
-  document.getElementById('blogBadge').textContent = data ? data.filter(p=>p.published).length : 0;
-  if (!data || !data.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">✍️</div><p>Nessun articolo ancora</p></div>'; return; }
-  el.innerHTML = data.map(p => `
-    <div class="queue-item ${p.published ? 'published' : 'pending'}" id="bp-${p.id}" style="grid-template-columns:1fr 120px 110px 130px">
-      <div><div class="qi-title">${p.title}</div><div class="qi-sub">${fmtDate(p.published_at)||'Bozza'}</div></div>
-      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.category||''}</span>
-      <span class="status-pill ${p.published ? 'st-published' : 'st-pending'}">${p.published ? 'Online' : 'Bozza'}</span>
-      <div class="qi-actions">
-        ${p.published
-          ? '<button class="btn btn-outline-red btn-sm" onclick="togglePost(''+p.id+'',false)">Ritira</button>'
-          : '<button class="btn btn-green btn-sm" onclick="togglePost(''+p.id+'',true)">Pubblica</button>'}
-        <button class="btn btn-ghost-white btn-sm" onclick="deletePost(''+p.id+'')">✕</button>
-      </div>
-    </div>`).join('');
-}
-
-async function publishPost() {
-  const title = document.getElementById('bTitle').value.trim();
-  const body  = document.getElementById('bBody').value.trim();
-  if (!title || !body) { toast('⚠ Titolo e corpo obbligatori','err'); return; }
-  const { error } = await sb.from('blog_posts').insert({
-    title, body,
-    excerpt:  document.getElementById('bExcerpt').value.trim(),
-    category: document.getElementById('bCat').value,
-    author:   document.getElementById('bAuthor').value.trim(),
-    published: true, published_at: new Date().toISOString()
-  });
-  if (error) { toast('⚠ ' + error.message,'err'); return; }
-  ['bTitle','bBody','bExcerpt','bAuthor'].forEach(id => document.getElementById(id).value='');
-  document.getElementById('panel-new-post').style.display='none';
-  toast('🚀 Articolo pubblicato!','ok'); loadBlogAdmin();
-}
-
-async function savePostDraft() {
-  const title = document.getElementById('bTitle').value.trim();
-  if (!title) { toast('⚠ Inserisci almeno il titolo','err'); return; }
-  const { error } = await sb.from('blog_posts').insert({
-    title, body: document.getElementById('bBody').value.trim(),
-    excerpt: document.getElementById('bExcerpt').value.trim(),
-    category: document.getElementById('bCat').value,
-    author: document.getElementById('bAuthor').value.trim(),
-    published: false
-  });
-  if (error) { toast('⚠ ' + error.message,'err'); return; }
-  document.getElementById('panel-new-post').style.display='none';
-  toast('✓ Bozza salvata','ok'); loadBlogAdmin();
-}
-
-async function togglePost(id, publish) {
-  const { error } = await sb.from('blog_posts').update({
-    published: publish,
-    published_at: publish ? new Date().toISOString() : null
-  }).eq('id', id);
-  if (error) { toast('⚠ Errore','err'); return; }
-  toast(publish ? '🚀 Articolo pubblicato!' : '✓ Ritirato dalla pubblicazione','ok');
-  loadBlogAdmin();
-}
-
-async function deletePost(id) {
-  if (!confirm('Eliminare definitivamente questo articolo?')) return;
-  await sb.from('blog_posts').delete().eq('id', id);
-  toast('✕ Articolo eliminato','');
-  loadBlogAdmin();
-}
-
-// ===== PUBBLICAZIONI ADMIN =====
-async function loadPubAdmin() {
-  const { data } = await sb.from('pubblicazioni').select('*').order('published_at',{ascending:false});
-  const el = document.getElementById('pubList');
-  document.getElementById('pubBadge').textContent = data ? data.length : 0;
-  if (!data || !data.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">📚</div><p>Nessuna pubblicazione ancora</p></div>'; return; }
-  el.innerHTML = data.map(p => `
-    <div class="queue-item published" style="grid-template-columns:1fr 100px 100px 130px">
-      <div><div class="qi-title">${p.title}</div><div class="qi-sub">${fmtDate(p.published_at)}</div></div>
-      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.tipo === 'quaderno' ? '📓 N.'+p.numero : '📄 Scritto'}</span>
-      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.pages ? p.pages+' pp.' : '—'}</span>
-      <div class="qi-actions">
-        <a href="${p.drive_url}" target="_blank" class="btn btn-ghost-white btn-sm">Apri →</a>
-        <button class="btn btn-outline-red btn-sm" onclick="deletePub('${p.id}')">✕</button>
-      </div>
-    </div>`).join('');
-}
-
-async function publishPub() {
-  const title = document.getElementById('pTitle').value.trim();
-  const drive = document.getElementById('pDrive').value.trim();
-  if (!title || !drive) { toast('⚠ Titolo e link Drive obbligatori','err'); return; }
-  const dateVal = document.getElementById('pDate').value;
-  const { error } = await sb.from('pubblicazioni').insert({
-    title,
-    tipo:    document.getElementById('pTipo').value,
-    numero:  document.getElementById('pNumero').value || null,
-    drive_url: drive,
-    pages:   document.getElementById('pPages').value || null,
-    excerpt: document.getElementById('pExcerpt').value.trim(),
-    published: true,
-    published_at: dateVal ? new Date(dateVal).toISOString() : new Date().toISOString()
-  });
-  if (error) { toast('⚠ ' + error.message,'err'); return; }
-  document.getElementById('pub-form').style.display='none';
-  ['pTitle','pDrive','pNumero','pPages','pExcerpt'].forEach(id => document.getElementById(id).value='');
-  toast('✓ Pubblicazione aggiunta!','ok'); loadPubAdmin();
-}
-
-async function deletePub(id) {
-  if (!confirm('Rimuovere questa pubblicazione?')) return;
-  await sb.from('pubblicazioni').delete().eq('id', id);
-  toast('✕ Rimossa',''); loadPubAdmin();
-}
-
-</script>
+<!-- FIX: tag src chiuso correttamente — il contenuto inline dentro <script src> viene ignorato dai browser -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
@@ -256,11 +141,11 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
 .status-pill { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; display: inline-block; }
 .st-pending { background: rgba(249,115,22,0.12); color: var(--orange); }
 .st-published { background: rgba(34,197,94,0.12); color: var(--green); }
-.source-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.source-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px; }
 .source-row:last-child { border-bottom: none; }
-.source-info { display: flex; flex-direction: column; gap: 3px; }
+.source-info { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .source-name { font-size: 0.88rem; font-weight: 500; color: white; }
-.source-url { font-family: var(--font-mono); font-size: 0.62rem; color: rgba(255,255,255,0.3); }
+.source-url { font-family: var(--font-mono); font-size: 0.62rem; color: rgba(255,255,255,0.3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tog { position: relative; width: 44px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 100px; cursor: pointer; transition: background 0.2s; border: none; flex-shrink: 0; }
 .tog.on { background: var(--green); }
 .tog::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform 0.2s; }
@@ -286,12 +171,13 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
 .modal { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 40px; max-width: 520px; width: 90%; }
 .modal h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 8px; }
 .modal p { font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 24px; }
+.drive-badge { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(245,200,0,0.1); color: var(--eu-yellow); padding: 3px 9px; border-radius: 100px; }
 </style>
 </head>
 <body>
 
 <!-- CONFIG MODAL -->
-<div class="modal-overlay" id="configModal">
+<div class="modal-overlay hidden" id="configModal">
   <div class="modal">
     <h2>⚙️ Configura Supabase</h2>
     <p>Inserisci le credenziali del tuo progetto Supabase.<br>
@@ -349,6 +235,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
       <div class="sidebar-nav-label">Setup</div>
       <button class="sidebar-link" onclick="showPanel('fonti',this)">
         <span class="icon">📡</span> Fonti monitorate
+        <span class="count-badge" id="fontiBadge">—</span>
       </button>
       <button class="sidebar-link" onclick="showPanel('config',this)">
         <span class="icon">⚙️</span> Impostazioni
@@ -361,7 +248,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
     <div class="stats-row">
       <div class="stat-card"><div class="num red" id="statPend">—</div><div class="label">In attesa approvazione</div></div>
       <div class="stat-card"><div class="num green" id="statPub">—</div><div class="label">Contenuti pubblicati</div></div>
-      <div class="stat-card"><div class="num yellow">8</div><div class="label">Fonti monitorate</div></div>
+      <div class="stat-card"><div class="num yellow" id="statFonti">—</div><div class="label">Fonti monitorate</div></div>
       <div class="stat-card"><div class="num blue">24h</div><div class="label">Prossima scansione</div></div>
     </div>
 
@@ -458,18 +345,32 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
       <div class="main-header">
         <div><div class="main-title">Fonti <span>monitorate</span></div>
         <div class="main-subtitle">Canali e RSS scansionati automaticamente ogni 24 ore.</div></div>
+        <button class="btn btn-red" onclick="toggleAddFonte()">+ Aggiungi fonte</button>
       </div>
-      <div class="card">
-        <div class="card-title">📺 YouTube</div>
-        <div class="source-row"><div class="source-info"><div class="source-name">Filomena Diodato — Didattica Digitale</div><div class="source-url">youtube.com/@filomenadiodato</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
-        <div class="source-row"><div class="source-info"><div class="source-name">Google for Education Italia</div><div class="source-url">youtube.com/@googleforeducation</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
-        <div class="source-row"><div class="source-info"><div class="source-name">AI per la Scuola</div><div class="source-url">youtube.com/@aiperla scuola</div></div><button class="tog" onclick="this.classList.toggle('on')"></button></div>
+
+      <!-- Form aggiungi fonte -->
+      <div class="card" id="add-fonte-form" style="display:none">
+        <div class="card-title">➕ Nuova fonte</div>
+        <div class="form-grid">
+          <div class="field"><label>Nome *</label><input type="text" id="fNome" placeholder="es. Wired Italia — AI"></div>
+          <div class="field"><label>Tipo</label>
+            <select id="fTipo">
+              <option value="rss">📰 RSS / Blog</option>
+              <option value="youtube">▶ YouTube</option>
+              <option value="instagram">📱 Instagram</option>
+              <option value="facebook">📘 Facebook</option>
+            </select>
+          </div>
+          <div class="field form-full"><label>URL / RSS Feed *</label><input type="url" id="fFonteUrl" placeholder="https://... oppure feed RSS completo"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-red" onclick="addFonte()">Aggiungi fonte →</button>
+          <button class="btn btn-ghost-white" onclick="toggleAddFonte()">Annulla</button>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">📰 RSS & Blog</div>
-        <div class="source-row"><div class="source-info"><div class="source-name">Agenda Digitale — Scuola</div><div class="source-url">agendadigitale.eu/feed/scuola</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
-        <div class="source-row"><div class="source-info"><div class="source-name">Wired Italia — AI</div><div class="source-url">wired.it/feed/tag/intelligenza-artificiale</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
-        <div class="source-row"><div class="source-info"><div class="source-name">EdTech Italia</div><div class="source-url">edtechitalia.it/rss</div></div><button class="tog" onclick="this.classList.toggle('on')"></button></div>
+
+      <div id="fontiList">
+        <div class="skel"></div><div class="skel" style="opacity:.5"></div>
       </div>
     </div>
 
@@ -505,15 +406,16 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
         </div>
       </div>
     </div>
-  
+
     <!-- PANEL: BLOG -->
     <div id="panel-blog" style="display:none">
       <div class="main-header">
         <div>
           <div class="main-title">Articoli <span>Blog</span></div>
-          <div class="main-subtitle">Scrivi e pubblica articoli leggibili online dal drawer del sito.</div>
+          <div class="main-subtitle">Scrivi articoli leggibili online. Puoi aggiungere facoltativamente un link a Google Drive per la versione completa.</div>
         </div>
-        <button class="btn btn-red" onclick="showPanel('new-post',this)">+ Nuovo articolo</button>
+        <!-- FIX: era showPanel('new-post',this) che nascondeva tutti i pannelli -->
+        <button class="btn btn-red" onclick="toggleNewPost()">+ Nuovo articolo</button>
       </div>
 
       <!-- New post form -->
@@ -529,23 +431,27 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
               </select>
             </div>
             <div class="field"><label>Autore</label><input type="text" id="bAuthor" placeholder="Nome Cognome"></div>
-            <div class="field form-full"><label>Abstract (mostrato nella card)</label><textarea id="bExcerpt" placeholder="2-3 righe che invogliano alla lettura..." style="min-height:60px"></textarea></div>
+            <div class="field form-full"><label>Abstract — mostrato nella card (obbligatorio)</label><textarea id="bExcerpt" placeholder="2-3 righe che invogliano alla lettura..." style="min-height:70px"></textarea></div>
             <div class="field form-full">
-              <label>Corpo dell'articolo (HTML supportato: &lt;p&gt; &lt;h2&gt; &lt;h3&gt; &lt;blockquote&gt;)</label>
-              <textarea id="bBody" placeholder="&lt;p&gt;Il testo del tuo articolo...&lt;/p&gt;" style="min-height:260px;font-family:var(--font-mono);font-size:0.8rem"></textarea>
+              <label>Testo dell'articolo (HTML: &lt;p&gt; &lt;h2&gt; &lt;h3&gt; &lt;blockquote&gt; &lt;strong&gt;) — opzionale se usi Drive</label>
+              <textarea id="bBody" placeholder="&lt;p&gt;Il testo del tuo articolo...&lt;/p&gt;" style="min-height:200px;font-family:var(--font-mono);font-size:0.8rem"></textarea>
+            </div>
+            <div class="field form-full">
+              <label>🔗 Link Google Drive — versione completa (opzionale)</label>
+              <input type="url" id="bDriveUrl" placeholder="https://drive.google.com/file/d/XXXX/view?usp=sharing — lascia vuoto se scrivi direttamente qui sopra">
             </div>
           </div>
           <div class="form-actions">
             <button class="btn btn-red" onclick="publishPost()">Pubblica articolo →</button>
             <button class="btn btn-ghost-white" onclick="savePostDraft()">Salva bozza</button>
-            <button class="btn btn-ghost-white" onclick="document.getElementById('panel-new-post').style.display='none'">Annulla</button>
+            <button class="btn btn-ghost-white" onclick="toggleNewPost()">Annulla</button>
           </div>
         </div>
       </div>
 
       <div class="card">
         <div class="card-title">📝 Articoli pubblicati</div>
-        <div class="queue-header" style="grid-template-columns:1fr 120px 110px 130px"><span>Titolo</span><span>Categoria</span><span>Stato</span><span>Azioni</span></div>
+        <div class="queue-header" style="grid-template-columns:1fr 120px 110px 160px"><span>Titolo</span><span>Categoria</span><span>Stato</span><span>Azioni</span></div>
         <div id="blogList"><div class="skel"></div></div>
       </div>
     </div>
@@ -557,7 +463,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
           <div class="main-title">Scritti & <span>Quaderni</span></div>
           <div class="main-subtitle">Carica PDF da Google Drive e aggiungili all'archivio.</div>
         </div>
-        <button class="btn btn-red" onclick="document.getElementById('pub-form').style.display='block'">+ Aggiungi</button>
+        <button class="btn btn-red" onclick="document.getElementById('pub-form').style.display='block';this.style.display='none'">+ Aggiungi</button>
       </div>
 
       <div class="card" id="pub-form" style="display:none">
@@ -581,7 +487,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
         </div>
         <div class="form-actions">
           <button class="btn btn-red" onclick="publishPub()">Pubblica →</button>
-          <button class="btn btn-ghost-white" onclick="document.getElementById('pub-form').style.display='none'">Annulla</button>
+          <button class="btn btn-ghost-white" onclick="document.getElementById('pub-form').style.display='none';document.querySelector('[onclick*=pubblicazioni]').style.display=''">Annulla</button>
         </div>
       </div>
 
@@ -598,9 +504,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
 <div class="toast" id="toastEl"><span id="toastMsg">—</span></div>
 
 <script>
-// ── CONFIGURAZIONE ──────────────────────────────────────────
-// Sostituisci questi due valori con le tue credenziali Supabase
-// Oppure usa la modale di configurazione al primo avvio
+// ── CONFIGURAZIONE ───────────────────────────────────────────
 const SUPABASE_URL = 'https://sevpxtbrdcnjijldlwvo.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnB4dGJyZGNuamlqbGRsd3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MTczNzgsImV4cCI6MjA5MzQ5MzM3OH0.rHLxZzpLfSJlaR8CO9GgRpmhlhWtrNWckdO0I1jMcU8';
 // ────────────────────────────────────────────────────────────
@@ -616,13 +520,26 @@ const DEMO = [
 ];
 let demoData = [...DEMO];
 
-// INIT
+const DEMO_FONTI = [
+  { id:'f1', name:'Filomena Diodato — Didattica Digitale', url:'youtube.com/@filomenadiodato', tipo:'youtube', active:true },
+  { id:'f2', name:'Google for Education Italia', url:'youtube.com/@googleforeducation', tipo:'youtube', active:true },
+  { id:'f3', name:'AI per la Scuola', url:'youtube.com/@aiperla scuola', tipo:'youtube', active:false },
+  { id:'f4', name:'Agenda Digitale — Scuola', url:'agendadigitale.eu/feed/scuola', tipo:'rss', active:true },
+  { id:'f5', name:'Wired Italia — AI', url:'wired.it/feed/tag/intelligenza-artificiale', tipo:'rss', active:true },
+  { id:'f6', name:'EdTech Italia', url:'edtechitalia.it/rss', tipo:'rss', active:false },
+];
+let demoFonti = [...DEMO_FONTI];
+
+// ── INIT ────────────────────────────────────────────────────
+// FIX: logica semplificata — usa credenziali hardcoded se presenti,
+// poi localStorage, poi mostra config modal
 window.addEventListener('DOMContentLoaded', () => {
   const su = localStorage.getItem('sb_url');
   const sk = localStorage.getItem('sb_key');
-  if (su && sk && su !== 'https://sevpxtbrdcnjijldlwvo.supabase.co') {
+  if (su && sk) {
+    // localStorage ha precedenza sulle credenziali hardcoded
     initSB(su, sk);
-  } else if (SUPABASE_URL !== 'https://sevpxtbrdcnjijldlwvo.supabase.co') {
+  } else if (SUPABASE_URL && SUPABASE_KEY) {
     initSB(SUPABASE_URL, SUPABASE_KEY);
   } else {
     document.getElementById('configModal').classList.remove('hidden');
@@ -638,6 +555,9 @@ function initSB(url, key) {
     document.getElementById('cfgKeyEdit').value = key;
     demoMode = false;
     loadAll();
+    loadBlogAdmin();
+    loadPubAdmin();
+    loadFonti();
     toast('✓ Connesso a Supabase', 'ok');
   } catch(e) {
     toast('⚠ Errore connessione Supabase', 'err');
@@ -667,9 +587,10 @@ function useDemoMode() {
   loadAll();
   loadBlogAdmin();
   loadPubAdmin();
+  loadFonti();
 }
 
-// LOAD
+// ── LOAD ────────────────────────────────────────────────────
 async function loadAll() { await Promise.all([loadPending(), loadPublished()]); }
 
 async function loadPending() {
@@ -698,12 +619,309 @@ async function loadPublished() {
   setCount('publishedBadge','statPub', items.length);
 }
 
-// RENDER
+// ── BLOG ADMIN ───────────────────────────────────────────────
+async function loadBlogAdmin() {
+  const el = document.getElementById('blogList');
+  if (!el) return;
+  if (demoMode) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">✍️</div><p>Nessun articolo in demo</p></div>';
+    document.getElementById('blogBadge').textContent = 0;
+    return;
+  }
+  const { data, error } = await sb.from('blog_posts').select('*').order('created_at',{ascending:false});
+  if (error) { toast('⚠ Errore caricamento blog: ' + error.message, 'err'); return; }
+  document.getElementById('blogBadge').textContent = data ? data.filter(p=>p.published).length : 0;
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">✍️</div><p>Nessun articolo ancora</p></div>';
+    return;
+  }
+  el.innerHTML = data.map(p => `
+    <div class="queue-item ${p.published ? 'published' : 'pending'}" id="bp-${p.id}" style="grid-template-columns:1fr 120px 110px 160px">
+      <div>
+        <div class="qi-title">${escHtml(p.title)}</div>
+        <div class="qi-sub">${fmtDate(p.published_at)||'Bozza'} · ${escHtml(p.category||'')}
+          ${p.drive_url ? ' · <span class="drive-badge">📎 Drive</span>' : ''}
+        </div>
+      </div>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${escHtml(p.author||'')}</span>
+      <span class="status-pill ${p.published ? 'st-published' : 'st-pending'}">${p.published ? 'Online' : 'Bozza'}</span>
+      <div class="qi-actions">
+        ${p.drive_url ? `<a href="${escHtml(p.drive_url)}" target="_blank" class="btn btn-ghost-white btn-sm">Drive →</a>` : ''}
+        ${p.published
+          ? `<button class="btn btn-outline-red btn-sm" onclick="togglePost('${p.id}',false)">Ritira</button>`
+          : `<button class="btn btn-green btn-sm" onclick="togglePost('${p.id}',true)">Pubblica</button>`}
+        <button class="btn btn-ghost-white btn-sm" onclick="deletePost('${p.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+async function publishPost() {
+  const title   = document.getElementById('bTitle').value.trim();
+  const excerpt = document.getElementById('bExcerpt').value.trim();
+  if (!title || !excerpt) { toast('⚠ Titolo e abstract obbligatori','err'); return; }
+  const body     = document.getElementById('bBody').value.trim();
+  const driveUrl = document.getElementById('bDriveUrl').value.trim();
+  if (!body && !driveUrl) { toast('⚠ Inserisci il testo oppure un link Drive','err'); return; }
+  if (demoMode) { toast('⚠ Funzione non disponibile in demo mode','err'); return; }
+  const { error } = await sb.from('blog_posts').insert({
+    title, body, excerpt,
+    drive_url: driveUrl || null,
+    category:  document.getElementById('bCat').value,
+    author:    document.getElementById('bAuthor').value.trim(),
+    published: true,
+    published_at: new Date().toISOString()
+  });
+  if (error) { toast('⚠ ' + error.message,'err'); return; }
+  clearBlogForm();
+  document.getElementById('panel-new-post').style.display='none';
+  toast('🚀 Articolo pubblicato!','ok');
+  loadBlogAdmin();
+}
+
+async function savePostDraft() {
+  const title = document.getElementById('bTitle').value.trim();
+  if (!title) { toast('⚠ Inserisci almeno il titolo','err'); return; }
+  if (demoMode) { toast('⚠ Funzione non disponibile in demo mode','err'); return; }
+  const { error } = await sb.from('blog_posts').insert({
+    title,
+    body:      document.getElementById('bBody').value.trim(),
+    excerpt:   document.getElementById('bExcerpt').value.trim(),
+    drive_url: document.getElementById('bDriveUrl').value.trim() || null,
+    category:  document.getElementById('bCat').value,
+    author:    document.getElementById('bAuthor').value.trim(),
+    published: false
+  });
+  if (error) { toast('⚠ ' + error.message,'err'); return; }
+  clearBlogForm();
+  document.getElementById('panel-new-post').style.display='none';
+  toast('✓ Bozza salvata','ok');
+  loadBlogAdmin();
+}
+
+async function togglePost(id, publish) {
+  if (demoMode) { toast('⚠ Non disponibile in demo','err'); return; }
+  const { error } = await sb.from('blog_posts').update({
+    published: publish,
+    published_at: publish ? new Date().toISOString() : null
+  }).eq('id', id);
+  if (error) { toast('⚠ Errore','err'); return; }
+  toast(publish ? '🚀 Articolo pubblicato!' : '✓ Ritirato dalla pubblicazione','ok');
+  loadBlogAdmin();
+}
+
+async function deletePost(id) {
+  if (!confirm('Eliminare definitivamente questo articolo?')) return;
+  if (demoMode) { toast('⚠ Non disponibile in demo','err'); return; }
+  await sb.from('blog_posts').delete().eq('id', id);
+  toast('✕ Articolo eliminato','');
+  loadBlogAdmin();
+}
+
+function clearBlogForm() {
+  ['bTitle','bBody','bExcerpt','bAuthor','bDriveUrl'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+// FIX: funzione dedicata per mostrare/nascondere il form nuovo articolo
+// senza toccare gli altri pannelli
+function toggleNewPost() {
+  const panel = document.getElementById('panel-new-post');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'none') clearBlogForm();
+}
+
+// ── PUBBLICAZIONI ADMIN ───────────────────────────────────────
+async function loadPubAdmin() {
+  const el = document.getElementById('pubList');
+  if (!el) return;
+  if (demoMode) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">📚</div><p>Nessuna pubblicazione in demo</p></div>';
+    document.getElementById('pubBadge').textContent = 0;
+    return;
+  }
+  const { data, error } = await sb.from('pubblicazioni').select('*').order('published_at',{ascending:false});
+  if (error) { toast('⚠ Errore caricamento pubblicazioni: ' + error.message, 'err'); return; }
+  document.getElementById('pubBadge').textContent = data ? data.length : 0;
+  if (!data || !data.length) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">📚</div><p>Nessuna pubblicazione ancora</p></div>';
+    return;
+  }
+  el.innerHTML = data.map(p => `
+    <div class="queue-item published" style="grid-template-columns:1fr 100px 100px 130px">
+      <div><div class="qi-title">${escHtml(p.title)}</div><div class="qi-sub">${fmtDate(p.published_at)}</div></div>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.tipo === 'quaderno' ? '📓 N.'+p.numero : '📄 Scritto'}</span>
+      <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.pages ? p.pages+' pp.' : '—'}</span>
+      <div class="qi-actions">
+        <a href="${escHtml(p.drive_url)}" target="_blank" class="btn btn-ghost-white btn-sm">Apri →</a>
+        <button class="btn btn-outline-red btn-sm" onclick="deletePub('${p.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+async function publishPub() {
+  const title = document.getElementById('pTitle').value.trim();
+  const drive = document.getElementById('pDrive').value.trim();
+  if (!title || !drive) { toast('⚠ Titolo e link Drive obbligatori','err'); return; }
+  if (demoMode) { toast('⚠ Funzione non disponibile in demo mode','err'); return; }
+  const dateVal = document.getElementById('pDate').value;
+  const { error } = await sb.from('pubblicazioni').insert({
+    title,
+    tipo:        document.getElementById('pTipo').value,
+    numero:      document.getElementById('pNumero').value || null,
+    drive_url:   drive,
+    pages:       document.getElementById('pPages').value || null,
+    excerpt:     document.getElementById('pExcerpt').value.trim(),
+    published:   true,
+    published_at: dateVal ? new Date(dateVal).toISOString() : new Date().toISOString()
+  });
+  if (error) { toast('⚠ ' + error.message,'err'); return; }
+  document.getElementById('pub-form').style.display='none';
+  ['pTitle','pDrive','pNumero','pPages','pExcerpt'].forEach(id => document.getElementById(id).value='');
+  toast('✓ Pubblicazione aggiunta!','ok');
+  loadPubAdmin();
+}
+
+async function deletePub(id) {
+  if (!confirm('Rimuovere questa pubblicazione?')) return;
+  if (demoMode) { toast('⚠ Non disponibile in demo','err'); return; }
+  await sb.from('pubblicazioni').delete().eq('id', id);
+  toast('✕ Rimossa','');
+  loadPubAdmin();
+}
+
+// ── FONTI MONITORATE ─────────────────────────────────────────
+async function loadFonti() {
+  const el = document.getElementById('fontiList');
+  let fonti;
+
+  if (demoMode) {
+    fonti = demoFonti;
+  } else {
+    // Tenta di caricare da Supabase; se la tabella non esiste usa i default
+    const { data, error } = await sb.from('monitored_sources').select('*').order('created_at',{ascending:true});
+    if (error) {
+      // Tabella non ancora creata — usa defaults e mostra avviso
+      fonti = DEMO_FONTI;
+      console.warn('monitored_sources non trovata su Supabase. Creala con lo script SQL nel README.');
+    } else {
+      fonti = data && data.length ? data : DEMO_FONTI;
+    }
+  }
+
+  const active = fonti.filter(f=>f.active).length;
+  document.getElementById('fontiBadge').textContent = active;
+  document.getElementById('statFonti').textContent = active;
+
+  const tipoIcon = { youtube:'▶', rss:'📰', instagram:'📱', facebook:'📘' };
+  const tipoLabel = { youtube:'YouTube', rss:'RSS', instagram:'Instagram', facebook:'Facebook' };
+
+  // Raggruppa per tipo
+  const gruppi = {};
+  fonti.forEach(f => {
+    if (!gruppi[f.tipo]) gruppi[f.tipo] = [];
+    gruppi[f.tipo].push(f);
+  });
+
+  el.innerHTML = Object.entries(gruppi).map(([tipo, items]) => `
+    <div class="card">
+      <div class="card-title">${tipoIcon[tipo]||'🔗'} ${tipoLabel[tipo]||tipo}</div>
+      ${items.map(f => `
+        <div class="source-row" id="fonte-${f.id}">
+          <div class="source-info">
+            <div class="source-name">${escHtml(f.name)}</div>
+            <div class="source-url">${escHtml(f.url)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+            <button class="tog ${f.active?'on':''}" onclick="toggleFonte('${f.id}',this)" title="${f.active?'Disattiva':'Attiva'}"></button>
+            <button class="btn btn-outline-red btn-sm" onclick="deleteFonte('${f.id}')">✕</button>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+
+  if (!fonti.length) {
+    el.innerHTML = '<div class="card"><div class="empty-state"><div class="es-icon">📡</div><p>Nessuna fonte configurata</p></div></div>';
+  }
+}
+
+function toggleAddFonte() {
+  const form = document.getElementById('add-fonte-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function addFonte() {
+  const name = document.getElementById('fNome').value.trim();
+  const url  = document.getElementById('fFonteUrl').value.trim();
+  if (!name || !url) { toast('⚠ Nome e URL obbligatori','err'); return; }
+  const tipo = document.getElementById('fTipo').value;
+
+  if (demoMode) {
+    demoFonti.push({ id:'f'+Date.now(), name, url, tipo, active:true });
+    document.getElementById('fNome').value='';
+    document.getElementById('fFonteUrl').value='';
+    toggleAddFonte();
+    toast('✓ Fonte aggiunta (demo)','ok');
+    loadFonti();
+    return;
+  }
+
+  const { error } = await sb.from('monitored_sources').insert({ name, url, tipo, active: true });
+  if (error) { toast('⚠ ' + error.message + ' — verifica che la tabella monitored_sources esista su Supabase','err'); return; }
+  document.getElementById('fNome').value='';
+  document.getElementById('fFonteUrl').value='';
+  toggleAddFonte();
+  toast('✓ Fonte aggiunta!','ok');
+  loadFonti();
+}
+
+async function toggleFonte(id, btn) {
+  const nowActive = !btn.classList.contains('on');
+  btn.classList.toggle('on');
+
+  if (demoMode) {
+    const f = demoFonti.find(x=>x.id===id);
+    if (f) f.active = nowActive;
+    // Aggiorna badge
+    const active = demoFonti.filter(x=>x.active).length;
+    document.getElementById('fontiBadge').textContent = active;
+    document.getElementById('statFonti').textContent = active;
+    return;
+  }
+
+  const { error } = await sb.from('monitored_sources').update({ active: nowActive }).eq('id', id);
+  if (error) {
+    btn.classList.toggle('on'); // rollback visivo
+    toast('⚠ Errore salvataggio','err');
+    return;
+  }
+  const active = document.querySelectorAll('.tog.on').length;
+  document.getElementById('fontiBadge').textContent = active;
+  document.getElementById('statFonti').textContent = active;
+}
+
+async function deleteFonte(id) {
+  if (!confirm('Rimuovere questa fonte?')) return;
+  if (demoMode) {
+    demoFonti = demoFonti.filter(x=>x.id!==id);
+    fadeOut('fonte-'+id);
+    toast('✕ Fonte rimossa','');
+    setTimeout(loadFonti, 400);
+    return;
+  }
+  const { error } = await sb.from('monitored_sources').delete().eq('id', id);
+  if (error) { toast('⚠ Errore','err'); return; }
+  fadeOut('fonte-'+id);
+  toast('✕ Fonte rimossa','');
+  setTimeout(loadFonti, 400);
+}
+
+// ── RENDER FEED ───────────────────────────────────────────────
 const srcLabel = {
-  youtube: '<span class="source-pill sp-yt">▶ YouTube</span>',
-  articolo: '<span class="source-pill sp-art">📰 Articolo</span>',
+  youtube:   '<span class="source-pill sp-yt">▶ YouTube</span>',
+  articolo:  '<span class="source-pill sp-art">📰 Articolo</span>',
   instagram: '<span class="source-pill sp-ig">📱 Instagram</span>',
-  facebook: '<span class="source-pill sp-fb">📘 Facebook</span>',
+  facebook:  '<span class="source-pill sp-fb">📘 Facebook</span>',
 };
 
 function renderPending(items) {
@@ -711,7 +929,7 @@ function renderPending(items) {
   if (!items.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">✓</div><p>Coda vuota — tutto approvato</p></div>'; return; }
   el.innerHTML = items.map(it => `
     <div class="queue-item pending" id="qi-${it.id}">
-      <div><div class="qi-title"><a href="${it.url}" target="_blank" style="color:white;text-decoration:none">${it.title}</a></div>
+      <div><div class="qi-title"><a href="${escHtml(it.url)}" target="_blank" style="color:white;text-decoration:none">${escHtml(it.title)}</a></div>
       <div class="qi-sub">${safeHost(it.url)} · ${ago(it.found_at)}</div></div>
       ${srcLabel[it.source]||srcLabel.articolo}
       <span class="status-pill st-pending">In attesa</span>
@@ -727,15 +945,15 @@ function renderPublished(items) {
   if (!items.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><p>Nessun contenuto pubblicato</p></div>'; return; }
   el.innerHTML = items.map(it => `
     <div class="queue-item published" id="qp-${it.id}">
-      <div><div class="qi-title"><a href="${it.url}" target="_blank" style="color:white;text-decoration:none">${it.title}</a></div>
-      <div class="qi-sub">${it.category||''}</div></div>
+      <div><div class="qi-title"><a href="${escHtml(it.url)}" target="_blank" style="color:white;text-decoration:none">${escHtml(it.title)}</a></div>
+      <div class="qi-sub">${escHtml(it.category||'')}</div></div>
       ${srcLabel[it.source]||srcLabel.articolo}
       <span class="status-pill st-published">${fmtDate(it.published_at)}</span>
       <div class="qi-actions"><button class="btn btn-outline-red btn-sm" onclick="unpublish('${it.id}')">Rimuovi</button></div>
     </div>`).join('');
 }
 
-// ACTIONS
+// ── ACTIONS ───────────────────────────────────────────────────
 async function approve(id) {
   if (demoMode) {
     const i = demoData.find(x=>x.id===id);
@@ -771,9 +989,17 @@ async function unpublish(id) {
 
 async function publishNew() {
   const title = document.getElementById('fTitle').value.trim();
-  const url = document.getElementById('fUrl').value.trim();
+  const url   = document.getElementById('fUrl').value.trim();
   if (!title||!url) { toast('⚠ Titolo e URL obbligatori','err'); return; }
-  const item = { title, description: document.getElementById('fDesc').value.trim(), url, source: document.getElementById('fSource').value, category: document.getElementById('fCat').value, status:'published', published_at:new Date().toISOString(), found_at:new Date().toISOString() };
+  const item = {
+    title,
+    description: document.getElementById('fDesc').value.trim(),
+    url, source: document.getElementById('fSource').value,
+    category: document.getElementById('fCat').value,
+    status:'published',
+    published_at: new Date().toISOString(),
+    found_at: new Date().toISOString()
+  };
   if (demoMode) { demoData.push({...item, id:'d'+Date.now()}); clearForm(); toast('🚀 Pubblicato!','ok'); await loadPublished(); return; }
   const btn = document.getElementById('publishBtn');
   btn.disabled=true; btn.textContent='Pubblicazione...';
@@ -785,16 +1011,23 @@ async function publishNew() {
 
 async function saveAsPending() {
   const title = document.getElementById('fTitle').value.trim();
-  const url = document.getElementById('fUrl').value.trim();
+  const url   = document.getElementById('fUrl').value.trim();
   if (!title||!url) { toast('⚠ Titolo e URL obbligatori','err'); return; }
-  const item = { title, description: document.getElementById('fDesc').value.trim(), url, source: document.getElementById('fSource').value, category: document.getElementById('fCat').value, status:'pending', found_at:new Date().toISOString() };
+  const item = {
+    title,
+    description: document.getElementById('fDesc').value.trim(),
+    url, source: document.getElementById('fSource').value,
+    category: document.getElementById('fCat').value,
+    status:'pending',
+    found_at: new Date().toISOString()
+  };
   if (demoMode) { demoData.push({...item,id:'d'+Date.now()}); clearForm(); toast('✓ Salvato in coda','ok'); await loadPending(); return; }
   const { error } = await sb.from('feed_items').insert(item);
   if (error) { toast('⚠ '+error.message,'err'); return; }
   clearForm(); toast('✓ Salvato in coda','ok'); await loadPending();
 }
 
-// UTILS
+// ── UTILS ─────────────────────────────────────────────────────
 function detectSource() {
   const url = document.getElementById('urlInput').value.trim();
   if (!url) { toast('⚠ Inserisci un URL','err'); return; }
@@ -819,8 +1052,10 @@ function clearForm() {
 }
 
 function showPanel(id, btn) {
+  // FIX: lista pannelli aggiornata; 'new-post' non è un pannello top-level
   ['coda','aggiungi','pubblicati','fonti','config','blog','pubblicazioni'].forEach(p=>{
-    document.getElementById('panel-'+p).style.display = p===id?'block':'none';
+    const el = document.getElementById('panel-'+p);
+    if (el) el.style.display = p===id ? 'block' : 'none';
   });
   document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
   if(btn) btn.classList.add('active');
@@ -828,6 +1063,7 @@ function showPanel(id, btn) {
   if(id==='coda') loadPending();
   if(id==='blog') loadBlogAdmin();
   if(id==='pubblicazioni') loadPubAdmin();
+  if(id==='fonti') loadFonti();
 }
 
 function setCount(badgeId, statId, n) {
@@ -850,6 +1086,7 @@ function fadeOut(id) {
 function safeHost(url) { try{return new URL(url).hostname.replace('www.','')}catch{return url;} }
 function ago(d) { if(!d)return'—'; const h=Math.floor((Date.now()-new Date(d))/3600000); return h<1?'poco fa':h<24?h+'h fa':Math.floor(h/24)+'g fa'; }
 function fmtDate(d) { if(!d)return'—'; return new Date(d).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}); }
+function escHtml(s) { if(!s)return''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function toast(msg, type) {
   const el = document.getElementById('toastEl');
