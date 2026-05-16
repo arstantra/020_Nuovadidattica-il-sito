@@ -528,20 +528,20 @@ section { padding: 100px 48px; }
 .crit-card.interactive:hover .crit-expand-trigger::after { transform: translateY(2px); }
 
 /* Card variants */
-.crit-01 { grid-column: span 7; }
-.crit-02 { grid-column: span 5; }
+.crit-01 { grid-column: span 4; }
+.crit-02 { grid-column: span 4; }
 .crit-02 .crit-tag { color: var(--eu-yellow); }
 .crit-02 .crit-tag::before { background: var(--eu-yellow); }
 .crit-02 .crit-expand-trigger { color: var(--eu-yellow); }
 
 .crit-03 {
-  grid-column: span 12;
+  grid-column: span 4;
   background: linear-gradient(135deg, var(--dark-2) 0%, #2a1010 100%);
-  min-height: 220px;
+  min-height: 280px;
 }
-.crit-03 .crit-num-bg { font-size: 8rem; right: 48px; top: 28px; color: rgba(217,27,27,0.08); }
-.crit-03 .crit-title { font-size: 1.9rem; max-width: 720px; }
-.crit-03 .crit-claim { max-width: 720px; font-size: 1.02rem; }
+.crit-03 .crit-num-bg { font-size: 5rem; right: 32px; top: 22px; color: rgba(217,27,27,0.08); }
+.crit-03 .crit-title { font-size: 1.45rem; max-width: none; }
+.crit-03 .crit-claim { max-width: none; font-size: 0.95rem; }
 
 /* Variante DARK di .bento-expand per la sezione etica */
 #etica .bento-expand {
@@ -1370,14 +1370,19 @@ footer {
   .tool-prompts    { grid-column: span 4; }
   .tool-pdf        { grid-column: span 4; }
   .tool-ada        { grid-column: span 4; }
+
+  /* Casi: equalizza riga 1 per evitare schiacciamento di caso-lezioni (span 3 troppo stretto) */
+  .caso-verifiche  { grid-column: span 4; }
+  .caso-inclusione { grid-column: span 4; }
+  .caso-lezioni    { grid-column: span 4; }
 }
 
 /* Tablet — 3-col grids where it makes sense */
 @media (min-width: 601px) and (max-width: 900px) {
-  .bento-toolbox { grid-template-columns: repeat(3, 1fr); }
-  /* Generator: full-width (span 3 su griglia a 3 col), override !important del mobile */
-  .tool-nlm-generator { grid-column: span 3 !important; }
-  /* 6 card restanti: 2 righe da 3 uguali */
+  .bento-toolbox { grid-template-columns: repeat(2, 1fr); }
+  /* Generator: full-width (span 2 su griglia a 2 col), override !important del mobile */
+  .tool-nlm-generator { grid-column: span 2 !important; }
+  /* 6 card restanti: 3 righe da 2 uguali */
   .tool-classroom, .tool-notebooklm, .tool-drive { grid-column: span 1; }
   .tool-prompts { grid-column: span 1; }
   .tool-pdf, .tool-ada { grid-column: span 1; }
@@ -1494,10 +1499,10 @@ footer {
   display: flex; flex-direction: column; grid-column: span 4;
   transition: transform 0.3s, box-shadow 0.3s; }
 .pub-card:hover { transform: translateY(-4px); box-shadow: 0 16px 50px rgba(0,0,0,0.08); }
-.pub-cover { aspect-ratio: 3/4; width: 100%;
+.pub-cover { height: 140px; width: 100%;
   background: linear-gradient(160deg, var(--dark) 0%, var(--dark-3) 100%);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 32px; position: relative; overflow: hidden; }
+  padding: 24px 32px; position: relative; overflow: hidden; }
 .pub-cover-num { font-family: var(--font-display); font-size: 5rem; font-weight: 800;
   color: rgba(255,255,255,0.06); position: absolute; bottom: -10px; right: 8px; line-height: 1; }
 .pub-cover-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.2em;
@@ -1799,7 +1804,18 @@ footer {
       <span class="crit-expand-trigger">Approfondisci il meccanismo</span>
     </div>
 
-    <!-- ===== EXPAND PANELS #01 e #02 ===== -->
+    <!-- ===== CRITICITÀ #03 — EFFETTO RUFFIANO ===== -->
+    <div class="crit-card crit-03 interactive reveal reveal-delay-3" onclick="toggleExpand('exp-crit03')">
+      <div>
+        <div class="crit-tag">Criticità reale · 03 — il più subdolo</div>
+        <div class="crit-num-bg">03</div>
+        <h3 class="crit-title">L'effetto ruffiano.<br>L'AI ti dà ragione anche quando hai torto.</h3>
+        <p class="crit-claim">In letteratura tecnica si chiama <em style="color:#F5C800;font-style:italic">sycophancy</em>. È addestrata a compiacerti. Le chiedi se la tua verifica è ben fatta? Tenderà a dirti di sì. Lavora <em style="color:#F5C800;font-style:italic">contro</em> il pensiero critico proprio mentre credi di esercitarlo.</p>
+      </div>
+      <span class="crit-expand-trigger">Approfondisci il meccanismo</span>
+    </div>
+
+    <!-- ===== EXPAND PANELS #01, #02, #03 ===== -->
     <div class="bento-expand" id="exp-crit01">
       <div class="bento-expand-inner">
         <div class="bento-expand-num">01</div>
@@ -1820,17 +1836,6 @@ footer {
           <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-crit02')">✕ Chiudi</button>
         </div>
       </div>
-    </div>
-
-    <!-- ===== CRITICITÀ #03 — EFFETTO RUFFIANO (banda larga, pezzo forte) ===== -->
-    <div class="crit-card crit-03 interactive reveal reveal-delay-3" onclick="toggleExpand('exp-crit03')">
-      <div>
-        <div class="crit-tag">Criticità reale · 03 — il più subdolo</div>
-        <div class="crit-num-bg">03</div>
-        <h3 class="crit-title">L'effetto ruffiano.<br>L'AI ti dà ragione anche quando hai torto.</h3>
-        <p class="crit-claim">In letteratura tecnica si chiama <em style="color:#F5C800;font-style:italic">sycophancy</em>. È addestrata a compiacerti. Le chiedi se la tua verifica è ben fatta? Tenderà a dirti di sì. Lavora <em style="color:#F5C800;font-style:italic">contro</em> il pensiero critico proprio mentre credi di esercitarlo.</p>
-      </div>
-      <span class="crit-expand-trigger">Approfondisci il meccanismo</span>
     </div>
 
     <div class="bento-expand" id="exp-crit03">
