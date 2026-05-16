@@ -463,7 +463,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
           <div class="main-title">Scritti & <span>Quaderni</span></div>
           <div class="main-subtitle">Carica PDF da Google Drive e aggiungili all'archivio.</div>
         </div>
-        <button class="btn btn-red" onclick="document.getElementById('pub-form').style.display='block';this.style.display='none'">+ Aggiungi</button>
+        <button class="btn btn-red" id="btnAddPub" onclick="document.getElementById('pub-form').style.display='block';this.style.display='none'">+ Aggiungi</button>
       </div>
 
       <div class="card" id="pub-form" style="display:none">
@@ -487,7 +487,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
         </div>
         <div class="form-actions">
           <button class="btn btn-red" onclick="publishPub()">Pubblica →</button>
-          <button class="btn btn-ghost-white" onclick="document.getElementById('pub-form').style.display='none';document.querySelector('[onclick*=pubblicazioni]').style.display=''">Annulla</button>
+          <button class="btn btn-ghost-white" onclick="document.getElementById('pub-form').style.display='none';document.getElementById('btnAddPub').style.display=''">Annulla</button>
         </div>
       </div>
 
@@ -806,7 +806,9 @@ async function loadFonti() {
       fonti = DEMO_FONTI;
       console.warn('monitored_sources non trovata su Supabase. Creala con lo script SQL nel README.');
     } else {
-      fonti = data && data.length ? data : DEMO_FONTI;
+      // Se la tabella è vuota non usiamo i demo — mostriamo lo stato vuoto
+      // così i toggle non provano a salvare su id inesistenti
+      fonti = data || [];
     }
   }
 
