@@ -840,6 +840,9 @@ async function loadPubAdmin() {
     el.innerHTML = '<div class="empty-state"><div class="es-icon">📚</div><p>Nessuna pubblicazione ancora</p></div>';
     return;
   }
+  // Popola la cache — evita JSON.stringify in onclick
+  _pubsCache = {};
+  data.forEach(p => { _pubsCache[p.id] = p; });
   el.innerHTML = data.map(p => `
     <div class="queue-item published" style="grid-template-columns:1fr 100px 100px 130px">
       <div>
@@ -850,7 +853,7 @@ async function loadPubAdmin() {
       <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.pages ? p.pages+' pp.' : '—'}</span>
       <div class="qi-actions">
         <a href="${escHtml(p.drive_url)}" target="_blank" class="btn btn-ghost-white btn-sm">Apri →</a>
-        <button class="btn btn-ghost-white btn-sm" onclick="editPub(${JSON.stringify(p)})">✏ Modifica</button>
+        <button class="btn btn-ghost-white btn-sm" onclick="editPub('${p.id}')">✏ Modifica</button>
         <button class="btn btn-outline-red btn-sm" onclick="deletePub('${p.id}')">✕</button>
       </div>
     </div>`).join('');
@@ -893,7 +896,13 @@ async function deletePub(id) {
 
 // ── MODIFICA PUBBLICAZIONE ────────────────────────────────────
 let _editPubId = null;
-function editPub(p) {
+let _pubsCache = {};   // mappa id → oggetto pubblicazione
+
+function editPub(idOrObj) {
+  // Accetta sia un ID stringa (da onclick) che un oggetto diretto
+  const p = (typeof idOrObj === 'string') ? _pubsCache[idOrObj] : idOrObj;
+  if (!p) { toast('⚠ Pubblicazione non trovata', 'err'); return; }
+
   _editPubId = p.id;
   // Mostra il form e popola i campi
   document.getElementById('pub-form').style.display = 'block';
