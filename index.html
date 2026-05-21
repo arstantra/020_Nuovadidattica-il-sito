@@ -1635,6 +1635,32 @@ footer {
   .card-approfondimento { padding: 28px 24px; flex-direction: column; align-items: flex-start; }
   .card-approfondimento-cta { align-self: flex-start; }
 }
+/* ── Card Docente-Team: wrapper multi-CTA ── */
+.card-approfondimento { cursor: pointer; }
+.card-approfondimento-ctas { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; position: relative; z-index: 1; }
+.card-approfondimento-cta { display: inline-block; text-decoration: none; }
+@media (max-width: 900px) {
+  .card-approfondimento-ctas { align-self: flex-start; }
+}
+/* ── Risorsa CTA iniettata nelle card / expand panel ── */
+.card-risorsa-cta { margin-top: 20px; }
+.card-risorsa-cta a {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.13em;
+  text-transform: uppercase; text-decoration: none;
+  color: var(--red); background: rgba(217,27,27,0.07);
+  border: 1px solid rgba(217,27,27,0.2);
+  padding: 9px 18px; border-radius: 100px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.card-risorsa-cta a:hover { background: rgba(217,27,27,0.14); border-color: rgba(217,27,27,0.4); }
+.card-approfondimento-ctas .card-risorsa-cta a {
+  color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.18);
+}
+.card-approfondimento-ctas .card-risorsa-cta a:hover {
+  color: white; background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3);
+}
 </style>
 </head>
 <body>
@@ -1753,7 +1779,7 @@ footer {
       </div>
     </div>
 
-    <div class="bento-card card-filosofia interactive reveal reveal-delay-2" onclick="toggleExpand('exp-01')">
+    <div class="bento-card card-filosofia interactive reveal reveal-delay-2" onclick="toggleExpand('exp-01')" data-card-id="card-filosofia-01" data-expand-id="exp-01">
       <div class="card-number">01</div>
       <div>
         <h3>Potenziare l'insegnamento, non automatizzarlo</h3>
@@ -1761,7 +1787,7 @@ footer {
       </div>
     </div>
 
-    <div class="bento-card card-tre interactive reveal reveal-delay-3" onclick="toggleExpand('exp-tre')">
+    <div class="bento-card card-tre interactive reveal reveal-delay-3" onclick="toggleExpand('exp-tre')" data-card-id="card-tre-cose" data-expand-id="exp-tre">
       <h3>3 cose che puoi fare<br>subito in classe</h3>
       <ul>
         <li>Genera verifiche differenziate in 5 minuti</li>
@@ -1770,7 +1796,7 @@ footer {
       </ul>
     </div>
 
-    <div class="bento-card card-stat interactive reveal reveal-delay-1" onclick="toggleExpand('exp-stat1')">
+    <div class="bento-card card-stat interactive reveal reveal-delay-1" onclick="toggleExpand('exp-stat1')" data-card-id="card-stat-73" data-expand-id="exp-stat1">
       <div class="stat-num">73%</div>
       <div class="stat-label">dei docenti non sa cosa sia un prompt efficace</div>
     </div>
@@ -1780,16 +1806,18 @@ footer {
       <div class="stat-label">più veloce la preparazione con AI ben usata</div>
     </div>
 
-    <a href="docente-team.html" class="card-approfondimento reveal reveal-delay-1">
+    <div class="card-approfondimento reveal reveal-delay-1" data-card-id="card-docente-team" onclick="window.location.href='docente-team.html'">
       <div class="card-approfondimento-body">
         <div class="card-tag">Approfondimento · Metodo &amp; Strategia</div>
         <h3>Il Docente-Team:<br><em>Dirigere l'Ecosistema AI</em></h3>
         <p>Dal prompt isolato alla direzione consapevole di un team di specialisti virtuali. Il cambio di paradigma professionale che distingue chi usa l'AI da chi la governa.</p>
       </div>
-      <div class="card-approfondimento-cta">Leggi l'articolo →</div>
-    </a>
+      <div class="card-approfondimento-ctas">
+        <a href="docente-team.html" class="card-approfondimento-cta" onclick="event.stopPropagation()">Leggi l'articolo →</a>
+      </div>
+    </div>
 
-    <div class="bento-card card-claim-box interactive reveal reveal-delay-3" onclick="toggleExpand('exp-claim')">
+    <div class="bento-card card-claim-box interactive reveal reveal-delay-3" onclick="toggleExpand('exp-claim')" data-card-id="card-claim-prompt" data-expand-id="exp-claim">
       <blockquote>
         "Il problema non è l'AI. È il <span>prompt generico</span> che non porta da nessuna parte."
         <cite>— NuovaDidattica.eu</cite>
@@ -1848,7 +1876,7 @@ footer {
 
   <div class="bento bento-casi">
 
-    <div class="bento-card card-caso caso-verifiche interactive reveal reveal-delay-1" onclick="goToFeed('articolo')">
+    <div class="bento-card card-caso caso-verifiche interactive reveal reveal-delay-1" onclick="goToFeed('articolo')" data-card-id="caso-verifiche">
       <div>
         <div class="caso-icon">📝</div>
         <h3>Verifiche & Valutazioni</h3>
@@ -1858,7 +1886,7 @@ footer {
       <span class="caso-hint">Esplora risorse nel feed</span>
     </div>
 
-    <div class="bento-card card-caso caso-inclusione interactive reveal reveal-delay-2" onclick="goToFeed('all')">
+    <div class="bento-card card-caso caso-inclusione interactive reveal reveal-delay-2" onclick="goToFeed('all')" data-card-id="caso-inclusione">
       <div>
         <div class="caso-icon">♿</div>
         <h3>Inclusione BES/DSA</h3>
@@ -1868,7 +1896,7 @@ footer {
       <span class="caso-hint">Vedi contenuti correlati</span>
     </div>
 
-    <div class="bento-card card-caso caso-lezioni interactive reveal reveal-delay-3" onclick="goToPubblicazioni()">
+    <div class="bento-card card-caso caso-lezioni interactive reveal reveal-delay-3" onclick="goToPubblicazioni()" data-card-id="caso-lezioni">
       <div>
         <div class="caso-icon">🎓</div>
         <h3>Unità Didattiche</h3>
@@ -1878,7 +1906,7 @@ footer {
       <span class="caso-hint">Scarica materiali pronti</span>
     </div>
 
-    <div class="bento-card card-caso caso-tutoring interactive reveal reveal-delay-1" onclick="goToBlog()">
+    <div class="bento-card card-caso caso-tutoring interactive reveal reveal-delay-1" onclick="goToBlog()" data-card-id="caso-tutoring">
       <div>
         <div class="caso-icon">🤝</div>
         <h3>Tutoring Personalizzato</h3>
@@ -2032,7 +2060,7 @@ footer {
       </div>
     </div>
 
-    <div class="bento-card tool-card tool-classroom reveal reveal-delay-1">
+    <div class="bento-card tool-card tool-classroom reveal reveal-delay-1" data-card-id="tool-classroom">
       <div>
         <div class="tool-icon">🏫</div>
         <h3>Google Classroom</h3>
@@ -2041,7 +2069,7 @@ footer {
       <a href="#" class="tool-link">Guida completa →</a>
     </div>
 
-    <div class="bento-card tool-card tool-notebooklm reveal reveal-delay-2">
+    <div class="bento-card tool-card tool-notebooklm reveal reveal-delay-2" data-card-id="tool-notebooklm">
       <div>
         <div class="tool-icon">📓</div>
         <h3>NotebookLM</h3>
@@ -2050,7 +2078,7 @@ footer {
       <a href="#" class="tool-link">Scopri come →</a>
     </div>
 
-    <div class="bento-card tool-card tool-drive reveal reveal-delay-3">
+    <div class="bento-card tool-card tool-drive reveal reveal-delay-3" data-card-id="tool-drive">
       <div>
         <div class="tool-icon">☁️</div>
         <h3>Google Drive</h3>
@@ -2059,7 +2087,7 @@ footer {
       <a href="#" class="tool-link">Accedi alla libreria →</a>
     </div>
 
-    <div class="bento-card tool-card tool-prompts reveal reveal-delay-1">
+    <div class="bento-card tool-card tool-prompts reveal reveal-delay-1" data-card-id="tool-prompts">
       <div>
         <div class="tool-icon">✍️</div>
         <h3>Libreria di Prompt Pronti</h3>
@@ -2069,7 +2097,7 @@ footer {
       <div class="tool-prompts-bg">{"prompt"}</div>
     </div>
 
-    <div class="bento-card tool-card tool-pdf reveal reveal-delay-2">
+    <div class="bento-card tool-card tool-pdf reveal reveal-delay-2" data-card-id="tool-pdf">
       <div>
         <div class="tool-icon">📄</div>
         <h3>PDF & Slide</h3>
@@ -2078,7 +2106,7 @@ footer {
       <a href="#" class="tool-link">Download →</a>
     </div>
 
-    <div class="bento-card tool-card tool-ada reveal reveal-delay-3">
+    <div class="bento-card tool-card tool-ada reveal reveal-delay-3" data-card-id="tool-ada">
       <div>
         <div class="tool-icon">🤖</div>
         <h3>App ADA</h3>
@@ -2607,7 +2635,42 @@ async function loadPubblicazioni() {
       .eq('published',true).order('published_at',{ascending:false});
     allPubs = data || [];
     renderPubs(allPubs.filter(p => p.tipo === 'scritto'));
+    injectCardRisorse();
   } catch(e) { renderPubs([]); }
+}
+
+function injectCardRisorse() {
+  const linked = allPubs.filter(p => p.card_id && p.drive_url);
+  linked.forEach(pub => {
+    const card = document.querySelector(`[data-card-id="${pub.card_id}"]`);
+    if (!card) return;
+
+    // Evita duplicati
+    if (card.querySelector('.card-risorsa-cta')) return;
+
+    const expandId = card.getAttribute('data-expand-id');
+    const ctaHtml = `<div class="card-risorsa-cta">
+      <a href="${gdriveDirect(pub.drive_url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg>
+        Scarica PDF
+      </a>
+    </div>`;
+
+    if (expandId) {
+      // Inietta dentro il pannello expand, nella colonna testo
+      const expandEl = document.getElementById(expandId);
+      if (!expandEl) return;
+      const contentDiv = expandEl.querySelector('.bento-expand-inner > div:last-child');
+      if (contentDiv) contentDiv.insertAdjacentHTML('beforeend', ctaHtml);
+    } else if (pub.card_id === 'card-docente-team') {
+      // Card docente-team: inietta nel wrapper multi-CTA
+      const ctasWrapper = card.querySelector('.card-approfondimento-ctas');
+      if (ctasWrapper) ctasWrapper.insertAdjacentHTML('beforeend', ctaHtml);
+    } else {
+      // Card senza expand: inietta in fondo alla card, stopPropagation gestito
+      card.insertAdjacentHTML('beforeend', ctaHtml);
+    }
+  });
 }
 function filterPub(tipo, btn) {
   document.querySelectorAll('.pub-tab').forEach(t => t.classList.remove('active'));

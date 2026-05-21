@@ -484,6 +484,34 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
           <div class="field"><label>N° pagine</label><input type="number" id="pPages" placeholder="es. 24"></div>
           <div class="field"><label>Data pubblicazione</label><input type="date" id="pDate"></div>
           <div class="field form-full"><label>Abstract</label><textarea id="pExcerpt" placeholder="Breve descrizione del contenuto..."></textarea></div>
+          <div class="field form-full">
+            <label>Collega a una card della homepage (opzionale)</label>
+            <select id="pCardId">
+              <option value="">— Nessun collegamento (solo Scritti & Quaderni)</option>
+              <optgroup label="Sezione Filosofia">
+                <option value="card-filosofia-01">Potenziare l'insegnamento, non automatizzarlo</option>
+                <option value="card-tre-cose">3 cose che puoi fare subito in classe</option>
+                <option value="card-stat-73">73% — Il problema della formazione</option>
+                <option value="card-claim-prompt">Il prompt generico: il nemico invisibile</option>
+                <option value="card-docente-team">Il Docente-Team: Dirigere l'Ecosistema AI</option>
+              </optgroup>
+              <optgroup label="Sezione Casi Reali">
+                <option value="caso-verifiche">Verifiche & Valutazioni</option>
+                <option value="caso-inclusione">Inclusione BES/DSA</option>
+                <option value="caso-lezioni">Unità Didattiche</option>
+                <option value="caso-tutoring">Tutoring Personalizzato</option>
+              </optgroup>
+              <optgroup label="Sezione Toolbox">
+                <option value="tool-classroom">Google Classroom</option>
+                <option value="tool-notebooklm">NotebookLM</option>
+                <option value="tool-drive">Google Drive</option>
+                <option value="tool-prompts">Prompt Library</option>
+                <option value="tool-pdf">PDF & AI Tools</option>
+                <option value="tool-ada">App ADA</option>
+              </optgroup>
+            </select>
+            <span style="font-family:var(--font-mono);font-size:0.6rem;color:rgba(255,255,255,0.25);margin-top:4px">Se selezioni una card, il PDF comparirà come CTA direttamente in quella card della homepage.</span>
+          </div>
         </div>
         <div class="form-actions">
           <button class="btn btn-red" onclick="publishPub()">Pubblica →</button>
@@ -814,7 +842,10 @@ async function loadPubAdmin() {
   }
   el.innerHTML = data.map(p => `
     <div class="queue-item published" style="grid-template-columns:1fr 100px 100px 130px">
-      <div><div class="qi-title">${escHtml(p.title)}</div><div class="qi-sub">${fmtDate(p.published_at)}</div></div>
+      <div>
+        <div class="qi-title">${escHtml(p.title)}</div>
+        <div class="qi-sub">${fmtDate(p.published_at)}${p.card_id ? ' · <span style="color:var(--eu-yellow)">⬡ '+escHtml(p.card_id)+'</span>' : ''}</div>
+      </div>
       <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.tipo === 'quaderno' ? '📓 N.'+p.numero : '📄 Scritto'}</span>
       <span style="font-size:0.75rem;color:rgba(255,255,255,0.5)">${p.pages ? p.pages+' pp.' : '—'}</span>
       <div class="qi-actions">
@@ -831,6 +862,7 @@ async function publishPub() {
   if (!title || !drive) { toast('⚠ Titolo e link Drive obbligatori','err'); return; }
   if (demoMode) { toast('⚠ Funzione non disponibile in demo mode','err'); return; }
   const dateVal = document.getElementById('pDate').value;
+  const cardId = document.getElementById('pCardId').value.trim() || null;
   const { error } = await sb.from('pubblicazioni').insert({
     title,
     tipo:        document.getElementById('pTipo').value,
@@ -838,6 +870,7 @@ async function publishPub() {
     drive_url:   drive,
     pages:       document.getElementById('pPages').value || null,
     excerpt:     document.getElementById('pExcerpt').value.trim(),
+    card_id:     cardId,
     published:   true,
     published_at: dateVal ? new Date(dateVal).toISOString() : new Date().toISOString()
   });
@@ -845,6 +878,7 @@ async function publishPub() {
   document.getElementById('pub-form').style.display='none';
   document.getElementById('btnAddPub').style.display='';
   ['pTitle','pDrive','pNumero','pPages','pExcerpt'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('pCardId').value = '';
   toast('✓ Pubblicazione aggiunta!','ok');
   loadPubAdmin();
 }
@@ -870,6 +904,7 @@ function editPub(p) {
   document.getElementById('pDrive').value   = p.drive_url || '';
   document.getElementById('pPages').value   = p.pages || '';
   document.getElementById('pExcerpt').value = p.excerpt || '';
+  document.getElementById('pCardId').value  = p.card_id || '';
   if (p.published_at) {
     document.getElementById('pDate').value = p.published_at.substring(0,10);
   }
@@ -890,6 +925,7 @@ async function updatePub() {
   if (!title || !drive) { toast('⚠ Titolo e link Drive obbligatori','err'); return; }
   if (demoMode) { toast('⚠ Non disponibile in demo','err'); return; }
   const dateVal = document.getElementById('pDate').value;
+  const cardId = document.getElementById('pCardId').value.trim() || null;
   const { error } = await sb.from('pubblicazioni').update({
     title,
     tipo:    document.getElementById('pTipo').value,
@@ -897,12 +933,14 @@ async function updatePub() {
     drive_url: drive,
     pages:   document.getElementById('pPages').value || null,
     excerpt: document.getElementById('pExcerpt').value.trim(),
+    card_id: cardId,
     published_at: dateVal ? new Date(dateVal).toISOString() : undefined
   }).eq('id', _editPubId);
   if (error) { toast('⚠ ' + error.message,'err'); return; }
   _editPubId = null;
   // Ripristina form
   ['pTitle','pDrive','pNumero','pPages','pExcerpt'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('pCardId').value = '';
   const form = document.getElementById('pub-form');
   form.style.display = 'none';
   form.querySelector('.card-title').textContent = '📄 Nuova pubblicazione';
