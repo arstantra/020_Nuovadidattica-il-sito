@@ -76,7 +76,8 @@ Pesi usati: Syne 400/600/700/800 · DM Sans 300/400/500 (anche italic) · DM Mon
 
 | File | Dimensione | Descrizione |
 |---|---|---|
-| `index.html` | ~243 KB | Homepage principale |
+| `index.html` | ~249 KB | Homepage principale |
+| `capire-ai.html` | ~182 KB | Guida fondamentale "Capire l'AI" — 9 sezioni dal cos'è l'AI alle allucinazioni, privacy e domanda filosofica |
 | `docente-team.html` | ~163 KB | Articolo blog "Il Docente-Team: Dirigere l'Ecosistema AI" |
 | `admin-feed.html` | ~63 KB | Pannello admin per gestione feed (Supabase) |
 | `notebooklm-generator.html` | ~44 KB | Tool generatore di prompt per NotebookLM |
@@ -100,7 +101,9 @@ Sezioni in ordine, con anchor ID:
 9. **`#pubblicazioni`** — Pubblicazioni e risorse
 10. **`#community`** — CTA iscrizione community
 
-Navigazione: link a tutte le sezioni + CTA "Unisciti" → `#community`.
+Navigazione: voce "Capire l'AI" (link a `capire-ai.html`) + link a tutte le sezioni + CTA "Unisciti" → `#community`.
+
+Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-ai-hook` (sfondo scuro, testo + CTA gialla) che rimanda a `capire-ai.html` per i docenti alle prime armi.
 
 ---
 
@@ -128,6 +131,8 @@ Navigazione: link a tutte le sezioni + CTA "Unisciti" → `#community`.
 
 **Sezioni chiare** (default): `background: var(--light)`, testo `var(--text-dark)`.
 
+**Pagine guida** (pattern da `capire-ai.html`): nav con pulsante "← Home" + tag pagina al posto dei link sezione; griglia capitoli `.chapters-grid` 3×3 su `var(--dark-2)` al posto della barra TOC; footer identico alla homepage (logo ND + logo AP + credits).
+
 ---
 
 ## Navigazione e UI
@@ -135,7 +140,7 @@ Navigazione: link a tutte le sezioni + CTA "Unisciti" → `#community`.
 - **Nav desktop:** logo + link sezioni + CTA pill rossa "Unisciti"
 - **Nav mobile:** hamburger → menu overlay a schermo intero
 - **Nav scrolled:** `background: rgba(10,10,10,0.85)` + `backdrop-filter: blur(16px)` dopo scroll
-- **Logo:** inline base64 PNG (placeholder `ND_LOGO_PLACEHOLDER` nei `src`)
+- **Logo:** base64 PNG iniettato via JS con costanti `ND_B64` e `AP_B64` definite nello script inline. Gli `<img>` hanno `src=""` nel markup e vengono popolati a runtime. IDs usati: `navLogoND`, `heroLogoND`, `footerLogoND`, `footerLogoAP`. Le costanti base64 reali sono in `index.html` (righe ~2232-2233) — copiare da lì per nuove pagine.
 
 ---
 
@@ -164,7 +169,7 @@ Navigazione: link a tutte le sezioni + CTA "Unisciti" → `#community`.
 
 > Aggiornare questa sezione ad ogni chat di lavoro
 
-- [ ] Logo definitivo (sostituire il placeholder base64 `ND_LOGO_PLACEHOLDER`)
+- [x] Pagina "Capire l'AI" (`capire-ai.html`) — creata, 9 sezioni, collegata dal nav e da hook in #filosofia
 - [ ] Video sezione #filosofia (link YouTube da inserire)
 - [ ] Completare sezione #feed con integrazione Supabase nella homepage
 - [ ] Nuove pagine blog da aggiungere (struttura simile a `docente-team.html`)
@@ -182,6 +187,8 @@ Navigazione: link a tutte le sezioni + CTA "Unisciti" → `#community`.
 | apr 2025 | Nessun framework CSS | Controllo totale sul design, performance |
 | mag 2025 | ADA su sottodominio separato | Separazione tool applicativo dal sito editoriale |
 | mag 2025 | Supabase per contenuti feed | Backend gestito senza server proprietario |
+| mag 2026 | Pagina "Capire l'AI" come sezione separata dal nav | Non appesantire homepage; chi sa già salta la pagina, chi no ha una risorsa dedicata |
+| mag 2026 | Griglia capitoli 3×3 invece di barra TOC orizzontale | La barra scroll era poco elegante; la griglia è visivamente intenzionale e coerente col design |
 
 ---
 
