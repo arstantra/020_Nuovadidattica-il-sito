@@ -27,8 +27,8 @@
 | Build process | Nessuno — file statici, deploy diretto |
 | Deploy | GitHub Pages (branch `main`) |
 | Font | Google Fonts: Syne (display), DM Sans (body), DM Mono (mono) |
-| Librerie JS | Nessuna dipendenza esterna; Chart.js solo in `docente-team.html` |
-| Backend | Supabase (usato in `admin-feed.html` per feed e contenuti) |
+| Librerie JS | Nessuna dipendenza esterna; Chart.js solo in `docente-team.html`; `@supabase/supabase-js@2` via CDN in `index.html` e `admin-feed.html` |
+| Backend | Supabase — usato in `index.html` (feed, blog, pubblicazioni) e `admin-feed.html` (admin panel) |
 
 **Regola principale:** ogni pagina è un singolo file HTML autosufficiente (CSS e JS inline). Non si creano file separati `.css` o `.js` salvo esplicita richiesta.
 
@@ -74,15 +74,14 @@ Pesi usati: Syne 400/600/700/800 · DM Sans 300/400/500 (anche italic) · DM Mon
 
 ## File del progetto
 
-| File | Dimensione | Descrizione |
-|---|---|---|
-| `index.html` | ~249 KB | Homepage principale |
-| `capire-ai.html` | ~182 KB | Guida fondamentale "Capire l'AI" — 9 sezioni dal cos'è l'AI alle allucinazioni, privacy e domanda filosofica |
-| `docente-team.html` | ~163 KB | Articolo blog "Il Docente-Team: Dirigere l'Ecosistema AI" |
-| `admin-feed.html` | ~63 KB | Pannello admin per gestione feed (Supabase) |
-| `notebooklm-generator.html` | ~44 KB | Tool generatore di prompt per NotebookLM |
-| `CNAME` | — | `nuovadidattica.eu` |
-| `README.md` | — | Placeholder minimo |
+| File | Descrizione |
+|---|---|
+| `index.html` | Homepage principale — feed, blog, pubblicazioni tutti da Supabase |
+| `capire-ai.html` | Guida "Capire l'AI" — 9 sezioni, collegata dal nav e dall'hook in #filosofia |
+| `docente-team.html` | Articolo blog "Il Docente-Team: Dirigere l'Ecosistema AI" |
+| `admin-feed.html` | Pannello admin unificato: feed, blog, pubblicazioni (con card linking) |
+| `notebooklm-generator.html` | Tool generatore di prompt per NotebookLM |
+| `CNAME` | `nuovadidattica.eu` |
 
 ---
 
@@ -125,7 +124,9 @@ Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-a
 </section>
 ```
 
-**Expand inline (Pattern B):** card cliccabili che espandono un pannello `.bento-expand` con JS `toggleExpand(id)`.
+**Expand inline (Pattern B):** card cliccabili che espandono un pannello `.bento-expand` con JS `toggleExpand(id)`. Le card con expand hanno attributi `data-card-id` e `data-expand-id` per il sistema risorse.
+
+**Card multi-CTA (Pattern D):** la card `.card-approfondimento` (docente-team) è un `<div>` con `onclick="window.location.href=..."` e un wrapper `.card-approfondimento-ctas` che contiene più link `<a>` in colonna — articolo + PDF quando disponibile. Non usare `<a>` come wrapper se servono più CTA.
 
 **Sezioni scure** (hero, etica): `background: var(--dark)`, testo `var(--text-light)`, label in `var(--eu-yellow)`.
 
@@ -140,7 +141,7 @@ Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-a
 - **Nav desktop:** logo + link sezioni + CTA pill rossa "Unisciti"
 - **Nav mobile:** hamburger → menu overlay a schermo intero
 - **Nav scrolled:** `background: rgba(10,10,10,0.85)` + `backdrop-filter: blur(16px)` dopo scroll
-- **Logo:** base64 PNG iniettato via JS con costanti `ND_B64` e `AP_B64` definite nello script inline. Gli `<img>` hanno `src=""` nel markup e vengono popolati a runtime. IDs usati: `navLogoND`, `heroLogoND`, `footerLogoND`, `footerLogoAP`. Le costanti base64 reali sono in `index.html` (righe ~2232-2233) — copiare da lì per nuove pagine.
+- **Logo:** base64 PNG iniettato via JS con costanti `ND_B64` e `AP_B64` definite nello script inline. Gli `<img>` hanno `src=""` nel markup e vengono popolati a runtime. IDs usati: `navLogoND`, `heroLogoND`, `footerLogoND`, `footerLogoAP`. Le costanti base64 reali sono in `index.html` — copiare da lì per nuove pagine.
 
 ---
 
@@ -161,7 +162,51 @@ Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-a
 4. **Mobile-first responsive:** breakpoint principale a 768px con `@media (max-width: 768px)`
 5. **Performance:** immagini inline base64 o SVG dove possibile; nessun fetch di asset pesanti
 6. **Accessibilità:** `alt` su tutte le immagini, `aria-label` sui bottoni icon-only
-7. **Supabase** usato solo in `admin-feed.html`: URL e chiave configurabili da UI (mai hardcoded)
+7. **Supabase** — client `SB` condiviso in `index.html` (costanti `SB_URL`/`SB_KEY` hardcoded nello script); in `admin-feed.html` le stesse credenziali sono configurabili da UI con fallback su `localStorage`. Mai hardcodare in pagine pubbliche nuove senza valutare le RLS policy.
+8. **onclick con dati complessi** — non usare `JSON.stringify(obj)` dentro attributi `onclick="..."`: le virgolette doppie spezzano l'HTML. Usare una cache JS indicizzata per ID (es. `_pubsCache`) e passare solo l'ID stringa.
+
+---
+
+## Supabase — tabelle esistenti
+
+| Tabella | Descrizione | Note |
+|---|---|---|
+| `feed_items` | Contenuti del feed ragionato | campi: title, description, url, source, category, status, found_at, published_at |
+| `blog_posts` | Articoli blog leggibili inline | campi: title, body (HTML), excerpt, category, author, drive_url, published, published_at |
+| `pubblicazioni` | Scritti & Quaderni (PDF su Drive) | campi: title, tipo, numero, drive_url, pages, excerpt, published, published_at, **card_id** |
+| `monitored_sources` | Fonti RSS/YouTube monitorate | campi: name, url, tipo, active |
+
+**`card_id`** in `pubblicazioni`: collega un PDF a una specifica bento card della homepage. Se valorizzato, `injectCardRisorse()` inietta automaticamente il CTA "Scarica PDF" nella card corrispondente. Se `null`, il PDF appare solo in Scritti & Quaderni.
+
+---
+
+## Sistema risorse — bento card linking
+
+Le bento card della homepage che possono ricevere un PDF hanno:
+- `data-card-id="[id]"` — identificatore unico della card
+- `data-expand-id="[exp-id]"` — (solo card con expand) id del pannello `.bento-expand`
+
+La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()` e inietta il CTA nella posizione giusta: dentro il pannello expand per le card con expand, in fondo alla card per le altre.
+
+**ID card disponibili** (da usare nel campo `card_id` dell'admin):
+
+| ID | Card |
+|---|---|
+| `card-filosofia-01` | Potenziare l'insegnamento, non automatizzarlo |
+| `card-tre-cose` | 3 cose che puoi fare subito in classe |
+| `card-stat-73` | 73% — Il problema della formazione |
+| `card-claim-prompt` | Il prompt generico: il nemico invisibile |
+| `card-docente-team` | Il Docente-Team (card con multi-CTA) |
+| `caso-verifiche` | Verifiche & Valutazioni |
+| `caso-inclusione` | Inclusione BES/DSA |
+| `caso-lezioni` | Unità Didattiche |
+| `caso-tutoring` | Tutoring Personalizzato |
+| `tool-classroom` | Google Classroom |
+| `tool-notebooklm` | NotebookLM |
+| `tool-drive` | Google Drive |
+| `tool-prompts` | Libreria di Prompt Pronti |
+| `tool-pdf` | PDF & Slide |
+| `tool-ada` | App ADA |
 
 ---
 
@@ -170,10 +215,12 @@ Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-a
 > Aggiornare questa sezione ad ogni chat di lavoro
 
 - [x] Pagina "Capire l'AI" (`capire-ai.html`) — creata, 9 sezioni, collegata dal nav e da hook in #filosofia
+- [x] Sezione #feed con integrazione Supabase nella homepage — operativa
+- [x] Sezione #pubblicazioni con lista reale pubblicazioni — operativa, PDF da Google Drive
+- [x] Sistema card linking (pubblicazioni.card_id → bento card CTA) — operativo
+- [x] Admin panel unificato (feed + blog + pubblicazioni) in `admin-feed.html`
 - [ ] Video sezione #filosofia (link YouTube da inserire)
-- [ ] Completare sezione #feed con integrazione Supabase nella homepage
 - [ ] Nuove pagine blog da aggiungere (struttura simile a `docente-team.html`)
-- [ ] Sezione #pubblicazioni con lista reale pubblicazioni
 - [ ] Pagina dedicata ADA (ada.nuovadidattica.eu)
 - [ ] Form iscrizione community #community funzionante
 
@@ -189,7 +236,11 @@ Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-a
 | mag 2025 | Supabase per contenuti feed | Backend gestito senza server proprietario |
 | mag 2026 | Pagina "Capire l'AI" come sezione separata dal nav | Non appesantire homepage; chi sa già salta la pagina, chi no ha una risorsa dedicata |
 | mag 2026 | Griglia capitoli 3×3 invece di barra TOC orizzontale | La barra scroll era poco elegante; la griglia è visivamente intenzionale e coerente col design |
+| mag 2026 | PDF ospitati su Google Drive (non nella repo) | Evita appesantire la repo GitHub; Drive gestisce versioning e accesso |
+| mag 2026 | `pubblicazioni.card_id` per collegare PDF alle bento card | Un campo solo fa due cose: appare in Scritti & Quaderni E inietta CTA nella card — zero duplicazioni |
+| mag 2026 | Admin unificato in `admin-feed.html` per feed + blog + pubblicazioni | Un solo pannello editoriale; nessun file da toccare per aggiungere contenuti |
+| mag 2026 | Cache `_pubsCache` in admin invece di JSON.stringify in onclick | Le virgolette doppie nel JSON spezzano gli attributi HTML — pattern da seguire per tutti i render futuri |
 
 ---
 
-*Ultima revisione: 2026-05-21 — aggiornare ad ogni sessione di lavoro significativa*
+*Ultima revisione: 2026-05-21 — sistema card linking + admin unificato*

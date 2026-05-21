@@ -2698,7 +2698,6 @@ function renderPubs(items) {
             <span class="pub-type">${pub.tipo==='quaderno'?'📓 Quaderno periodico':'📄 Saggio'}</span>
             ${pub.pages?'<span class="pub-pages">'+pub.pages+' pp.</span>':''}
           </div>
-          <div class="pub-title">${pub.title}</div>
           <p class="pub-desc">${pub.excerpt||''}</p>
         </div>
         <a href="${gdriveDirect(pub.drive_url)}" target="_blank" rel="noopener" class="pub-download">
