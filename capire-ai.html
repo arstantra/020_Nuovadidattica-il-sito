@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capire l'AI — NuovaDidattica.eu</title>
+<meta name="description" content="Una guida per docenti: cos'è davvero l'AI, come funzionano gli LLM, cosa sono i token, perché si allucinano e come scegliere il modello giusto.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:#F5F3EE;color:#0D0D0D;overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+.cursor{position:fixed;top:0;left:0;width:12px;height:12px;background:#D91B1B;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:difference}
+.cursor-ring{position:fixed;top:0;left:0;width:36px;height:36px;border:1.5px solid #D91B1B;border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .08s ease-out,width .2s,height .2s;mix-blend-mode:difference}
+
+:root{
+  --red:#D91B1B;--red-deep:#A51515;--eu-blue:#003FA5;--eu-yellow:#F5C800;
+  --dark:#0A0A0A;--dark-2:#141414;--dark-3:#1E1E1E;
+  --light:#F5F3EE;--light-2:#ECEAE4;--light-3:#E0DDD5;
+  --text-dark:#0D0D0D;--text-mid:#4A4A4A;--text-light:#F5F3EE;--text-muted:#8A8A8A;
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+  --radius:20px;--radius-sm:12px;--gap:16px;
+}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:160;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;transition:background .4s,backdrop-filter .4s,padding .3s}
+nav.scrolled{background:rgba(10,10,10,.85);backdrop-filter:blur(16px);padding:14px 48px}
+.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.nav-logo-text{font-family:var(--font-display);font-size:.85rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:white}
+.nav-back{font-family:var(--font-display);font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:white;text-decoration:none;display:flex;align-items:center;gap:8px;transition:all .2s;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:100px;padding:9px 18px}
+.nav-back:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.5);transform:translateX(-2px)}
+.nav-back::before{content:"←";font-size:.9rem}
+.nav-tag{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:8px 16px;border:1px solid rgba(255,255,255,.1);border-radius:100px}
+
+/* HERO */
+.article-hero{min-height:80vh;background:var(--dark);position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:140px 48px 80px;overflow:hidden}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(217,27,27,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(217,27,27,.04) 1px,transparent 1px);background-size:60px 60px;opacity:.5}
+.hero-glow{position:absolute;top:-200px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(217,27,27,.1) 0%,transparent 70%);pointer-events:none}
+.hero-glow-2{position:absolute;bottom:-150px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(0,63,165,.08) 0%,transparent 70%);pointer-events:none}
+.article-category{font-family:var(--font-mono);font-size:.68rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:10px;margin-bottom:28px;opacity:0;transform:translateY(20px);animation:fadeUp .7s .2s forwards}
+.article-category::before{content:"";display:block;width:28px;height:1px;background:var(--red)}
+.article-title{font-family:var(--font-display);font-size:clamp(2.6rem,6vw,6rem);font-weight:800;line-height:.96;letter-spacing:-.03em;color:white;max-width:800px;margin-bottom:32px;opacity:0;transform:translateY(30px);animation:fadeUp .8s .4s forwards}
+.article-title em{color:var(--red);font-style:normal}
+.article-meta{display:flex;align-items:center;gap:24px;font-family:var(--font-mono);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);opacity:0;animation:fadeUp .7s .7s forwards}
+.article-meta span+span::before{content:"·";margin-right:24px}
+.hero-bg-word{position:absolute;right:60px;top:50%;transform:translateY(-50%);font-family:var(--font-display);font-size:clamp(7rem,14vw,16rem);font-weight:900;color:rgba(217,27,27,.05);letter-spacing:-.05em;line-height:1;user-select:none;pointer-events:none;opacity:0;animation:fadeIn 1.4s .9s forwards}
+
+/* INDICE NAVIGAZIONE */
+.toc-bar{background:var(--dark-2);border-bottom:1px solid rgba(255,255,255,.06);padding:0 48px;overflow-x:auto;white-space:nowrap}
+.toc-inner{display:flex;gap:0;max-width:1200px;margin:0 auto}
+.toc-link{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);text-decoration:none;padding:18px 20px;display:inline-block;border-bottom:2px solid transparent;transition:all .2s;flex-shrink:0}
+.toc-link:hover{color:rgba(255,255,255,.75);border-bottom-color:var(--red)}
+
+/* BODY LAYOUT */
+.article-body{background:var(--light)}
+.article-container{max-width:1200px;margin:0 auto;padding:80px 48px}
+
+/* PROSE */
+.article-prose p{font-size:1.05rem;line-height:1.85;color:var(--text-mid);margin-bottom:1.4rem}
+.article-prose p strong{color:var(--text-dark);font-weight:600}
+.article-prose p em{font-style:italic;color:var(--text-mid)}
+
+/* CALLOUT */
+.callout{border-left:3px solid var(--red);padding:20px 28px;margin:28px 0;background:rgba(217,27,27,.04);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.callout-label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.callout-label::before{content:"";display:block;width:14px;height:1px;background:var(--red)}
+.callout p{font-size:.95rem;line-height:1.7;color:var(--text-mid);margin:0;font-style:italic}
+
+/* SECTION LABELS */
+.sec-label{font-family:var(--font-mono);font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.sec-label::before{content:"";display:block;width:24px;height:1px;background:var(--red)}
+.sec-title{font-family:var(--font-display);font-size:clamp(2rem,3.5vw,3rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;color:var(--text-dark);margin-bottom:16px}
+.sec-subtitle{font-size:1rem;font-weight:300;color:var(--text-mid);line-height:1.6;max-width:560px;margin-bottom:48px}
+
+/* SEZIONE ALTERNATA */
+.alt-section{background:var(--light-2);padding:80px 48px}
+.dark-section{background:var(--dark);padding:80px 48px}
+.dark-section .sec-label{color:var(--eu-yellow)}
+.dark-section .sec-title{color:white}
+.dark-section .sec-subtitle{color:rgba(255,255,255,.5)}
+
+/* CARD GRID */
+.card-grid{display:grid;gap:var(--gap);margin-top:40px}
+.card-grid-2{grid-template-columns:1fr 1fr}
+.card-grid-3{grid-template-columns:1fr 1fr 1fr}
+.concept-card{background:white;border-radius:var(--radius);padding:32px;transition:transform .25s,box-shadow .25s}
+.concept-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.08)}
+.concept-card-icon{font-size:2rem;margin-bottom:16px}
+.concept-card-label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.concept-card-label::before{content:"";display:block;width:12px;height:1px;background:var(--red)}
+.concept-card h3{font-family:var(--font-display);font-size:1.15rem;font-weight:800;color:var(--text-dark);margin-bottom:12px;line-height:1.2}
+.concept-card p{font-size:.88rem;line-height:1.7;color:var(--text-mid)}
+
+/* CARD SCURA */
+.dark-card{background:var(--dark-3);border-radius:var(--radius);padding:32px}
+.dark-card .concept-card-label{color:var(--eu-yellow)}
+.dark-card .concept-card-label::before{background:var(--eu-yellow)}
+.dark-card h3{color:white;font-family:var(--font-display);font-size:1.1rem;font-weight:800;margin-bottom:12px}
+.dark-card p{font-size:.88rem;line-height:1.7;color:rgba(255,255,255,.55)}
+
+/* TOKEN VISUALIZER */
+.token-demo{background:var(--dark-2);border-radius:var(--radius);padding:36px;margin:40px 0}
+.token-demo-label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:20px;display:flex;align-items:center;gap:6px}
+.token-demo-label::before{content:"";display:block;width:14px;height:1px;background:rgba(255,255,255,.35)}
+.token-sentence{font-family:var(--font-mono);font-size:1rem;line-height:2.2;color:white;display:flex;flex-wrap:wrap;gap:4px}
+.token{display:inline-block;padding:3px 8px;border-radius:6px;font-size:.85rem;line-height:1.4}
+.t1{background:rgba(217,27,27,.35);color:#ff8f8f}
+.t2{background:rgba(0,63,165,.35);color:#8fb8ff}
+.t3{background:rgba(245,200,0,.2);color:#f5c800}
+.t4{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+.t5{background:rgba(0,180,120,.2);color:#80e8c0}
+.token-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:20px}
+.token-legend-item{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.token-legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* PROBABILITÀ DEMO */
+.prob-demo{background:white;border-radius:var(--radius);padding:36px;margin:32px 0}
+.prob-title{font-family:var(--font-display);font-size:.95rem;font-weight:700;color:var(--text-dark);margin-bottom:24px}
+.prob-prompt{font-family:var(--font-mono);font-size:.82rem;color:var(--text-muted);margin-bottom:24px;padding:16px;background:var(--light-2);border-radius:var(--radius-sm)}
+.prob-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.prob-word{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:var(--text-dark);width:120px;flex-shrink:0}
+.prob-bar-wrap{flex:1;height:8px;background:var(--light-3);border-radius:4px;overflow:hidden}
+.prob-bar{height:100%;border-radius:4px;background:var(--red);transition:width 1s ease}
+.prob-pct{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);width:36px;text-align:right;flex-shrink:0}
+
+/* MODELLI TABLE */
+.modelli-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--gap);margin-top:40px}
+.modello-card{background:white;border-radius:var(--radius);padding:28px;border-top:3px solid transparent;transition:all .25s}
+.modello-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.07)}
+.modello-card.gpt{border-top-color:#10a37f}
+.modello-card.gemini{border-top-color:#4285f4}
+.modello-card.claude{border-top-color:#d97706}
+.modello-card.open{border-top-color:#7c3aed}
+.modello-logo{font-family:var(--font-display);font-size:1.1rem;font-weight:800;margin-bottom:4px}
+.modello-logo.gpt{color:#10a37f}
+.modello-logo.gemini{color:#4285f4}
+.modello-logo.claude{color:#d97706}
+.modello-logo.open{color:#7c3aed}
+.modello-by{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:20px}
+.modello-feature{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:.82rem;color:var(--text-mid);line-height:1.4}
+.modello-feature::before{content:"→";color:var(--red);font-family:var(--font-mono);flex-shrink:0;margin-top:1px}
+.modello-nota{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-top:20px;padding-top:16px;border-top:1px solid var(--light-3)}
+
+/* ALLUCINAZIONI BENTO */
+.alucinazioni-grid{display:grid;grid-template-columns:2fr 1fr;gap:var(--gap);margin-top:40px}
+.halluc-main{background:white;border-radius:var(--radius);padding:40px}
+.halluc-main h3{font-family:var(--font-display);font-size:1.4rem;font-weight:800;color:var(--text-dark);margin-bottom:16px}
+.halluc-main p{font-size:.9rem;line-height:1.75;color:var(--text-mid);margin-bottom:1rem}
+.halluc-side{display:flex;flex-direction:column;gap:var(--gap)}
+.halluc-tip{background:var(--light-2);border-radius:var(--radius-sm);padding:24px}
+.halluc-tip-label{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.halluc-tip h4{font-family:var(--font-display);font-size:.95rem;font-weight:700;color:var(--text-dark);margin-bottom:8px;line-height:1.2}
+.halluc-tip p{font-size:.82rem;line-height:1.6;color:var(--text-mid)}
+
+/* CONTESTO VISUALIZER */
+.contesto-box{border-radius:var(--radius);overflow:hidden;margin-top:40px}
+.contesto-header{background:var(--dark-3);padding:20px 32px;font-family:var(--font-mono);font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.35);display:flex;justify-content:space-between;align-items:center}
+.contesto-bar-label{color:var(--eu-yellow)}
+.contesto-body{background:var(--dark-2);padding:32px}
+.ctx-row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.ctx-label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);width:120px;flex-shrink:0}
+.ctx-tokens{display:flex;gap:3px;flex:1;flex-wrap:wrap}
+.ctx-token-block{height:14px;border-radius:3px;background:rgba(255,255,255,.08)}
+.ctx-token-block.system{background:rgba(245,200,0,.3)}
+.ctx-token-block.user{background:rgba(0,63,165,.4)}
+.ctx-token-block.assistant{background:rgba(217,27,27,.3)}
+.ctx-token-block.free{background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.1)}
+.ctx-counter{font-family:var(--font-mono);font-size:.65rem;color:rgba(255,255,255,.25);margin-top:20px;text-align:right}
+
+/* DOMANDA FILOSOFICA */
+.filosofia-dark{background:var(--dark);padding:80px 48px}
+.filo-inner{max-width:1200px;margin:0 auto}
+.filo-quote{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2.8rem);font-weight:800;line-height:1.2;color:white;max-width:800px;margin-bottom:40px}
+.filo-quote em{color:var(--eu-yellow);font-style:normal}
+.filo-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-top:48px}
+.filo-card{border-radius:var(--radius);padding:36px}
+.filo-card.pro{background:rgba(0,63,165,.15);border:1px solid rgba(0,63,165,.3)}
+.filo-card.con{background:rgba(217,27,27,.1);border:1px solid rgba(217,27,27,.2)}
+.filo-card-label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:6px}
+.filo-card.pro .filo-card-label{color:rgba(143,184,255,.8)}
+.filo-card.pro .filo-card-label::before{content:"";display:block;width:12px;height:1px;background:rgba(143,184,255,.8)}
+.filo-card.con .filo-card-label{color:rgba(255,143,143,.8)}
+.filo-card.con .filo-card-label::before{content:"";display:block;width:12px;height:1px;background:rgba(255,143,143,.8)}
+.filo-card h3{font-family:var(--font-display);font-size:1.1rem;font-weight:800;color:white;margin-bottom:14px}
+.filo-card p{font-size:.88rem;line-height:1.7;color:rgba(255,255,255,.5)}
+
+/* PRIVACY */
+.privacy-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap);margin-top:40px;position:relative}
+.privacy-step{background:white;border-radius:var(--radius-sm);padding:24px;text-align:center;position:relative}
+.privacy-step-num{font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--light-3);margin-bottom:8px;line-height:1}
+.privacy-step h4{font-family:var(--font-display);font-size:.9rem;font-weight:800;color:var(--text-dark);margin-bottom:8px}
+.privacy-step p{font-size:.78rem;line-height:1.6;color:var(--text-muted)}
+.privacy-step-arrow{position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:1.2rem;color:var(--light-3);z-index:2}
+.privacy-warning{background:rgba(217,27,27,.06);border:1px solid rgba(217,27,27,.15);border-radius:var(--radius-sm);padding:24px 28px;margin-top:28px;display:flex;gap:16px;align-items:flex-start}
+.privacy-warning-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.privacy-warning p{font-size:.88rem;line-height:1.65;color:var(--text-mid)}
+.privacy-warning p strong{color:var(--red)}
+
+/* CTA FINALE */
+.cta-section{background:var(--dark);padding:80px 48px;text-align:center}
+.cta-section h2{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.5rem);font-weight:800;color:white;line-height:1.1;margin-bottom:16px;letter-spacing:-.03em}
+.cta-section h2 em{color:var(--red);font-style:normal}
+.cta-section p{font-size:1rem;color:rgba(255,255,255,.45);max-width:520px;margin:0 auto 40px;line-height:1.6}
+.cta-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-primary{font-family:var(--font-display);font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--red);color:white;padding:16px 36px;border-radius:100px;text-decoration:none;transition:all .2s}
+.btn-primary:hover{background:var(--red-deep);transform:scale(1.03)}
+.btn-ghost{font-family:var(--font-display);font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:transparent;color:white;padding:16px 36px;border-radius:100px;text-decoration:none;border:1.5px solid rgba(255,255,255,.25);transition:all .2s}
+.btn-ghost:hover{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.06)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.12s}
+.reveal-delay-2{transition-delay:.24s}
+.reveal-delay-3{transition-delay:.36s}
+
+/* ANIMS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* MOBILE */
+@media(max-width:768px){
+  nav{padding:16px 24px}
+  nav.scrolled{padding:12px 24px}
+  .article-hero{padding:100px 24px 60px;min-height:70vh}
+  .toc-bar{padding:0 24px}
+  .article-container{padding:48px 24px}
+  .alt-section,.dark-section,.filosofia-dark,.cta-section{padding:56px 24px}
+  .card-grid-2,.card-grid-3{grid-template-columns:1fr}
+  .modelli-grid{grid-template-columns:1fr}
+  .alucinazioni-grid{grid-template-columns:1fr}
+  .filo-grid{grid-template-columns:1fr}
+  .privacy-flow{grid-template-columns:1fr 1fr}
+  .privacy-step-arrow{display:none}
+  .hero-bg-word{display:none}
+  .nav-tag{display:none}
+}
+@media(max-width:480px){
+  .privacy-flow{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-text">NuovaDidattica.eu</span>
+  </a>
+  <a href="index.html" class="nav-back">Home</a>
+  <span class="nav-tag">Guida · Capire l'AI</span>
+</nav>
+
+<!-- HERO -->
+<header class="article-hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-bg-word">AI</div>
+  <div class="article-category">Guida fondamentale · Per docenti e non solo</div>
+  <h1 class="article-title">Capire l'AI<br><em>davvero</em>.</h1>
+  <div class="article-meta">
+    <span>NuovaDidattica.eu</span>
+    <span>8 sezioni · ~15 min di lettura</span>
+    <span>Nessuna formula matematica</span>
+  </div>
+</header>
+
+<!-- INDICE -->
+<nav class="toc-bar" aria-label="Indice della pagina">
+  <div class="toc-inner">
+    <a href="#sezione-cos-e" class="toc-link">1 · Cos'è l'AI</a>
+    <a href="#sezione-ml" class="toc-link">2 · ML e Deep Learning</a>
+    <a href="#sezione-generativa" class="toc-link">3 · AI Generativa</a>
+    <a href="#sezione-token" class="toc-link">4 · Token e Probabilità</a>
+    <a href="#sezione-llm" class="toc-link">5 · LLM e Allucinazioni</a>
+    <a href="#sezione-contesto" class="toc-link">6 · Il Contesto</a>
+    <a href="#sezione-modelli" class="toc-link">7 · I Modelli a confronto</a>
+    <a href="#sezione-privacy" class="toc-link">8 · Privacy e dati</a>
+    <a href="#sezione-ragiona" class="toc-link">9 · Ragiona davvero?</a>
+  </div>
+</nav>
+
+<!-- BODY -->
+<main class="article-body">
+
+<!-- ==============================
+     SEZIONE 1 — COS'È L'AI
+================================= -->
+<section id="sezione-cos-e" class="article-container">
+  <div class="sec-label reveal">Sezione 1</div>
+  <h2 class="sec-title reveal reveal-delay-1">Cos'è l'AI,<br>in tre minuti.</h2>
+  <p class="sec-subtitle reveal reveal-delay-2">Prima di tutto: non è magia, non è fantascienza, non è un cervello elettronico. È uno strumento statistico molto sofisticato.</p>
+
+  <div class="article-prose reveal reveal-delay-2">
+    <p>L'<strong>Intelligenza Artificiale</strong> è un campo dell'informatica che studia come far sì che i computer eseguano compiti che, se fatti da un essere umano, richiederebbero quello che chiamiamo "intelligenza": riconoscere immagini, capire il linguaggio, prendere decisioni, tradurre testi.</p>
+    <p>Il termine è volutamente vago — e questo crea molta confusione. Quando diciamo "AI" oggi, nella vita quotidiana, intendiamo quasi sempre una tecnologia specifica chiamata <strong>machine learning</strong>, e più precisamente una sua variante: il <strong>deep learning</strong>. Non stiamo parlando di un computer che "pensa" nel senso che intendiamo noi.</p>
+    <p>Una distinzione che vale la pena fissare subito: l'AI "stretta" (o <em>narrow AI</em>) è quello che usiamo oggi — sistemi che eccellono in un compito preciso. Riconoscere volti, giocare a scacchi, rispondere a domande. L'AI "generale" (<em>AGI</em>), quella dei film, che ragiona su qualsiasi problema come un essere umano, non esiste ancora. Quello che vediamo con ChatGPT o Gemini è AI stretta, molto potente, ma stretta.</p>
+  </div>
+
+  <div class="callout reveal reveal-delay-3">
+    <div class="callout-label">Da tenere a mente</div>
+    <p>L'AI non "sa" nulla nel senso in cui lo sa un essere umano. Ha trovato pattern statistici in miliardi di testi. La differenza sembra sottile, ma cambia tutto nel modo in cui la usiamo e nei suoi limiti.</p>
+  </div>
+
+  <div class="card-grid card-grid-3 reveal reveal-delay-2">
+    <div class="concept-card">
+      <div class="concept-card-icon">🎯</div>
+      <div class="concept-card-label">Narrow AI</div>
+      <h3>AI stretta</h3>
+      <p>Eccelle in un dominio specifico. ChatGPT è bravissimo a generare testo, ma non sa guidare un'auto. Un'AI per la guida autonoma non sa scrivere poesie.</p>
+    </div>
+    <div class="concept-card">
+      <div class="concept-card-icon">🧠</div>
+      <div class="concept-card-label">AGI (non ancora)</div>
+      <h3>AI Generale</h3>
+      <p>Un sistema ipotetico che ragiona su qualsiasi problema come un essere umano. Non esiste. I modelli attuali ne simulano alcuni aspetti, ma rimangono fondamentalmente diversi.</p>
+    </div>
+    <div class="concept-card">
+      <div class="concept-card-icon">📊</div>
+      <div class="concept-card-label">La base di tutto</div>
+      <h3>Pattern statistici</h3>
+      <p>Tutta l'AI moderna è, alla radice, statistica applicata a grandi quantità di dati. L'eleganza del risultato nasconde la semplicità (relativa) del meccanismo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================
+     SEZIONE 2 — ML E DEEP LEARNING
+================================= -->
+<section id="sezione-ml" class="alt-section">
+  <div class="article-container" style="padding-top:0;padding-bottom:0">
+    <div class="sec-label reveal">Sezione 2</div>
+    <h2 class="sec-title reveal reveal-delay-1">Machine Learning<br>e Deep Learning.</h2>
+    <p class="sec-subtitle reveal reveal-delay-2">Due livelli dello stesso concetto. La differenza sta in come il sistema impara dai dati.</p>
+
+    <div class="article-prose reveal reveal-delay-2">
+      <p>Il <strong>Machine Learning</strong> (apprendimento automatico) è l'idea che un computer possa migliorare le proprie performance su un compito senza essere programmato esplicitamente per ogni caso. Invece di scrivere regole, si mostrano esempi: migliaia di email spam e non-spam, e il sistema impara da solo a distinguerle.</p>
+      <p>Il <strong>Deep Learning</strong> è una sottocategoria del ML che usa reti neurali artificiali con molti "strati" di elaborazione. Il nome "neurale" è una metafora: si ispirano vagamente al funzionamento dei neuroni, ma sono molto più semplici. Quello che conta è che ogni strato estrae caratteristiche sempre più astratte dai dati. Il primo strato riconosce linee, il secondo forme, il terzo occhi, il quarto visi — e così via, senza che nessun programmatore abbia mai scritto "cerca un occhio".</p>
+      <p>È questa capacità di <strong>trovare caratteristiche astratte autonomamente</strong> che ha reso il deep learning rivoluzionario. E che lo rende anche opaco: spesso non sappiamo esattamente perché un modello prende una certa decisione. Lo chiamiamo il problema della "scatola nera".</p>
+    </div>
+
+    <div class="card-grid card-grid-2 reveal reveal-delay-2">
+      <div class="concept-card">
+        <div class="concept-card-label">Metafora utile</div>
+        <h3>Il bambino che impara a camminare</h3>
+        <p>Non lo programmiamo con le regole della deambulazione. Gli diamo esempi (vede gli adulti), feedback (cade, si rialza), e impara. Il ML funziona in modo anaogo: esempi + feedback + aggiustamenti ripetuti.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card-label">Il limite da ricordare</div>
+        <h3>La scatola nera</h3>
+        <p>Un modello di deep learning può raggiungere il 99% di accuratezza su un compito e noi non riusciamo ancora a spiegare esattamente perché. Questo è un problema serio per l'uso in contesti ad alto rischio (medicina, giustizia).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================
+     SEZIONE 3 — AI GENERATIVA
+================================= -->
+<section id="sezione-generativa" class="article-container">
+  <div class="sec-label reveal">Sezione 3</div>
+  <h2 class="sec-title reveal reveal-delay-1">AI Generativa:<br>come funziona davvero.</h2>
+  <p class="sec-subtitle reveal reveal-delay-2">Non recupera informazioni da un database. Le costruisce, parola per parola, ogni volta.</p>
+
+  <div class="article-prose reveal reveal-delay-2">
+    <p>L'AI "classica" era prevalentemente discriminativa: dati in entrata → classificazione in uscita (questa foto è un gatto o un cane?). L'<strong>AI generativa</strong> fa qualcosa di diverso: produce nuovi contenuti — testi, immagini, audio, video — che non esistevano prima.</p>
+    <p>Come ci riesce? I modelli generativi vengono addestrati su enormi quantità di dati (per i modelli linguistici: miliardi di pagine di testo da internet, libri, articoli scientifici). Durante l'addestramento, il modello impara a predire cosa viene dopo: dato un pezzo di testo, qual è la parola — o più precisamente il <em>token</em> — più probabile che segua?</p>
+    <p>Questo processo, ripetuto miliardi di volte su dati enormi, produce qualcosa di sorprendente: il modello non impara solo a "incollare" frasi, ma sviluppa una comprensione implicita della grammatica, della logica, dei fatti, dello stile. Non perché qualcuno l'abbia programmato, ma perché tutto questo emerge dall'imparare a predire testo in modo accurato.</p>
+  </div>
+
+  <div class="callout reveal reveal-delay-3">
+    <div class="callout-label">L'intuizione chiave</div>
+    <p>Per predire bene il testo successivo, il modello deve "capire" il significato di quello precedente. La comprensione emerge dalla predizione — non è un obiettivo dichiarato, è un sottoprodotto necessario.</p>
+  </div>
+</section>
+
+<!-- ==============================
+     SEZIONE 4 — TOKEN E PROBABILITÀ
+================================= -->
+<section id="sezione-token" style="background:var(--dark);padding:80px 48px">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="sec-label reveal" style="color:var(--eu-yellow)">Sezione 4</div>
+    <h2 class="sec-title reveal reveal-delay-1" style="color:white">Token e probabilità:<br>il meccanismo concreto.</h2>
+    <p class="sec-subtitle reveal reveal-delay-2" style="color:rgba(255,255,255,.5)">Non parole, non lettere: token. E ogni token viene scelto con una probabilità, non con certezza.</p>
+
+    <div class="article-prose reveal reveal-delay-2">
+      <p style="color:rgba(255,255,255,.6)">Un <strong style="color:white">token</strong> è l'unità base con cui un LLM elabora il testo. Non corrisponde esattamente a una parola: può essere una parola intera, una parte di parola, uno spazio, un segno di punteggiatura. In inglese, una regola approssimativa è 1 token ≈ ¾ di parola. In italiano e in lingue con morfologia più ricca, i token sono spesso più frazionati.</p>
+      <p style="color:rgba(255,255,255,.6)">Perché conta saperlo? Perché i modelli hanno un <strong style="color:white">limite di contesto</strong> (quanti token "vedono" contemporaneamente), e perché capire la tokenizzazione aiuta a costruire prompt migliori.</p>
+    </div>
+
+    <div class="token-demo reveal reveal-delay-2">
+      <div class="token-demo-label">Esempio di tokenizzazione — la frase viene spezzata così</div>
+      <div class="token-sentence">
+        <span class="token t1">L'in</span><span class="token t1">telligenza</span>
+        <span class="token t2"> artificiale</span>
+        <span class="token t3"> non</span>
+        <span class="token t4"> è</span>
+        <span class="token t5"> magia</span><span class="token t5">,</span>
+        <span class="token t1"> è</span>
+        <span class="token t2"> statistica</span>
+        <span class="token t3"> applicata</span>
+        <span class="token t4"> su</span>
+        <span class="token t1"> scala</span>
+        <span class="token t2"> enorme</span><span class="token t4">.</span>
+      </div>
+      <div class="token-legend">
+        <div class="token-legend-item"><div class="token-legend-dot" style="background:rgba(217,27,27,.5)"></div> Token da parte di parola</div>
+        <div class="token-legend-item"><div class="token-legend-dot" style="background:rgba(0,63,165,.5)"></div> Token da parola intera</div>
+        <div class="token-legend-item"><div class="token-legend-dot" style="background:rgba(245,200,0,.4)"></div> Token funzionale</div>
+        <div class="token-legend-item"><div class="token-legend-dot" style="background:rgba(0,180,120,.3)"></div> Token con punteggiatura</div>
+      </div>
+    </div>
+
+    <div class="prob-demo reveal reveal-delay-3">
+      <div class="prob-title">Come il modello sceglie la parola successiva</div>
+      <div class="prob-prompt">Prompt: "L'AI nella didattica dovrebbe essere usata con…"</div>
+      <div class="prob-row">
+        <div class="prob-word">consapevolezza</div>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:52%"></div></div>
+        <div class="prob-pct">52%</div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-word">criterio</div>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:24%"></div></div>
+        <div class="prob-pct">24%</div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-word">cautela</div>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:13%"></div></div>
+        <div class="prob-pct">13%</div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-word">attenzione</div>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:7%"></div></div>
+        <div class="prob-pct">7%</div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-word">altre parole</div>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:4%"></div></div>
+        <div class="prob-pct">4%</div>
+      </div>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-top:16px;font-family:var(--font-mono)">* valori indicativi a scopo illustrativo. La temperatura del modello regola quanto "rischiare" scelte meno probabili.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================
+     SEZIONE 5 — LLM E ALLUCINAZIONI
+================================= -->
+<section id="sezione-llm" class="article-container">
+  <div class="sec-label reveal">Sezione 5</div>
+  <h2 class="sec-title reveal reveal-delay-1">LLM e allucinazioni:<br>perché il modello inventa.</h2>
+  <p class="sec-subtitle reveal reveal-delay-2">Un Large Language Model non mente deliberatamente. Fa qualcosa di più sottile e per certi versi più pericoloso.</p>
+
+  <div class="alucinazioni-grid reveal reveal-delay-2">
+    <div class="halluc-main">
+      <h3>Cos'è un Large Language Model</h3>
+      <p>Un <strong>LLM</strong> (Large Language Model, Modello Linguistico di Grandi Dimensioni) è un modello di deep learning addestrato su enormi quantità di testo con l'obiettivo di predire token successivi. "Large" si riferisce al numero di parametri — i pesi interni del modello che vengono aggiustati durante l'addestramento. GPT-4, Gemini Ultra, Claude 3: tutti LLM.</p>
+      <p>La caratteristica definitoria è che <strong>non hanno una memoria esplicita dei fatti</strong>. Non c'è un database interno che consultano. Quello che sanno è distribuito, in modo diffuso e opaco, nei miliardi di parametri della rete.</p>
+      <h3 style="margin-top:28px">Perché "allucinano"</h3>
+      <p>Il termine tecnico è <em>hallucination</em>: il modello produce informazioni che sembrano plausibili ma sono false. Questo accade perché il suo obiettivo primario non è "essere vero" ma "essere coerente con il pattern linguistico". Se non ha una risposta, ne costruisce una che suona bene — perché questo è esattamente quello per cui è stato addestrato.</p>
+      <p>Non è un bug che si può correggere facilmente. È una conseguenza diretta del meccanismo di funzionamento. I modelli più recenti lo fanno meno, ma non lo eliminano.</p>
+    </div>
+    <div class="halluc-side">
+      <div class="halluc-tip">
+        <div class="halluc-tip-label">Rischio alto</div>
+        <h4>Fatti verificabili</h4>
+        <p>Date, nomi, citazioni, statistiche, riferimenti bibliografici. Verificare sempre. Il modello può inventare una fonte che suona perfettamente accademica.</p>
+      </div>
+      <div class="halluc-tip">
+        <div class="halluc-tip-label">Rischio medio</div>
+        <h4>Ragionamento logico</h4>
+        <p>Su problemi matematici o logici complessi, il modello può sbagliare pur mostrando un procedimento apparentemente corretto.</p>
+      </div>
+      <div class="halluc-tip">
+        <div class="halluc-tip-label">Rischio basso</div>
+        <h4>Testi e strutture</h4>
+        <p>Generare testo, riformulare, strutturare idee, creare varianti di un documento: qui le allucinazioni contano meno perché non c'è un "vero" da confrontare.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout reveal reveal-delay-3">
+    <div class="callout-label">Per il docente</div>
+    <p>Insegnare a riconoscere le allucinazioni è una delle competenze digitali più preziose che possiamo trasmettere. Non "l'AI sbaglia", ma "l'AI produce output plausibili — sta a noi verificare".</p>
+  </div>
+</section>
+
+<!-- ==============================
+     SEZIONE 6 — IL CONTESTO
+================================= -->
+<section id="sezione-contesto" class="alt-section">
+  <div class="article-container" style="padding-top:0;padding-bottom:0">
+    <div class="sec-label reveal">Sezione 6</div>
+    <h2 class="sec-title reveal reveal-delay-1">Il contesto:<br>la memoria del modello.</h2>
+    <p class="sec-subtitle reveal reveal-delay-2">Il motivo per cui lo stesso modello risponde in modo completamente diverso a seconda di come scrivi.</p>
+
+    <div class="article-prose reveal reveal-delay-2">
+      <p>Ogni volta che apri una nuova conversazione con un LLM, il modello non ricorda nulla delle sessioni precedenti. Non ha memoria persistente. Quello che "vede" è solo il testo attuale della conversazione — il cosiddetto <strong>contesto</strong> o <em>context window</em>.</p>
+      <p>La finestra di contesto misura quanti token il modello può processare contemporaneamente: prompt di sistema, tutta la storia della conversazione, la tua domanda, la sua risposta. I modelli moderni hanno finestre enormi (alcune centinaia di migliaia di token), ma il limite esiste e ha conseguenze pratiche.</p>
+      <p>Cosa significa per te? Che <strong>il modo in cui scrivi il prompt cambia radicalmente la risposta</strong>. Non perché il modello sia capriccioso, ma perché tutto il suo ragionamento parte dal testo che legge in quel momento. Un prompt vago produce risposte vaghe. Un prompt con contesto, ruolo e obiettivo produce risposte calibrate e utili.</p>
+    </div>
+
+    <div class="contesto-box reveal reveal-delay-2">
+      <div class="contesto-header">
+        <span>Visualizzazione della finestra di contesto</span>
+        <span class="contesto-bar-label">ogni blocco = ~100 token</span>
+      </div>
+      <div class="contesto-body">
+        <div class="ctx-row">
+          <div class="ctx-label">Prompt sistema</div>
+          <div class="ctx-tokens">
+            <div class="ctx-token-block system" style="width:120px"></div>
+            <div class="ctx-token-block system" style="width:80px"></div>
+          </div>
+        </div>
+        <div class="ctx-row">
+          <div class="ctx-label">Storico chat</div>
+          <div class="ctx-tokens">
+            <div class="ctx-token-block user" style="width:60px"></div>
+            <div class="ctx-token-block assistant" style="width:140px"></div>
+            <div class="ctx-token-block user" style="width:90px"></div>
+            <div class="ctx-token-block assistant" style="width:200px"></div>
+            <div class="ctx-token-block user" style="width:50px"></div>
+            <div class="ctx-token-block assistant" style="width:180px"></div>
+          </div>
+        </div>
+        <div class="ctx-row">
+          <div class="ctx-label">Domanda attuale</div>
+          <div class="ctx-tokens">
+            <div class="ctx-token-block user" style="width:110px"></div>
+          </div>
+        </div>
+        <div class="ctx-row">
+          <div class="ctx-label">Spazio libero</div>
+          <div class="ctx-tokens">
+            <div class="ctx-token-block free" style="width:40px"></div>
+            <div class="ctx-token-block free" style="width:40px"></div>
+            <div class="ctx-token-block free" style="width:40px"></div>
+            <div class="ctx-token-block free" style="width:40px"></div>
+            <div class="ctx-token-block free" style="width:40px"></div>
+          </div>
+        </div>
+        <div class="ctx-counter">Finestra attiva: ~1.030 token su ~128.000 disponibili</div>
+      </div>
+    </div>
+
+    <div class="callout reveal reveal-delay-3">
+      <div class="callout-label">Implicazione pratica</div>
+      <p>In una conversazione molto lunga, i modelli tendono a "dimenticare" le istruzioni date all'inizio — non perché le ignorino, ma perché quelle parti del contesto diventano meno influenti. Nelle sessioni di lavoro complesse, conviene ripetere le istruzioni chiave.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================
+     SEZIONE 7 — I MODELLI
+================================= -->
+<section id="sezione-modelli" class="article-container">
+  <div class="sec-label reveal">Sezione 7</div>
+  <h2 class="sec-title reveal reveal-delay-1">I principali modelli:<br>differenze pratiche.</h2>
+  <p class="sec-subtitle reveal reveal-delay-2">ChatGPT, Gemini, Claude, Llama — non sono la stessa cosa. Ecco cosa cambia per chi insegna.</p>
+
+  <div class="modelli-grid reveal reveal-delay-2">
+    <div class="modello-card gpt">
+      <div class="modello-logo gpt">ChatGPT / GPT-4o</div>
+      <div class="modello-by">OpenAI · Dal 2022</div>
+      <div class="modello-feature">Il più conosciuto, con la base utenti più ampia</div>
+      <div class="modello-feature">Ottimo per redazione, sintesi e brainstorming</div>
+      <div class="modello-feature">Interpreta immagini, genera immagini (DALL·E), analizza file</div>
+      <div class="modello-feature">Disponibile free con limiti, abbonamento Plus per i modelli avanzati</div>
+      <div class="modello-nota">Punto di forza didattico: ecosistema ampio, facile da adottare in classe</div>
+    </div>
+    <div class="modello-card gemini">
+      <div class="modello-logo gemini">Gemini</div>
+      <div class="modello-by">Google DeepMind · Dal 2023</div>
+      <div class="modello-feature">Integrato con Google Workspace (Docs, Drive, Gmail)</div>
+      <div class="modello-feature">Accesso nativo al web in tempo reale</div>
+      <div class="modello-feature">Finestra di contesto molto ampia (fino a 1 milione di token)</div>
+      <div class="modello-feature">Gratuito in versione base, abbonamento Google One per Gemini Advanced</div>
+      <div class="modello-nota">Punto di forza didattico: integrazione con gli strumenti Google già usati a scuola</div>
+    </div>
+    <div class="modello-card claude">
+      <div class="modello-logo claude">Claude</div>
+      <div class="modello-by">Anthropic · Dal 2023</div>
+      <div class="modello-feature">Progettato con focus su sicurezza e comportamento affidabile</div>
+      <div class="modello-feature">Eccellente per ragionamento lungo e analisi di documenti</div>
+      <div class="modello-feature">Finestra di contesto molto ampia, ottimo per testi lunghi</div>
+      <div class="modello-feature">Gratuito in versione base, abbonamento Pro per i modelli avanzati</div>
+      <div class="modello-nota">Punto di forza didattico: risposte più caute e sfumate su argomenti sensibili</div>
+    </div>
+    <div class="modello-card open">
+      <div class="modello-logo open">Llama / Modelli open</div>
+      <div class="modello-by">Meta e altri · Open source</div>
+      <div class="modello-feature">Codice sorgente e pesi disponibili pubblicamente</div>
+      <div class="modello-feature">Possono essere eseguiti localmente, senza inviare dati a nessun server</div>
+      <div class="modello-feature">Richiedono hardware adeguato o piattaforme intermedie</div>
+      <div class="modello-feature">Opzione interessante per istituzioni con requisiti di privacy severi</div>
+      <div class="modello-nota">Punto di forza didattico: privacy massima, nessun abbonamento, personalizzabili</div>
+    </div>
+  </div>
+
+  <div class="callout reveal reveal-delay-3">
+    <div class="callout-label">Consiglio per iniziare</div>
+    <p>Non esiste il modello "migliore" in assoluto. La scelta dipende da cosa vuoi fare, da chi sono i tuoi studenti e da che strumenti usa già la tua scuola. Inizia da quello che hai già a disposizione — la logica di funzionamento è la stessa per tutti.</p>
+  </div>
+</section>
+
+<!-- ==============================
+     SEZIONE 8 — PRIVACY E DATI
+================================= -->
+<section id="sezione-privacy" class="alt-section">
+  <div class="article-container" style="padding-top:0;padding-bottom:0">
+    <div class="sec-label reveal">Sezione 8</div>
+    <h2 class="sec-title reveal reveal-delay-1">Privacy e dati:<br>cosa succede quando scrivi.</h2>
+    <p class="sec-subtitle reveal reveal-delay-2">Una domanda che ogni docente dovrebbe saper rispondere prima di usare questi strumenti in classe.</p>
+
+    <div class="privacy-flow reveal reveal-delay-2">
+      <div class="privacy-step">
+        <div class="privacy-step-num">01</div>
+        <h4>Scrivi il prompt</h4>
+        <p>Il testo che invii lascia il tuo dispositivo e viaggia verso i server dell'azienda.</p>
+        <div class="privacy-step-arrow">→</div>
+      </div>
+      <div class="privacy-step">
+        <div class="privacy-step-num">02</div>
+        <h4>Elaborazione in cloud</h4>
+        <p>Il modello elabora la tua richiesta su server remoti — generalmente negli USA o in Europa.</p>
+        <div class="privacy-step-arrow">→</div>
+      </div>
+      <div class="privacy-step">
+        <div class="privacy-step-num">03</div>
+        <h4>Log e conservazione</h4>
+        <p>Le conversazioni vengono conservate per periodi variabili. Alcuni provider le usano per il training futuro (salvo opt-out).</p>
+        <div class="privacy-step-arrow">→</div>
+      </div>
+      <div class="privacy-step">
+        <div class="privacy-step-num">04</div>
+        <h4>Risposta</h4>
+        <p>Il testo generato ti viene restituito. Il tuo prompt originale rimane nei log del provider.</p>
+      </div>
+    </div>
+
+    <div class="privacy-warning reveal reveal-delay-3">
+      <div class="privacy-warning-icon">⚠️</div>
+      <div>
+        <p><strong>Non inserire mai dati personali di studenti minorenni</strong> nei prompt di servizi AI commerciali senza aver verificato la conformità al GDPR e alle policy della piattaforma. Nomi, valutazioni, situazioni familiari, condizioni di salute: niente di tutto questo nei prompt. La maggior parte dei provider offre opzioni per disattivare il training sui tuoi dati — vale la pena attivarle.</p>
+      </div>
+    </div>
+
+    <div class="card-grid card-grid-2 reveal reveal-delay-2" style="margin-top:32px">
+      <div class="concept-card">
+        <div class="concept-card-label">Alternativa sicura</div>
+        <h3>Prompt anonimi e scenari fittizi</h3>
+        <p>Puoi usare l'AI per preparare materiali su uno studente generico ("uno studente di terza media con difficoltà in matematica") senza inserire dati reali. Il risultato è ugualmente utile, il rischio privacy azzerato.</p>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card-label">Per le scuole</div>
+        <h3>Accordi istituzionali</h3>
+        <p>Molte piattaforme (Microsoft con Azure OpenAI, Google Workspace for Education) offrono contratti specifici per istituzioni educative con garanzie GDPR. Verificare con il proprio DPO prima di adottare strumenti per uso istituzionale.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================
+     SEZIONE 9 — RAGIONA DAVVERO?
+================================= -->
+<section id="sezione-ragiona" class="filosofia-dark">
+  <div class="filo-inner">
+    <div class="sec-label reveal" style="color:var(--eu-yellow)">Sezione 9 · La domanda difficile</div>
+    <div class="filo-quote reveal reveal-delay-1">
+      L'AI <em>capisce</em> quello che scrive,<br>o lo <em>simula</em> in modo indistinguibile?
+    </div>
+
+    <div class="article-prose reveal reveal-delay-2">
+      <p style="color:rgba(255,255,255,.6)">È la domanda che i tuoi colleghi di filosofia faranno — giustamente. E non ha una risposta definitiva. Ma è utile ragionarci con onestà, perché la risposta che dai influenza come usi questi strumenti e come ne parli ai tuoi studenti.</p>
+      <p style="color:rgba(255,255,255,.6)">Quello che sappiamo con certezza: un LLM non ha coscienza, non ha emozioni, non ha intenzioni nel senso che attribuiamo a questi termini negli esseri umani. Non "vuole" aiutarti, non "sa" di sbagliarsi, non "prova" nulla. Ma produce output che in molti contesti sono funzionalmente equivalenti a quelli di un interlocutore intelligente.</p>
+    </div>
+
+    <div class="filo-grid reveal reveal-delay-3">
+      <div class="filo-card pro">
+        <div class="filo-card-label">Argomento funzionalista</div>
+        <h3>La comprensione emerge dalla funzione</h3>
+        <p>Se un sistema risponde in modo appropriato a qualsiasi domanda su un testo, disambigua metafore, coglie ironie e adatta il registro comunicativo — in che senso diremmo che "non capisce"? La comprensione potrebbe essere definita proprio da questi comportamenti.</p>
+      </div>
+      <div class="filo-card con">
+        <div class="filo-card-label">Argomento della stanza cinese</div>
+        <h3>La sintassi non è semantica</h3>
+        <p>John Searle, già negli anni '80, immaginava una persona in una stanza che manipola simboli cinesi seguendo regole formali, producendo risposte corrette senza capire il cinese. Un LLM, dice questa posizione, fa esattamente questo: manipola pattern senza significato interno.</p>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:40px;background:rgba(245,200,0,.08);border-left-color:var(--eu-yellow)">
+      <div class="callout-label" style="color:var(--eu-yellow)">La posizione di NuovaDidattica</div>
+      <p style="color:rgba(255,255,255,.6)">La domanda "l'AI capisce davvero?" è affascinante ma, per il docente, rischia di essere un vicolo cieco. La domanda più produttiva è: <em>cosa sa fare, cosa non sa fare, e come posso usarlo per far pensare meglio i miei studenti?</em> La risposta a quella domanda non dipende dalla risposta alla prima.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINALE -->
+<section class="cta-section">
+  <h2>Ora che sai come funziona,<br><em>usalo meglio</em>.</h2>
+  <p>Conoscere il meccanismo non è un esercizio teorico. È la base per costruire un metodo didattico solido — e per insegnarlo ai tuoi studenti.</p>
+  <div class="cta-buttons">
+    <a href="index.html#filosofia" class="btn-primary">Scopri il metodo</a>
+    <a href="index.html#toolbox" class="btn-ghost">Vai al Toolbox</a>
+  </div>
+</section>
+
+</main>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)})();
+
+// NAV SCROLL
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+
+// REVEAL ON SCROLL
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// PROB BAR ANIMATION — attiva solo quando la sezione è visibile
+const probBars = document.querySelectorAll('.prob-bar');
+const probObserver = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      probBars.forEach(b=>{const w=b.style.width;b.style.width='0';setTimeout(()=>b.style.width=w,100)});
+      probObserver.disconnect();
+    }
+  });
+},{threshold:.3});
+const probDemo = document.querySelector('.prob-demo');
+if(probDemo) probObserver.observe(probDemo);
+</script>
+</body>
+</html>

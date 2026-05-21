@@ -1151,6 +1151,46 @@ footer {
 }
 .feed-cta-card a:hover { transform: scale(1.04); }
 
+/* ===== HOOK CAPIRE AI ===== */
+.capire-ai-hook {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+  background: var(--dark-3);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+  padding: 24px 32px;
+  margin-bottom: 48px;
+}
+.capire-ai-hook-text {
+  display: flex; align-items: center; gap: 20px;
+}
+.capire-ai-hook-icon {
+  font-size: 2rem; flex-shrink: 0;
+}
+.capire-ai-hook-label {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--eu-yellow);
+  margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+}
+.capire-ai-hook-label::before {
+  content: ""; display: block; width: 12px; height: 1px; background: var(--eu-yellow);
+}
+.capire-ai-hook p {
+  font-family: var(--font-display); font-size: 0.88rem; font-weight: 600;
+  color: rgba(255,255,255,0.65); line-height: 1.4; margin: 0;
+}
+.capire-ai-hook-cta {
+  font-family: var(--font-display); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: white; text-decoration: none; white-space: nowrap;
+  background: rgba(245,200,0,0.12); border: 1px solid rgba(245,200,0,0.3);
+  padding: 10px 22px; border-radius: 100px;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.capire-ai-hook-cta:hover {
+  background: rgba(245,200,0,0.22); border-color: rgba(245,200,0,0.6);
+}
+
 /* ===== RESPONSIVE ===== */
 
 /* ===== HAMBURGER MOBILE ===== */
@@ -1608,6 +1648,7 @@ footer {
     <img src="data:image/png;base64,ND_LOGO_PLACEHOLDER" alt="NuovaDidattica.eu" id="navLogoND">
   </a>
   <ul class="nav-links">
+    <li><a href="capire-ai.html">Capire l'AI</a></li>
     <li><a href="#filosofia">Filosofia</a></li>
     <li><a href="#casi">Applicazioni</a></li>
     <li><a href="#etica">Etica</a></li>
@@ -1625,6 +1666,7 @@ footer {
 
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
+  <a href="capire-ai.html" onclick="toggleMenu()">Capire l'AI</a>
   <a href="#filosofia" onclick="toggleMenu()">Filosofia</a>
   <a href="#casi" onclick="toggleMenu()">Applicazioni</a>
   <a href="#etica" onclick="toggleMenu()">Etica</a>
@@ -1684,6 +1726,17 @@ footer {
   <div class="section-label reveal">La nostra filosofia</div>
   <h2 class="section-title reveal reveal-delay-1">Non lo strumento.<br>Il <em>metodo</em>.</h2>
   <p class="section-subtitle reveal reveal-delay-2">L'intelligenza artificiale non è la risposta — è il mezzo. Quello che conta è il come e il perché della sua applicazione didattica.</p>
+
+  <div class="capire-ai-hook reveal reveal-delay-2">
+    <div class="capire-ai-hook-text">
+      <div class="capire-ai-hook-icon">🧩</div>
+      <div>
+        <div class="capire-ai-hook-label">Prima di tutto</div>
+        <p>Non sai ancora cosa sia un LLM, come funzionano i token o perché l'AI "allucia"? Parti dalle basi — tutto il resto avrà più senso.</p>
+      </div>
+    </div>
+    <a href="capire-ai.html" class="capire-ai-hook-cta">Capire l'AI →</a>
+  </div>
 
   <div class="bento bento-filosofia">
 
