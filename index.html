@@ -2087,13 +2087,13 @@ footer {
       <a href="#" class="tool-link">Accedi alla libreria →</a>
     </div>
 
-    <div class="bento-card tool-card tool-prompts reveal reveal-delay-1" data-card-id="tool-prompts">
+    <div class="bento-card tool-card tool-prompts reveal reveal-delay-1" data-card-id="tool-prompts" onclick="window.location='prompt-coach.html'" style="cursor:pointer;">
       <div>
-        <div class="tool-icon">✍️</div>
-        <h3>Libreria di Prompt Pronti</h3>
-        <p>Una raccolta curata di prompt testati in classe, divisi per materia, livello e obiettivo didattico. Copia, adatta, usa.</p>
+        <div class="tool-icon">✦</div>
+        <h3>PromptCoach</h3>
+        <p>Scrivi un prompt, ricevi un'analisi completa: punteggio, punti deboli e una versione ottimizzata pronta all'uso. Powered by Claude.</p>
       </div>
-      <a href="#" class="tool-link">Scarica gratis →</a>
+      <a href="prompt-coach.html" class="tool-link" onclick="event.stopPropagation()">Prova il tool →</a>
       <div class="tool-prompts-bg">{"prompt"}</div>
     </div>
 
