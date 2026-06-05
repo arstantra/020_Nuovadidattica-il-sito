@@ -372,6 +372,19 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
       <div id="fontiList">
         <div class="skel"></div><div class="skel" style="opacity:.5"></div>
       </div>
+
+      <!-- Risultati scansione RSS -->
+      <div id="scan-results-panel" style="display:none">
+        <div class="card">
+          <div class="card-title" id="scan-title">🔍 Articoli trovati</div>
+          <div style="font-family:var(--font-mono);font-size:0.62rem;color:rgba(255,255,255,0.3);margin-bottom:14px" id="scan-subtitle"></div>
+          <div class="queue-header" style="grid-template-columns:1fr 160px"><span>Titolo & descrizione</span><span>Azione</span></div>
+          <div id="scan-list"></div>
+          <div style="margin-top:14px">
+            <button class="btn btn-ghost-white btn-sm" onclick="document.getElementById('scan-results-panel').style.display='none'">✕ Chiudi</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- CONFIG -->
@@ -663,6 +676,9 @@ async function loadBlogAdmin() {
     el.innerHTML = '<div class="empty-state"><div class="es-icon">✍️</div><p>Nessun articolo ancora</p></div>';
     return;
   }
+  // Popola la cache — evita JSON.stringify in onclick
+  _blogCache = {};
+  data.forEach(p => { _blogCache[p.id] = p; });
   el.innerHTML = data.map(p => `
     <div class="queue-item ${p.published ? 'published' : 'pending'}" id="bp-${p.id}" style="grid-template-columns:1fr 120px 110px 160px">
       <div>
@@ -675,7 +691,7 @@ async function loadBlogAdmin() {
       <span class="status-pill ${p.published ? 'st-published' : 'st-pending'}">${p.published ? 'Online' : 'Bozza'}</span>
       <div class="qi-actions">
         ${p.drive_url ? `<a href="${escHtml(p.drive_url)}" target="_blank" class="btn btn-ghost-white btn-sm">Drive →</a>` : ''}
-        <button class="btn btn-ghost-white btn-sm" onclick="editPost(${JSON.stringify(p)})">✏ Modifica</button>
+        <button class="btn btn-ghost-white btn-sm" onclick="editPost('${p.id}')">✏ Modifica</button>
         ${p.published
           ? `<button class="btn btn-outline-red btn-sm" onclick="togglePost('${p.id}',false)">Ritira</button>`
           : `<button class="btn btn-green btn-sm" onclick="togglePost('${p.id}',true)">Pubblica</button>`}
@@ -741,14 +757,19 @@ async function togglePost(id, publish) {
 async function deletePost(id) {
   if (!confirm('Eliminare definitivamente questo articolo?')) return;
   if (demoMode) { toast('⚠ Non disponibile in demo','err'); return; }
-  await sb.from('blog_posts').delete().eq('id', id);
+  const { error } = await sb.from('blog_posts').delete().eq('id', id);
+  if (error) { toast('⚠ Errore eliminazione: ' + error.message,'err'); return; }
   toast('✕ Articolo eliminato','');
   loadBlogAdmin();
 }
 
 // ── MODIFICA ARTICOLO BLOG ────────────────────────────────────
 let _editPostId = null;
-function editPost(p) {
+let _blogCache = {};   // mappa id → oggetto post (evita JSON.stringify in onclick)
+
+function editPost(idOrObj) {
+  const p = (typeof idOrObj === 'string') ? _blogCache[idOrObj] : idOrObj;
+  if (!p) { toast('⚠ Articolo non trovato — ricarica la lista', 'err'); return; }
   _editPostId = p.id;
   // Popola i campi del form con i dati esistenti
   document.getElementById('bTitle').value   = p.title || '';
@@ -896,7 +917,8 @@ async function deletePub(id) {
 
 // ── MODIFICA PUBBLICAZIONE ────────────────────────────────────
 let _editPubId = null;
-let _pubsCache = {};   // mappa id → oggetto pubblicazione
+let _pubsCache = {};     // mappa id → oggetto pubblicazione
+let _fontiData = [];     // cache fonti monitorate per scanFonte()
 
 function editPub(idOrObj) {
   // Accetta sia un ID stringa (da onclick) che un oggetto diretto
@@ -982,6 +1004,8 @@ async function loadFonti() {
     }
   }
 
+  _fontiData = fonti; // cache globale per scanFonte()
+
   const active = fonti.filter(f=>f.active).length;
   document.getElementById('fontiBadge').textContent = active;
   document.getElementById('statFonti').textContent = active;
@@ -1006,6 +1030,7 @@ async function loadFonti() {
             <div class="source-url">${escHtml(f.url)}</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+            ${f.tipo === 'rss' ? `<button class="btn btn-ghost-white btn-sm" onclick="scanFonte('${f.id}')">🔍 Scansiona</button>` : ''}
             <button class="tog ${f.active?'on':''}" onclick="toggleFonte('${f.id}',this)" title="${f.active?'Disattiva':'Attiva'}"></button>
             <button class="btn btn-outline-red btn-sm" onclick="deleteFonte('${f.id}')">✕</button>
           </div>
@@ -1086,6 +1111,105 @@ async function deleteFonte(id) {
   fadeOut('fonte-'+id);
   toast('✕ Fonte rimossa','');
   setTimeout(loadFonti, 400);
+}
+
+// ── SCAN RSS ─────────────────────────────────────────────────
+let _scanItems = [];
+
+async function scanFonte(id) {
+  const fonte = _fontiData.find(f => String(f.id) === String(id));
+  if (!fonte) { toast('⚠ Fonte non trovata', 'err'); return; }
+  if (fonte.tipo !== 'rss') { toast('⚠ Scansione disponibile solo per fonti RSS', 'err'); return; }
+
+  const panel = document.getElementById('scan-results-panel');
+  const list  = document.getElementById('scan-list');
+  document.getElementById('scan-title').textContent = `🔍 ${escHtml(fonte.name)}`;
+  document.getElementById('scan-subtitle').textContent = fonte.url;
+  list.innerHTML = '<div class="skel"></div><div class="skel" style="opacity:.5"></div>';
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Normalizza URL — assicura schema https://
+  let feedUrl = fonte.url.trim();
+  if (!feedUrl.startsWith('http')) feedUrl = 'https://' + feedUrl;
+
+  try {
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
+    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
+    if (!res.ok) throw new Error('Proxy non raggiungibile (status ' + res.status + ')');
+    const json = await res.json();
+    if (!json.contents) throw new Error('Feed vuoto o non raggiungibile');
+
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(json.contents, 'text/xml');
+    const parseErr = xml.querySelector('parsererror');
+    if (parseErr) throw new Error('Feed non è XML valido');
+
+    // Supporta RSS 2.0 (<item>) e Atom (<entry>)
+    const nodes = Array.from(xml.querySelectorAll('item, entry')).slice(0, 15);
+    if (!nodes.length) {
+      list.innerHTML = '<div class="empty-state"><div class="es-icon">📭</div><p>Nessun articolo nel feed</p></div>';
+      return;
+    }
+
+    _scanItems = nodes.map(node => {
+      // <link> in Atom può essere attributo href, in RSS è textContent
+      let url = '';
+      const linkEl = node.querySelector('link');
+      if (linkEl) url = linkEl.getAttribute('href') || linkEl.textContent.trim();
+      const title = node.querySelector('title')?.textContent?.trim() || 'Senza titolo';
+      const desc  = (node.querySelector('description, summary, content')?.textContent || '')
+                      .replace(/<[^>]+>/g, '').trim().substring(0, 180);
+      return { title, url, description: desc };
+    });
+
+    list.innerHTML = _scanItems.map((it, i) => `
+      <div class="queue-item" id="scan-item-${i}" style="grid-template-columns:1fr 160px;border-left:none">
+        <div>
+          <div class="qi-title">${escHtml(it.title)}</div>
+          <div class="qi-sub">${escHtml(it.description)}</div>
+        </div>
+        <div class="qi-actions">
+          <button class="btn btn-green btn-sm" onclick="addFromScan(${i})">+ Coda</button>
+          ${it.url ? `<a href="${escHtml(it.url)}" target="_blank" class="btn btn-ghost-white btn-sm">↗</a>` : ''}
+        </div>
+      </div>`).join('');
+
+    toast(`✓ ${_scanItems.length} articoli trovati`, 'ok');
+  } catch(e) {
+    list.innerHTML = `<div class="empty-state"><div class="es-icon">⚠️</div><p>${escHtml(e.message)}</p></div>`;
+    toast('⚠ Impossibile scansionare: ' + e.message, 'err');
+  }
+}
+
+async function addFromScan(idx) {
+  const item = _scanItems[idx];
+  if (!item) return;
+  if (!item.url) { toast('⚠ Nessun URL per questo articolo', 'err'); return; }
+
+  const payload = {
+    title:       item.title,
+    description: item.description,
+    url:         item.url,
+    source:      'articolo',
+    category:    '🎓 Didattica pratica',
+    status:      'pending',
+    found_at:    new Date().toISOString()
+  };
+
+  if (demoMode) {
+    demoData.push({ ...payload, id: 'd' + Date.now() });
+    fadeOut('scan-item-' + idx);
+    toast('✓ Aggiunto alla coda (demo)', 'ok');
+    adjustCount('pendingBadge', 'statPend', 1);
+    return;
+  }
+
+  const { error } = await sb.from('feed_items').insert(payload);
+  if (error) { toast('⚠ ' + error.message, 'err'); return; }
+  fadeOut('scan-item-' + idx);
+  toast('✓ Aggiunto alla coda di approvazione!', 'ok');
+  adjustCount('pendingBadge', 'statPend', 1);
 }
 
 // ── RENDER FEED ───────────────────────────────────────────────
