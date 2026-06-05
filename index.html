@@ -673,16 +673,15 @@ section { padding: 100px 48px; }
   font-family: var(--font-display); font-weight: 800;
 }
 .tool-pdf {
-  grid-column: span 3; background: var(--light-2);
+  grid-column: span 6; background: var(--light-2);
 }
 .tool-pdf h3, .tool-pdf p { color: var(--text-dark); }
 .tool-pdf .tool-link { color: var(--text-dark); }
 .tool-ada {
-  grid-column: span 3; background: var(--dark-2);
+  grid-column: span 12; background: var(--dark-2);
   border: 1px solid rgba(217,27,27,0.2);
 }
 .tool-ada h3 { color: white; }
-.tool-ada p { color: rgba(255,255,255,0.6); }
 .tool-ada .tool-link { color: var(--red); }
 .tool-ada .soon-badge {
   font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.15em;
@@ -690,6 +689,62 @@ section { padding: 100px 48px; }
   color: var(--red); padding: 4px 10px; border-radius: 100px;
   display: inline-block; margin-bottom: 10px;
 }
+/* ADA card — expanded layout */
+.ada-card-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; width: 100%;
+}
+.ada-card-desc {
+  color: rgba(255,255,255,0.65); margin: 0 0 20px; line-height: 1.65;
+}
+.ada-badges {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+}
+.ada-badge-pill {
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 4px 12px; border-radius: 100px; border: 1px solid;
+}
+.ada-badge-pill.free {
+  background: rgba(74,222,128,0.1); color: #4ade80; border-color: rgba(74,222,128,0.25);
+}
+.ada-badge-pill.tech {
+  background: rgba(217,27,27,0.1); color: var(--red); border-color: rgba(217,27,27,0.2);
+}
+.ada-access-note {
+  font-family: var(--font-mono); font-size: 0.75rem; color: rgba(255,255,255,0.35);
+}
+.ada-access-note strong { color: rgba(255,255,255,0.6); }
+.ada-competences {
+  background: rgba(255,255,255,0.04); border-radius: var(--radius-sm);
+  padding: 20px; margin-bottom: 28px;
+}
+.ada-competences-label {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 14px;
+}
+.ada-competences ul { list-style: none; padding: 0; margin: 0; }
+.ada-competences li {
+  color: rgba(255,255,255,0.7); font-size: 0.875rem; line-height: 1.5;
+  padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.ada-competences li:last-child { border-bottom: none; }
+.ada-competences li::before {
+  content: "✓"; color: var(--red); font-family: var(--font-mono);
+  font-size: 0.75rem; margin-top: 2px; flex-shrink: 0;
+}
+.ada-ctas { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.ada-btn-primary {
+  display: inline-block; background: var(--red); color: white;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+  padding: 14px 28px; border-radius: 100px; text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.ada-btn-primary:hover { background: var(--red-deep); transform: translateY(-1px); }
+.ada-btn-secondary {
+  color: rgba(255,255,255,0.4); font-family: var(--font-display);
+  font-size: 0.875rem; text-decoration: none; transition: color 0.2s;
+}
+.ada-btn-secondary:hover { color: rgba(255,255,255,0.8); }
 .tool-icon { font-size: 2rem; margin-bottom: 14px; }
 
 /* ===== NOTEBOOKLM GENERATOR CARD ===== */
@@ -1409,10 +1464,11 @@ footer {
   /* Titolo hero: limita la larghezza massima per liberare spazio al logo */
   .hero-headline { max-width: 700px; }
 
-  /* Toolbox: generator resta full-width, le 6 card in 2 righe da 3 */
-  .tool-prompts    { grid-column: span 4; }
-  .tool-pdf        { grid-column: span 4; }
-  .tool-ada        { grid-column: span 4; }
+  /* Toolbox: generator full-width, ADA full-width, inner grid a 1 col */
+  .tool-prompts    { grid-column: span 6; }
+  .tool-pdf        { grid-column: span 6; }
+  .tool-ada        { grid-column: span 12; }
+  .ada-card-grid   { grid-template-columns: 1fr; gap: 28px; }
 
   /* Casi: equalizza riga 1 per evitare schiacciamento di caso-lezioni (span 3 troppo stretto) */
   .caso-verifiche  { grid-column: span 4; }
@@ -1428,7 +1484,9 @@ footer {
   /* 6 card restanti: 3 righe da 2 uguali */
   .tool-classroom, .tool-notebooklm, .tool-drive { grid-column: span 1; }
   .tool-prompts { grid-column: span 1; }
-  .tool-pdf, .tool-ada { grid-column: span 1; }
+  .tool-pdf { grid-column: span 1; }
+  .tool-ada { grid-column: span 2 !important; }
+  .ada-card-grid { grid-template-columns: 1fr; gap: 24px; }
 
   /* casi tablet: 2 col, last card full width — no orphan */
   .bento-casi { grid-template-columns: repeat(2, 1fr); }
@@ -2107,12 +2165,40 @@ footer {
     </div>
 
     <div class="bento-card tool-card tool-ada reveal reveal-delay-3" data-card-id="tool-ada">
-      <div>
-        <div class="tool-icon">🤖</div>
-        <h3>App ADA</h3>
-        <p>L'assistente AI proprietario per docenti. Powered by Gemini API.</p>
+      <div class="ada-card-grid">
+
+        <!-- Sinistra: identità e accesso -->
+        <div class="ada-card-left">
+          <div class="tool-icon">🤖</div>
+          <h3>App ADA</h3>
+          <p class="ada-card-desc">ADA è l'ambiente di lavoro AI di NuovaDidattica.eu pensato per i docenti. Non un chatbot generico: conosce il tuo corso, la tua classe e cresce con te nel tempo — dalla progettazione alla lezione quotidiana, fino al monitoraggio degli studenti.</p>
+          <div class="ada-badges">
+            <span class="ada-badge-pill free">✓ Accesso gratuito</span>
+            <span class="ada-badge-pill tech">Powered by Gemini</span>
+            <span class="ada-badge-pill tech">Solo browser</span>
+            <span class="ada-badge-pill tech">Nessuna installazione</span>
+          </div>
+          <p class="ada-access-note">Accedi su <strong>ada.nuovadidattica.eu</strong> — disponibile da qualsiasi browser moderno, da computer o tablet.</p>
+        </div>
+
+        <!-- Destra: competenze minime + CTA -->
+        <div class="ada-card-right">
+          <div class="ada-competences">
+            <div class="ada-competences-label">Per iniziare ti basta</div>
+            <ul>
+              <li>Saper navigare il web (Chrome o Firefox consigliati)</li>
+              <li>Il programma del tuo corso in formato testo o PDF</li>
+              <li>Un account Google — utile per integrare Google Classroom</li>
+              <li>Circa 20 minuti per il setup iniziale</li>
+            </ul>
+          </div>
+          <div class="ada-ctas">
+            <a href="https://ada.nuovadidattica.eu" target="_blank" class="ada-btn-primary">Inizia con ADA →</a>
+            <a href="https://ada.nuovadidattica.eu" target="_blank" class="ada-btn-secondary">Apri direttamente l'app</a>
+          </div>
+        </div>
+
       </div>
-      <a href="https://ada.nuovadidattica.eu" target="_blank" class="tool-link">Apri ADA →</a>
     </div>
 
   </div>
