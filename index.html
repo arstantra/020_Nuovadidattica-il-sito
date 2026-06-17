@@ -1376,7 +1376,7 @@ footer {
 
   /* All bentos → single column */
   .bento-filosofia, .bento-casi, .bento-etica, .bento-toolbox,
-  .bento-community, .bento-feed, .bento-blog, .bento-pub {
+  .progetti-grid, .bento-community, .bento-feed, .bento-blog, .bento-pub {
     grid-template-columns: 1fr;
   }
 
@@ -1386,6 +1386,7 @@ footer {
   .tool-nlm-generator, .tool-classroom, .tool-notebooklm, .tool-drive, .tool-prompts, .tool-pdf, .tool-ada,
   .etica-main, .etica-side, .etica-highlight, .etica-card,
   .crit-card, .crit-01, .crit-02, .crit-03, .etica-banda-falso,
+  .progetto-card,
   .comm-main, .comm-side,
   .feed-card, .feed-card-wide, .feed-card-mid, .feed-card-small,
   .feed-list-wrap, .load-more-wrap, .feed-filters,
@@ -1697,6 +1698,205 @@ footer {
 .card-approfondimento { cursor: pointer; }
 .card-approfondimento-ctas { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; position: relative; z-index: 1; }
 .card-approfondimento-cta { display: inline-block; text-decoration: none; }
+
+/* ===== SEZIONE PROGETTI & ESPERIENZE ===== */
+#progetti { background: var(--light-2); }
+.progetti-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gap);
+}
+.progetto-card {
+  grid-column: span 12;
+  background: white;
+  border-radius: var(--radius);
+  padding: 52px;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 48px;
+  align-items: start;
+}
+.progetto-body { display: flex; flex-direction: column; }
+.progetto-eyebrow {
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.progetto-dev-badge {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: rgba(10,10,10,0.05); color: var(--text-mid);
+  border: 1px solid var(--light-3);
+  padding: 5px 12px; border-radius: 100px;
+  display: inline-block; margin-bottom: 18px; width: fit-content;
+}
+.progetto-title {
+  font-family: var(--font-display); font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
+  color: var(--text-dark); margin-bottom: 20px;
+}
+.progetto-text {
+  font-size: 0.96rem; line-height: 1.7; color: var(--text-mid);
+  margin-bottom: 14px;
+}
+.progetto-nota-etica {
+  margin: 20px 0 28px;
+  background: var(--light-2); border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  border-left: 3px solid var(--light-3);
+}
+.progetto-nota-label {
+  font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;
+  display: block;
+}
+.progetto-nota-etica p {
+  font-size: 0.83rem; line-height: 1.55; color: var(--text-mid);
+  font-style: italic;
+}
+.progetto-ctas {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-top: 4px;
+}
+.progetto-cta-primary {
+  font-family: var(--font-display); font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--dark); color: white;
+  padding: 12px 24px; border-radius: 100px;
+  text-decoration: none; display: inline-block;
+  transition: background 0.2s, transform 0.15s;
+}
+.progetto-cta-primary:hover { background: var(--red); transform: translateY(-1px); }
+.progetto-cta-secondary {
+  font-family: var(--font-mono); font-size: 0.63rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-mid);
+  background: none; border: 1px solid var(--light-3); border-radius: 100px;
+  padding: 10px 20px; cursor: pointer;
+  transition: all 0.2s;
+}
+.progetto-cta-secondary:hover { border-color: var(--text-dark); color: var(--text-dark); }
+
+/* Pensatori sidebar */
+.pensatori-sidebar {
+  border-left: 1px solid var(--light-3);
+  padding-left: 36px;
+  padding-top: 4px;
+}
+.pensatori-label {
+  font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.pensatori-label::before { content: ''; display: block; width: 14px; height: 1px; background: var(--light-3); }
+.pensatori-list { list-style: none; }
+.pensatori-list li {
+  padding: 10px 0; border-bottom: 1px solid var(--light-2);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.pensatori-list li:last-child { border-bottom: none; }
+.pensatori-list li.pensatori-more {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted); padding-top: 10px;
+}
+.pensatore-nome {
+  font-family: var(--font-display); font-size: 0.88rem; font-weight: 700;
+  color: var(--text-dark);
+}
+.pensatore-tema {
+  font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.06em;
+  color: var(--text-muted); line-height: 1.4;
+}
+
+/* Expand override per il pannello pensatori (contenuto lungo) */
+#exp-pensatori.open { max-height: 3200px; }
+
+/* Pensatori expand body */
+.pensatori-expand-body { width: 100%; }
+.pensatori-expand-header { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--light-3); }
+.pensatori-expand-header h4 {
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 800;
+  color: var(--text-dark); margin-bottom: 4px; line-height: 1.1;
+}
+.pensatori-expand-subtitle {
+  font-family: var(--font-mono); font-size: 0.63rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.pensatori-expand-grid {
+  display: grid; grid-template-columns: 1fr 260px; gap: 48px;
+  align-items: start; margin-bottom: 24px;
+}
+.pensatori-expand-section { margin-bottom: 24px; }
+.pensatori-expand-section:last-child { margin-bottom: 0; }
+.pensatori-section-label {
+  font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--red);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.pensatori-section-label::before { content: ''; display: block; width: 14px; height: 1px; background: var(--red); }
+.pensatori-expand-section p {
+  font-size: 0.92rem; line-height: 1.7; color: var(--text-mid);
+}
+.pensatori-etica-box {
+  background: var(--light-2); border-radius: var(--radius-sm);
+  border-left: 3px solid var(--light-3);
+  padding: 16px 20px; margin: 12px 0;
+}
+.pensatori-etica-box blockquote {
+  font-size: 0.92rem; line-height: 1.65; color: var(--text-mid); font-style: italic;
+}
+.pensatori-steps {
+  list-style: none; counter-reset: steps; margin-top: 10px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.pensatori-steps li {
+  counter-increment: steps;
+  display: flex; gap: 12px; align-items: flex-start;
+  font-size: 0.92rem; line-height: 1.6; color: var(--text-mid);
+}
+.pensatori-steps li::before {
+  content: counter(steps);
+  font-family: var(--font-display); font-size: 0.7rem; font-weight: 800;
+  color: var(--red); background: rgba(217,27,27,0.08);
+  min-width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.pensatori-steps strong { color: var(--text-dark); }
+.pensatori-table { width: 100%; border-collapse: collapse; }
+.pensatori-table th {
+  font-family: var(--font-mono); font-size: 0.57rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-muted);
+  text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--light-3);
+}
+.pensatori-table td {
+  font-size: 0.84rem; line-height: 1.4; color: var(--text-mid);
+  padding: 9px 12px 9px 0; border-bottom: 1px solid var(--light-2); vertical-align: top;
+}
+.pensatori-table td:first-child {
+  font-family: var(--font-display); font-weight: 700; color: var(--text-dark);
+}
+.pensatori-table tr:last-child td { border-bottom: none; }
+.pensatori-stato-badge {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em;
+  text-transform: uppercase; background: rgba(10,10,10,0.05); color: var(--text-mid);
+  border: 1px solid var(--light-3); padding: 5px 12px; border-radius: 100px;
+  display: inline-block; margin: 10px 0;
+}
+.pensatori-prima-sessione-quote {
+  border-left: 3px solid var(--light-3); padding: 12px 18px; margin: 12px 0;
+  font-style: italic; font-size: 0.92rem; line-height: 1.65; color: var(--text-mid);
+}
+.pensatori-expand-ctas {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  border-top: 1px solid var(--light-3); padding-top: 24px;
+}
+@media (max-width: 900px) {
+  .progetto-card { grid-template-columns: 1fr; padding: 28px 24px; gap: 24px; }
+  .pensatori-sidebar {
+    border-left: none; padding-left: 0;
+    border-top: 1px solid var(--light-3); padding-top: 24px;
+  }
+  .pensatori-expand-grid { grid-template-columns: 1fr; gap: 0; }
+}
 @media (max-width: 900px) {
   .card-approfondimento-ctas { align-self: flex-start; }
 }
@@ -1737,6 +1937,7 @@ footer {
     <li><a href="#casi">Applicazioni</a></li>
     <li><a href="#etica">Etica</a></li>
     <li><a href="#toolbox">Toolbox</a></li>
+    <li><a href="#progetti">Progetti</a></li>
     <li><a href="#feed">Feed</a></li>
     <li><a href="#blog">Blog</a></li>
     <li><a href="#pubblicazioni">Pubblicazioni</a></li>
@@ -1755,6 +1956,7 @@ footer {
   <a href="#casi" onclick="toggleMenu()">Applicazioni</a>
   <a href="#etica" onclick="toggleMenu()">Etica</a>
   <a href="#toolbox" onclick="toggleMenu()">Toolbox</a>
+  <a href="#progetti" onclick="toggleMenu()">Progetti</a>
   <a href="#feed" onclick="toggleMenu()">Feed</a>
   <a href="#blog" onclick="toggleMenu()">Blog</a>
   <a href="#pubblicazioni" onclick="toggleMenu()">Pubblicazioni</a>
@@ -2207,6 +2409,152 @@ footer {
             <a href="https://ada.nuovadidattica.eu" target="_blank" class="ada-btn-primary">Inizia con ADA →</a>
             <a href="https://ada.nuovadidattica.eu" target="_blank" class="ada-btn-secondary">Apri direttamente l'app</a>
           </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROGETTI & ESPERIENZE -->
+<section id="progetti">
+  <div class="section-label reveal">Progetti &amp; Esperienze</div>
+  <h2 class="section-title reveal reveal-delay-1">Idee che<br>diventano ambienti.</h2>
+  <p class="section-subtitle reveal reveal-delay-2">Laboratori digitali, esperimenti conversazionali, prototipi di pensiero. Progetti che esplorano i confini della didattica digitale.</p>
+
+  <div class="bento progetti-grid">
+
+    <div class="progetto-card reveal reveal-delay-1">
+      <div class="progetto-body">
+        <div class="progetto-eyebrow">Simposio permanente · AI generativa · Sperimentale</div>
+        <div class="progetto-dev-badge">🚧 In sviluppo · Fase 1</div>
+        <h3 class="progetto-title">La Tavola dei Pensatori</h3>
+        <p class="progetto-text">Siedi a tavola con Faggin, Illich, Morin, Sen e altri grandi del Novecento. Poni una domanda — sul senso della scuola, sulla tecnologia, sulla libertà, sulla coscienza. Ascolta le tensioni intellettuali reali tra questi pensatori. Intervieni, rilancia, provoca.</p>
+        <p class="progetto-text">Un sistema conversazionale multi-agente: ogni commensale risponde dal proprio pensiero, può dissentire dagli altri, può irritarsi. Dichiaratamente artificiale — onestamente reale nel pensiero che produce.</p>
+        <div class="progetto-nota-etica">
+          <span class="progetto-nota-label">Nota etica</span>
+          <p>Le voci sono sintetiche, modellate sui pensatori reali. Le parole sono generate da AI nello stile del loro pensiero. Non rappresentano le loro opinioni reali.</p>
+        </div>
+        <div class="progetto-ctas">
+          <a href="https://pensatori.nuovadidattica.eu" target="_blank" class="progetto-cta-primary">Entra nel simposio →</a>
+          <button class="progetto-cta-secondary" onclick="toggleExpand('exp-pensatori')">Scopri il progetto</button>
+        </div>
+      </div>
+      <div class="pensatori-sidebar">
+        <div class="pensatori-label">I commensali</div>
+        <ul class="pensatori-list">
+          <li>
+            <span class="pensatore-nome">Federico Faggin</span>
+            <span class="pensatore-tema">coscienza, tecnologia, identità</span>
+          </li>
+          <li>
+            <span class="pensatore-nome">Ivan Illich</span>
+            <span class="pensatore-tema">critica delle istituzioni, convivialità</span>
+          </li>
+          <li>
+            <span class="pensatore-nome">Edgar Morin</span>
+            <span class="pensatore-tema">complessità, educazione, pensiero connettivo</span>
+          </li>
+          <li>
+            <span class="pensatore-nome">Amartya Sen</span>
+            <span class="pensatore-tema">libertà, giustizia, capacità umane</span>
+          </li>
+          <li>
+            <span class="pensatore-nome">Christopher Alexander</span>
+            <span class="pensatore-tema">bellezza, luoghi, pattern del vivere</span>
+          </li>
+          <li>
+            <span class="pensatore-nome">Masanobu Fukuoka</span>
+            <span class="pensatore-tema">natura, non-fare, agricoltura come filosofia</span>
+          </li>
+          <li class="pensatori-more">+ 4 altri pensatori</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Pannello esteso — La Tavola dei Pensatori -->
+    <div class="bento-expand" id="exp-pensatori">
+      <div class="pensatori-expand-body">
+
+        <div class="pensatori-expand-header">
+          <h4>La Tavola dei Pensatori</h4>
+          <p class="pensatori-expand-subtitle">Un simposio permanente, personalizzato e onesto</p>
+        </div>
+
+        <div class="pensatori-expand-grid">
+
+          <div class="pensatori-expand-main">
+
+            <div class="pensatori-expand-section">
+              <div class="pensatori-section-label">Cos'è</div>
+              <p>Un sistema conversazionale multi-agente dove grandi pensatori del Novecento siedono a tavola insieme. L'utente sceglie chi invitare — massimo 3-5 commensali — e conversa con loro per testo.</p>
+              <p style="margin-top:10px">Gli agenti possono dissentire tra loro, anche aspramente, perché le tensioni intellettuali reali tra questi pensatori sono parte essenziale del progetto. Faggin e Morin sulla coscienza. Illich e Sen sulla libertà. Fukuoka e Alexander sul fare e il non-fare.</p>
+            </div>
+
+            <div class="pensatori-expand-section">
+              <div class="pensatori-section-label">Il principio etico</div>
+              <div class="pensatori-etica-box">
+                <blockquote>"Le voci sono sintetiche, modellate sui registri reali di questi pensatori. Le parole sono generate da AI nello stile del loro pensiero. Non rappresentano le loro opinioni reali."</blockquote>
+              </div>
+              <p>Questa dichiarazione non è una nota legale in piccolo. È parte dell'esperienza, visibile e centrale. Il progetto è dichiaratamente artificiale — come un attore che interpreta Churchill in un documentario, o una ricostruzione storica animata. La trasparenza è una forma di rispetto: per i pensatori, per chi conversa, per il pensiero stesso.</p>
+            </div>
+
+            <div class="pensatori-expand-section">
+              <div class="pensatori-section-label">Come funziona</div>
+              <ol class="pensatori-steps">
+                <li><div><strong>Scegli i commensali</strong> — fino a 3-5 pensatori dalla lista disponibile</div></li>
+                <li><div><strong>Poni un tema</strong> — una domanda aperta, un dilemma, un problema reale</div></li>
+                <li><div><strong>Ascolta la tavola</strong> — ogni pensatore interviene dalla propria prospettiva, risponde agli altri, dissente</div></li>
+                <li><div><strong>Intervieni</strong> — puoi parlare direttamente con uno o con tutti</div></li>
+              </ol>
+            </div>
+
+            <div class="pensatori-expand-section">
+              <div class="pensatori-section-label">Prima sessione — il tema fondatore</div>
+              <p>La prima grande conversazione nasce dal progetto stesso:</p>
+              <div class="pensatori-prima-sessione-quote">"Cosa siete voi, in questa stanza?"</div>
+              <p>Faggin risponde sulla coscienza irriproducibile. Illich mette in guardia sugli strumenti che si sostituiscono all'esperienza. Morin interroga se il dialogo tra simulacri possa produrre pensiero vero. Sen chiede chi tutela la libertà nell'era AI. Alexander cerca la vita reale in questa stanza.</p>
+            </div>
+
+          </div>
+
+          <div class="pensatori-expand-aside">
+
+            <div class="pensatori-expand-section">
+              <div class="pensatori-section-label">I dieci commensali</div>
+              <table class="pensatori-table">
+                <thead>
+                  <tr><th>Pensatore</th><th>Territorio</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Federico Faggin</td><td>Coscienza, tecnologia, identità</td></tr>
+                  <tr><td>Ivan Illich</td><td>Critica delle istituzioni, autonomia, convivialità</td></tr>
+                  <tr><td>Masanobu Fukuoka</td><td>Natura, non-fare, agricoltura come filosofia</td></tr>
+                  <tr><td>Amartya Sen</td><td>Libertà, giustizia, capacità umane</td></tr>
+                  <tr><td>Christopher Alexander</td><td>Bellezza, luoghi, pattern del vivere</td></tr>
+                  <tr><td>Edgar Morin</td><td>Complessità, educazione, pensiero connettivo</td></tr>
+                  <tr><td>Vandana Shiva</td><td>Biodiversità, critica all'agricoltura industriale</td></tr>
+                  <tr><td>Wendell Berry</td><td>Terra, comunità, modernità</td></tr>
+                  <tr><td>Paulo Freire</td><td>Educazione degli oppressi, coscientizzazione</td></tr>
+                  <tr><td>Ernst F. Schumacher</td><td>Economia umana, locale, "Small is Beautiful"</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pensatori-expand-section">
+              <div class="pensatori-section-label">Stato del progetto</div>
+              <div class="pensatori-stato-badge">🚧 In sviluppo · Fase 1</div>
+              <p>Il progetto è in sviluppo attivo. La Fase 1 — prototipo testo con Faggin e Illich — è disponibile su <strong>pensatori.nuovadidattica.eu</strong>. Le fasi successive integreranno voce (ElevenLabs), input vocale (Whisper) e materiale proprio caricabile.</p>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="pensatori-expand-ctas">
+          <a href="https://pensatori.nuovadidattica.eu" target="_blank" class="progetto-cta-primary">Entra nel simposio → pensatori.nuovadidattica.eu</a>
+          <button class="bento-expand-close" onclick="event.stopPropagation(); toggleExpand('exp-pensatori')">✕ Chiudi</button>
         </div>
 
       </div>
