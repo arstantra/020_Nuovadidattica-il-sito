@@ -649,6 +649,15 @@ section { padding: 100px 48px; }
   text-decoration: none; transition: gap 0.2s;
 }
 .tool-card .tool-link:hover { gap: 10px; }
+.tool-coming {
+  font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.15em;
+  text-transform: uppercase; margin-top: 20px;
+  display: inline-block; width: fit-content;
+  padding: 5px 12px; border-radius: 100px;
+  border: 1px dashed currentColor;
+}
+.tool-classroom .tool-coming, .tool-pdf .tool-coming { color: var(--text-muted); }
+.tool-drive .tool-coming { color: rgba(255,255,255,0.55); }
 .tool-classroom { grid-column: span 4; background: white; }
 .tool-classroom h3, .tool-classroom p { color: var(--text-dark); }
 .tool-classroom .tool-link { color: var(--red); }
@@ -2337,7 +2346,7 @@ footer {
         <h3>Google Classroom</h3>
         <p>Come strutturare compiti, feedback e valutazioni integrando l'AI nel flusso di lavoro quotidiano.</p>
       </div>
-      <a href="#" class="tool-link">Guida completa →</a>
+      <span class="tool-coming">Guida in arrivo</span>
     </div>
 
     <div class="bento-card tool-card tool-notebooklm reveal reveal-delay-2" data-card-id="tool-notebooklm">
@@ -2355,7 +2364,7 @@ footer {
         <h3>Google Drive</h3>
         <p>PDF, Slide e materiali scaricabili: un repository organizzato e condivisibile con studenti e colleghi.</p>
       </div>
-      <a href="#" class="tool-link">Accedi alla libreria →</a>
+      <span class="tool-coming">Libreria in arrivo</span>
     </div>
 
     <div class="bento-card tool-card tool-prompts reveal reveal-delay-1" data-card-id="tool-prompts" onclick="window.location='prompt-coach.html'" style="cursor:pointer;">
@@ -2374,7 +2383,7 @@ footer {
         <h3>PDF & Slide</h3>
         <p>Materiali scaricabili pronti per la classe: guide, schede e presentazioni.</p>
       </div>
-      <a href="#" class="tool-link">Download →</a>
+      <span class="tool-coming">In arrivo</span>
     </div>
 
     <div class="bento-card tool-card tool-ada reveal reveal-delay-3" data-card-id="tool-ada">
