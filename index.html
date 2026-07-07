@@ -1721,9 +1721,11 @@ footer {
   border-radius: var(--radius);
   padding: 52px;
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 48px;
-  align-items: start;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  max-width: 920px;
+  width: 100%;
+  margin: 0 auto;
 }
 .progetto-body { display: flex; flex-direction: column; }
 .progetto-eyebrow {
@@ -1787,9 +1789,8 @@ footer {
 
 /* Pensatori sidebar */
 .pensatori-sidebar {
-  border-left: 1px solid var(--light-3);
-  padding-left: 36px;
-  padding-top: 4px;
+  border-top: 1px solid var(--light-3);
+  padding-top: 24px;
 }
 .pensatori-label {
   font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.18em;
@@ -1899,11 +1900,7 @@ footer {
   border-top: 1px solid var(--light-3); padding-top: 24px;
 }
 @media (max-width: 900px) {
-  .progetto-card { grid-template-columns: 1fr; padding: 28px 24px; gap: 24px; }
-  .pensatori-sidebar {
-    border-left: none; padding-left: 0;
-    border-top: 1px solid var(--light-3); padding-top: 24px;
-  }
+  .progetto-card { padding: 28px 24px; gap: 24px; }
   .pensatori-expand-grid { grid-template-columns: 1fr; gap: 0; }
 }
 @media (max-width: 900px) {
@@ -2436,8 +2433,7 @@ footer {
 
     <div class="progetto-card reveal reveal-delay-1">
       <div class="progetto-body">
-        <div class="progetto-eyebrow">Simposio permanente · AI generativa · Sperimentale</div>
-        <div class="progetto-dev-badge">🚧 In sviluppo · Fase 1</div>
+        <div class="progetto-eyebrow">Simposio permanente · AI generativa · Multi-agente</div>
         <h3 class="progetto-title">La Tavola dei Pensatori</h3>
         <p class="progetto-text">Siedi a tavola con Faggin, Illich, Morin, Sen e altri grandi del Novecento. Poni una domanda — sul senso della scuola, sulla tecnologia, sulla libertà, sulla coscienza. Ascolta le tensioni intellettuali reali tra questi pensatori. Intervieni, rilancia, provoca.</p>
         <p class="progetto-text">Un sistema conversazionale multi-agente: ogni commensale risponde dal proprio pensiero, può dissentire dagli altri, può irritarsi. Dichiaratamente artificiale — onestamente reale nel pensiero che produce.</p>
@@ -2553,8 +2549,8 @@ footer {
 
             <div class="pensatori-expand-section">
               <div class="pensatori-section-label">Stato del progetto</div>
-              <div class="pensatori-stato-badge">🚧 In sviluppo · Fase 1</div>
-              <p>Il progetto è in sviluppo attivo. La Fase 1 — prototipo testo con Faggin e Illich — è disponibile su <strong>simposio.nuovadidattica.eu</strong>. Le fasi successive integreranno voce (ElevenLabs), input vocale (Whisper) e materiale proprio caricabile.</p>
+              <div class="pensatori-stato-badge">✓ Online</div>
+              <p>Il simposio è online e pienamente funzionante su <strong>simposio.nuovadidattica.eu</strong>. Le prossime evoluzioni integreranno voce (ElevenLabs), input vocale (Whisper) e materiale proprio caricabile.</p>
             </div>
 
           </div>
@@ -2573,7 +2569,6 @@ footer {
     <div class="progetto-card reveal reveal-delay-2">
       <div class="progetto-body">
         <div class="progetto-eyebrow">Gioco didattico · AI generativa · Pensiero critico</div>
-        <div class="progetto-dev-badge">🎮 Prototipo giocabile</div>
         <h3 class="progetto-title">La Scuola dei Professoracci</h3>
         <p class="progetto-text">Dove i professori sbagliano… e tu li correggi. Un gioco che ribalta i ruoli: l'AI interpreta professori inaffidabili che infilano errori nelle loro spiegazioni, e lo studente deve scovarli e correggerli. Motto della scuola: vietato fidarsi dei professori.</p>
         <p class="progetto-text">Dietro il gioco c'è un obiettivo serio: allenare la verifica critica degli output generativi. Chi impara a non fidarsi dei professoracci impara a non fidarsi ciecamente di nessuna risposta AI — la competenza chiave che ogni studente dovrebbe portarsi a casa.</p>
@@ -2685,9 +2680,10 @@ footer {
         <h3>Iscriviti alla<br>Mailing List</h3>
         <p>Ricevi aggiornamenti, nuovi materiali, guide esclusive e le ultime novità sulla didattica digitale e l'AI per la scuola.</p>
         <div class="comm-form">
-          <input type="email" placeholder="La tua email professionale">
-          <button type="button">Iscriviti</button>
+          <input type="email" id="commEmail" placeholder="La tua email professionale" onkeydown="if(event.key==='Enter')subscribeML()">
+          <button type="button" id="commBtn" onclick="subscribeML()">Iscriviti</button>
         </div>
+        <p id="commMsg" role="status" style="font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.05em; margin-top: 10px; min-height: 1.2em;"></p>
       </div>
       <p style="font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.2); text-transform: uppercase; position: relative; z-index:1;">
         Nessuno spam. Solo contenuti di valore.
@@ -3038,6 +3034,39 @@ function goToBlog() {
 
 // ===== SUPABASE CLIENT (shared) =====
 const SB = window.supabase.createClient(SB_URL, SB_KEY);
+
+// ===== MAILING LIST =====
+async function subscribeML() {
+  const input = document.getElementById('commEmail');
+  const btn   = document.getElementById('commBtn');
+  const msg   = document.getElementById('commMsg');
+  const email = (input.value || '').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    msg.textContent = 'Inserisci un indirizzo email valido.';
+    msg.style.color = 'var(--eu-yellow)';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Invio…';
+  try {
+    const { error } = await SB.from('iscritti').insert({ email });
+    if (error && error.code === '23505') {
+      msg.textContent = 'Sei già iscritto — grazie!';
+      msg.style.color = '#7ED957';
+      input.value = '';
+    } else if (error) {
+      msg.textContent = 'Errore di invio. Riprova tra poco.';
+      msg.style.color = 'var(--eu-yellow)';
+    } else {
+      msg.textContent = '✓ Iscrizione registrata. Benvenuto nella community!';
+      msg.style.color = '#7ED957';
+      input.value = '';
+    }
+  } catch (e) {
+    msg.textContent = 'Errore di rete. Riprova tra poco.';
+    msg.style.color = 'var(--eu-yellow)';
+  }
+  btn.disabled = false; btn.textContent = 'Iscriviti';
+}
 
 function gdriveDirect(url) {
   if (!url) return '#';
