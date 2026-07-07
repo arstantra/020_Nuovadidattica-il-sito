@@ -95,10 +95,11 @@ Sezioni in ordine, con anchor ID:
 4. **`#casi`** — Applicazioni pratiche in classe
 5. **`#etica`** — Sezione etica (sfondo scuro, accento giallo EU)
 6. **`#toolbox`** — Strumenti consigliati
-7. **`#feed`** — Feed di aggiornamenti (accento blu EU, dati da Supabase)
-8. **`#blog`** — Articoli blog
-9. **`#pubblicazioni`** — Pubblicazioni e risorse
-10. **`#community`** — CTA iscrizione community
+7. **`#progetti`** — Progetti & Esperienze: La Tavola dei Pensatori (→ simposio.nuovadidattica.eu) + La Scuola dei Professoracci (→ professoracci.nuovadidattica.eu)
+8. **`#feed`** — Feed di aggiornamenti (accento blu EU, dati da Supabase)
+9. **`#blog`** — Articoli blog
+10. **`#pubblicazioni`** — Pubblicazioni e risorse
+11. **`#community`** — CTA iscrizione community
 
 Navigazione: voce "Capire l'AI" (link a `capire-ai.html`) + link a tutte le sezioni + CTA "Unisciti" → `#community`.
 
@@ -243,4 +244,4 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 
 ---
 
-*Ultima revisione: 2026-05-21 — sistema card linking + admin unificato*
+*Ultima revisione: 2026-07-07 — link Tavola dei Pensatori aggiornato a simposio.nuovadidattica.eu; aggiunta card "La Scuola dei Professoracci" in #progetti*
