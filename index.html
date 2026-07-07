@@ -1543,7 +1543,8 @@ footer {
   color: var(--text-dark); margin-bottom: 10px; }
 .blog-card-featured .blog-title { font-size: 1.6rem; }
 .blog-card-sm .blog-title, .blog-card-third .blog-title { font-size: 1.05rem; }
-.blog-excerpt { font-size: 0.88rem; line-height: 1.6; color: var(--text-mid); margin-bottom: 18px; }
+.blog-excerpt { font-size: 0.88rem; line-height: 1.6; color: var(--text-mid); margin-bottom: 18px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .blog-meta { display: flex; align-items: center; justify-content: space-between;
   font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--text-muted); }
@@ -1629,7 +1630,8 @@ footer {
 .pub-pages { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-muted); }
 .pub-title { font-family: var(--font-display); font-size: 1rem; font-weight: 800;
   line-height: 1.2; color: var(--text-dark); margin-bottom: 8px; }
-.pub-desc { font-size: 0.82rem; line-height: 1.55; color: var(--text-mid); margin-bottom: 18px; }
+.pub-desc { font-size: 0.82rem; line-height: 1.55; color: var(--text-mid); margin-bottom: 18px;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .pub-download { display: inline-flex; align-items: center; gap: 8px;
   font-family: var(--font-display); font-size: 0.72rem; font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase;
@@ -1713,19 +1715,21 @@ footer {
 .progetti-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
+  grid-auto-flow: dense; /* la seconda card risale accanto alla prima, scavalcando il pannello expand chiuso */
   gap: var(--gap);
 }
 .progetto-card {
-  grid-column: span 12;
+  grid-column: span 6;
   background: white;
   border-radius: var(--radius);
-  padding: 52px;
+  padding: 44px;
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
   gap: 32px;
-  max-width: 920px;
-  width: 100%;
-  margin: 0 auto;
+}
+@media (max-width: 1080px) {
+  .progetto-card { grid-column: span 12; padding: 40px; }
 }
 .progetto-body { display: flex; flex-direction: column; }
 .progetto-eyebrow {
