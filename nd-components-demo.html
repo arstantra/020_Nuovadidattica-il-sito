@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pensatori — NuovaDidattica.eu</title>
+<style>
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F5F3EE;
+    color: #0D0D0D;
+    margin: 0;
+  }
+  .page-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 140px 48px 80px;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #4A4A4A;
+    max-width: 640px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-content">
+  <h1>Pensatori.<br><span style="color:#D91B1B">NuovaDidattica.eu</span></h1>
+  <p>Questa è una pagina demo che usa <code>nd-components.js</code> per ottenere header e footer del progetto NuovaDidattica senza copiare codice.</p>
+  <p style="margin-top:16px">L'header e il footer qui sopra/sotto sono iniettati automaticamente dallo script.</p>
+</div>
+
+<!-- Carica il file condiviso (in produzione: URL assoluto) -->
+<script src="nd-components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    NDComponents.init({
+      links: [
+        { href: 'https://nuovadidattica.eu', label: '← NuovaDidattica' },
+        { href: '#pensatori',  label: 'Pensatori' },
+        { href: '#percorsi',   label: 'Percorsi' },
+        { href: '#risorse',    label: 'Risorse' },
+      ],
+      cta: { href: '#iscriviti', label: 'Unisciti' },
+      footerTag: 'pensatori.nuovadidattica.eu',
+      cursor: true
+    });
+  });
+</script>
+
+</body>
+</html>
