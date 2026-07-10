@@ -672,7 +672,7 @@ section { padding: 100px 48px; }
 .tool-drive p { color: rgba(255,255,255,0.65); }
 .tool-drive .tool-link { color: var(--red); }
 .tool-prompts {
-  grid-column: span 6; background: var(--red);
+  grid-column: span 4; background: var(--red);
   position: relative; overflow: hidden;
 }
 .tool-prompts h3 { color: white; font-size: 1.6rem; }
@@ -684,16 +684,29 @@ section { padding: 100px 48px; }
   font-family: var(--font-display); font-weight: 800;
 }
 .tool-verificai {
-  grid-column: span 6; background: var(--light-2);
+  grid-column: span 4; background: var(--light-2);
   position: relative; overflow: hidden;
 }
-.tool-verificai h3 { font-size: 1.6rem; }
+.tool-verificai h3 { font-size: 1.3rem; }
 .tool-verificai h3, .tool-verificai p { color: var(--text-dark); }
 .tool-verificai .tool-link { color: var(--red); }
 .tool-verificai-bg {
   position: absolute; right: -10px; bottom: -30px;
   font-size: 9rem; opacity: 0.07; line-height: 1;
   font-family: var(--font-display); font-weight: 800; color: var(--red);
+}
+.tool-testgen {
+  grid-column: span 4; background: var(--eu-yellow);
+  position: relative; overflow: hidden;
+}
+.tool-testgen h3 { font-size: 1.3rem; }
+.tool-testgen h3 { color: var(--text-dark); }
+.tool-testgen p { color: rgba(13,13,13,0.72); }
+.tool-testgen .tool-link { color: var(--text-dark); }
+.tool-testgen-bg {
+  position: absolute; right: -15px; bottom: -25px;
+  font-size: 8rem; opacity: 0.10; line-height: 1;
+  font-family: var(--font-display); font-weight: 800; color: var(--dark);
 }
 .tool-ada {
   grid-column: span 12; background: var(--dark-2);
@@ -1401,7 +1414,7 @@ footer {
   /* All cards → full width */
   .card-hero-video, .card-filosofia, .card-tre, .card-stat, .card-claim-box, .card-approfondimento,
   .caso-verifiche, .caso-inclusione, .caso-lezioni, .caso-tutoring, .caso-studenti,
-  .tool-nlm-generator, .tool-classroom, .tool-notebooklm, .tool-drive, .tool-prompts, .tool-verificai, .tool-ada,
+  .tool-nlm-generator, .tool-classroom, .tool-notebooklm, .tool-drive, .tool-prompts, .tool-verificai, .tool-testgen, .tool-ada,
   .etica-main, .etica-side, .etica-highlight, .etica-card,
   .crit-card, .crit-01, .crit-02, .crit-03, .etica-banda-falso,
   .progetto-card,
@@ -1484,8 +1497,9 @@ footer {
   .hero-headline { max-width: 700px; }
 
   /* Toolbox: generator full-width, ADA full-width, inner grid a 1 col */
-  .tool-prompts    { grid-column: span 6; }
-  .tool-verificai  { grid-column: span 6; }
+  .tool-prompts    { grid-column: span 4; }
+  .tool-verificai  { grid-column: span 4; }
+  .tool-testgen    { grid-column: span 4; }
   .tool-ada        { grid-column: span 12; }
   .ada-card-grid   { grid-template-columns: 1fr; gap: 28px; }
 
@@ -1504,6 +1518,7 @@ footer {
   .tool-classroom, .tool-notebooklm, .tool-drive { grid-column: span 1; }
   .tool-prompts { grid-column: span 1; }
   .tool-verificai { grid-column: span 1; }
+  .tool-testgen { grid-column: span 1; }
   .tool-ada { grid-column: span 2 !important; }
   .ada-card-grid { grid-template-columns: 1fr; gap: 24px; }
 
@@ -2166,14 +2181,14 @@ footer {
 
   <div class="bento bento-casi">
 
-    <div class="bento-card card-caso caso-verifiche interactive reveal reveal-delay-1" onclick="window.location='verificai.html'" data-card-id="caso-verifiche">
+    <div class="bento-card card-caso caso-verifiche interactive reveal reveal-delay-1" onclick="window.location='generatore-test.html'" data-card-id="caso-verifiche">
       <div>
         <div class="caso-icon">📝</div>
         <h3>Verifiche & Valutazioni</h3>
-        <p>Crea test differenziati, rubriche di valutazione e griglia di correzione in pochi minuti, personalizzate per classe e livello.</p>
+        <p>Crea test differenziati, rubriche di valutazione e griglie di correzione in pochi minuti, personalizzate per classe e livello.</p>
       </div>
       <span class="tag-pill">Valutazione</span>
-      <span class="caso-hint">Prova VerificAI</span>
+      <span class="caso-hint">Prova il generatore</span>
     </div>
 
     <div class="bento-card card-caso caso-inclusione interactive reveal reveal-delay-2" onclick="toggleExpand('exp-caso-incl')" data-card-id="caso-inclusione" data-expand-id="exp-caso-incl">
@@ -2439,11 +2454,21 @@ footer {
     <div class="bento-card tool-card tool-verificai reveal reveal-delay-2" data-card-id="tool-verificai" onclick="window.location='verificai.html'" style="cursor:pointer;">
       <div>
         <div class="tool-icon">🎯</div>
-        <h3>VerificAI</h3>
-        <p>Progetta in 10 minuti una verifica che valuta il pensiero, non il prodotto: consegna pronta, rubrica di valutazione e nota metodologica incluse.</p>
+        <h3>Verifiche a prova di AI</h3>
+        <p>Con VerificAI progetti verifiche che gli studenti non possono far svolgere all'AI: valutano il pensiero, non il prodotto. Consegna, rubrica e nota metodologica pronte.</p>
       </div>
-      <a href="verificai.html" class="tool-link" onclick="event.stopPropagation()">Prova il tool →</a>
+      <a href="verificai.html" class="tool-link" onclick="event.stopPropagation()">Prova VerificAI →</a>
       <div class="tool-verificai-bg">✓</div>
+    </div>
+
+    <div class="bento-card tool-card tool-testgen reveal reveal-delay-3" data-card-id="tool-testgen" onclick="window.location='generatore-test.html'" style="cursor:pointer;">
+      <div>
+        <div class="tool-icon">📝</div>
+        <h3>Generatore Test &amp; Rubriche</h3>
+        <p>Test differenziati, versioni BES/DSA, rubriche di valutazione e griglie di correzione: 4 passi guidati e prompt pronti da incollare nella tua AI.</p>
+      </div>
+      <a href="generatore-test.html" class="tool-link" onclick="event.stopPropagation()">Prova il tool →</a>
+      <div class="tool-testgen-bg">✎</div>
     </div>
 
     <div class="bento-card tool-card tool-ada reveal reveal-delay-3" data-card-id="tool-ada">

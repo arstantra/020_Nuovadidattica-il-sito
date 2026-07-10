@@ -83,7 +83,8 @@ Pesi usati: Syne 400/600/700/800 · DM Sans 300/400/500 (anche italic) · DM Mon
 | `guida-notebooklm.html` | Guida NotebookLM — collegata dalla card `tool-notebooklm` |
 | `notebooklm-generator.html` | Tool generatore di prompt per NotebookLM (topbar con logo + menu unificato) |
 | `prompt-coach.html` | Tool PromptCoach — analisi prompt via API Claude (key inserita dall'utente) |
-| `verificai.html` | Tool VerificAI — progettazione verifiche in 4 step (contesto → obiettivo Bloom → forma → consegna+rubrica); topbar con logo + menu unificato |
+| `verificai.html` | Tool VerificAI — progettazione verifiche in 4 step (contesto → obiettivo Bloom → forma → consegna+rubrica); topbar con logo + menu unificato. Nel toolbox la card si chiama "Verifiche a prova di AI" |
+| `generatore-test.html` | Tool Generatore Test & Rubriche — wizard in 4 step (contesto classe → test → differenziazione BES/DSA e file A/B → rubrica+griglia) che produce prompt pronti da incollare nell'AI; topbar con logo + menu unificato |
 | `admin-feed.html` | Pannello admin unificato: feed, blog, pubblicazioni (con card linking) |
 | `nd-components.js` + `nd-components-demo.html` | Libreria componenti sperimentale — NON usata dalle pagine di produzione |
 | `CNAME` | `nuovadidattica.eu` |
@@ -172,7 +173,7 @@ Le grid desktop sono a **12 colonne** (`grid-template-columns: repeat(12, 1fr)`)
 | `#filosofia` | `7+5` / `4+4+4` / `12` (docente-team) / `7+5` (mente-rivendicata + claim) |
 | `#casi` | `4+5+3` / `6+6` (tutoring + studenti) |
 | `#etica` | `8+4` / `4+4+4` / `12` (banda falso allarme) |
-| `#toolbox` | `12` (nlm-gen) / `4+4+4` / `6+6` (PromptCoach + VerificAI) / `12` (ADA) |
+| `#toolbox` | `12` (nlm-gen) / `4+4+4` (classroom + notebooklm + drive) / `4+4+4` (PromptCoach + Verifiche a prova di AI + Generatore Test & Rubriche) / `12` (ADA) |
 
 ### Breakpoint
 
@@ -305,7 +306,7 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | `card-stat-73` | 73% — Il problema della formazione |
 | `card-claim-prompt` | Il prompt generico: il nemico invisibile |
 | `card-docente-team` | Il Docente-Team (card con multi-CTA) |
-| `caso-verifiche` | Verifiche & Valutazioni (→ `verificai.html`) |
+| `caso-verifiche` | Verifiche & Valutazioni (→ `generatore-test.html`) |
 | `caso-inclusione` | Inclusione BES/DSA (expand `exp-caso-incl`) |
 | `caso-lezioni` | Unità Didattiche (expand `exp-caso-lez`) |
 | `caso-tutoring` | Tutoring Personalizzato (expand `exp-caso-tut`) |
@@ -314,7 +315,8 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | `tool-notebooklm` | NotebookLM |
 | `tool-drive` | Google Drive |
 | `tool-prompts` | PromptCoach |
-| `tool-verificai` | VerificAI |
+| `tool-verificai` | Verifiche a prova di AI (VerificAI) — ospita il PDF "Riconoscere la AI" |
+| `tool-testgen` | Generatore Test & Rubriche (→ `generatore-test.html`) |
 | `tool-ada` | App ADA |
 
 > `tool-pdf` e `caso-ada` sono stati rimossi (lug 2026): il primo sostituito da `tool-verificai`, il secondo dalla card `caso-studenti` (ADA resta presentata in `tool-ada`).
@@ -363,7 +365,10 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | lug 2026 | Revocata l'eccezione "pagine tool leggere senza logo base64" | La coerenza di navigazione vale più dei ~90KB del logo; ogni pagina monta il logo vero |
 | lug 2026 | `overflow-x:hidden` obbligatorio su `html` E `body` in ogni pagina | Su mobile compariva una "mezza pagina bianca" scrollabile: iOS ignora la regola se applicata solo a `body` |
 | lug 2026 | Procedure vincolanti add/remove card e sezioni (desktop+tablet+mobile) | Ogni modifica ricomponeva la grid a mano e a memoria; ora la procedura è scritta e non negoziabile |
+| lug 2026 | Nuovo tool `generatore-test.html` (Generatore Test & Rubriche) + card `tool-testgen`; riga toolbox 6+6 → 4+4+4 | La card `caso-verifiche` prometteva "test, rubriche e griglie in pochi minuti" ma linkava VerificAI, che fa progettazione metodologica: due lavori diversi, due tool distinti |
+| lug 2026 | Card toolbox rinominata "Verifiche a prova di AI" (il nome VerificAI resta nel testo) | "VerificAI" da solo non comunicava lo scopo: la card ora spiega che serve a progettare verifiche non delegabili all'AI dagli studenti |
+| lug 2026 | PDF "Riconoscere la AI" spostato da `caso-verifiche` a `tool-verificai` (card_id in Supabase) | Il PDF parla di riconoscere elaborati fatti con l'AI: era fuori tema sulla card dei test, è coerente con le verifiche a prova di AI |
 
 ---
 
-*Ultima revisione: 2026-07-10 (2ª sessione) — menu sito unificato con logo + hamburger su tutte le 8 pagine pubbliche; fix overflow orizzontale mobile (`html`+`body`); sezione "REGOLE UI/UX NON NEGOZIABILI" e procedure vincolanti card/sezioni aggiunte a questo file*
+*Ultima revisione: 2026-07-10 (3ª sessione) — nuovo tool `generatore-test.html` + card `tool-testgen` nel toolbox (riga 4+4+4); card `caso-verifiche` ricablata sul generatore; card toolbox rinominata "Verifiche a prova di AI"; PDF "Riconoscere la AI" spostato su `tool-verificai`*
