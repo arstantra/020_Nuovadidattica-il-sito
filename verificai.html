@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VerificAI — Progetta verifiche che valutano il pensiero, non il prodotto</title>
+<meta name="description" content="Progetta in 10 minuti una verifica che valuta il processo cognitivo, non il prodotto. Consegna pronta, rubrica inclusa. Uno strumento di NuovaDidattica.eu.">
+<link rel="canonical" href="https://nuovadidattica.eu/verificai.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nuovadidattica.eu/verificai.html">
+<meta property="og:title" content="VerificAI — Progetta verifiche che valutano il pensiero, non il prodotto">
+<meta property="og:description" content="La tesina su Carlo Magno è obsoleta. Il prompt su Carlo Magno no. In 10 minuti: consegna pronta, rubrica di valutazione e nota metodologica.">
+<meta property="og:site_name" content="NuovaDidattica.eu">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red:       #D91B1B;
+  --red-deep:  #A51515;
+  --eu-blue:   #003FA5;
+  --eu-yellow: #F5C800;
+  --dark:      #0A0A0A;
+  --dark-2:    #141414;
+  --dark-3:    #1E1E1E;
+  --light:     #F5F3EE;
+  --light-2:   #ECEAE4;
+  --light-3:   #E0DDD5;
+  --text-dark: #0D0D0D;
+  --text-mid:  #4A4A4A;
+  --text-light:#F5F3EE;
+  --text-muted:#8A8A8A;
+  --radius:    20px;
+  --radius-sm: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--light);
+  color: var(--text-dark);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 940px; margin: 0 auto; padding: 0 20px; }
+
+/* ---------- Header ---------- */
+header { padding: 48px 0 8px; }
+
+.brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.brand .ai { color: var(--red); }
+
+.claim {
+  font-family: 'DM Mono', monospace;
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+  color: var(--text-mid);
+  margin-top: 14px;
+  border-left: 3px solid var(--eu-yellow);
+  padding-left: 14px;
+}
+.claim strong { color: var(--text-dark); font-weight: 500; }
+
+.subtitle {
+  margin-top: 14px;
+  color: var(--text-mid);
+  max-width: 620px;
+}
+
+/* ---------- Barra di avanzamento ---------- */
+.progress { margin: 40px 0 28px; }
+
+.progress-track {
+  display: flex;
+  gap: 0;
+  counter-reset: step;
+  list-style: none;
+}
+.progress-track li {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  padding-top: 44px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.progress-track li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--light-2);
+  border: 2px solid var(--light-3);
+  color: var(--text-muted);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .25s ease;
+}
+.progress-track li::after {
+  content: '';
+  position: absolute;
+  top: 17px;
+  left: calc(-50% + 19px);
+  width: calc(100% - 38px);
+  height: 2px;
+  background: var(--light-3);
+  transition: background .25s ease;
+}
+.progress-track li:first-child::after { display: none; }
+
+.progress-track li.done::before {
+  content: '✓';
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--text-light);
+}
+.progress-track li.done::after { background: var(--dark); }
+.progress-track li.active { color: var(--text-dark); }
+.progress-track li.active::before {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+.progress-track li.active::after { background: var(--dark); }
+
+/* ---------- Step ---------- */
+.step { display: none; padding-bottom: 24px; }
+.step.active { display: block; animation: fadeUp .3s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  letter-spacing: -0.01em;
+}
+.step-sub { color: var(--text-mid); margin: 6px 0 26px; }
+
+/* ---------- Campi (Step 1) ---------- */
+.field { margin-bottom: 26px; }
+
+.field > label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+select, input[type="text"] {
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  padding: 13px 16px;
+  border: 2px solid var(--light-3);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text-dark);
+  transition: border-color .2s ease;
+  appearance: none;
+}
+select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%230D0D0D' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 44px;
+  cursor: pointer;
+}
+select:focus, input[type="text"]:focus {
+  outline: none;
+  border-color: var(--eu-blue);
+}
+.field.invalid select, .field.invalid input[type="text"] {
+  border-color: var(--red);
+}
+.field.invalid .pill-group { outline: 2px solid var(--red); outline-offset: 6px; border-radius: 6px; }
+
+.hint { font-size: 0.85rem; color: var(--text-mid); margin-top: 6px; }
+
+.error-msg {
+  display: none;
+  font-size: 0.87rem;
+  color: var(--red-deep);
+  font-weight: 500;
+  margin-top: 7px;
+}
+.field.invalid .error-msg, .step-error.visible { display: block; }
+
+/* Livello: pill radio */
+.pill-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.pill-group input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+.pill-group label {
+  padding: 10px 20px;
+  border: 2px solid var(--light-3);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all .2s ease;
+  user-select: none;
+}
+.pill-group label:hover { border-color: var(--text-muted); }
+.pill-group input[type="radio"]:checked + label {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--text-light);
+}
+.pill-group input[type="radio"]:focus-visible + label {
+  outline: 3px solid var(--eu-blue);
+  outline-offset: 2px;
+}
+
+#field-altro { display: none; margin-top: 12px; }
+#field-altro.visible { display: block; }
+
+/* ---------- Card Bloom (Step 2) ---------- */
+.bloom-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 640px) { .bloom-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .bloom-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+.card-select {
+  position: relative;
+  background: #fff;
+  border: 2px solid var(--light-3);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  cursor: pointer;
+  transition: all .2s ease;
+  text-align: left;
+  font-family: 'DM Sans', sans-serif;
+  font-size: inherit;
+  color: inherit;
+  display: block;
+  width: 100%;
+}
+.card-select:hover { border-color: var(--text-muted); transform: translateY(-2px); }
+.card-select:focus-visible { outline: 3px solid var(--eu-blue); outline-offset: 2px; }
+.card-select[aria-pressed="true"] {
+  border-color: var(--red);
+  box-shadow: 0 0 0 1px var(--red);
+}
+.card-select[aria-pressed="true"]::after {
+  content: '✓';
+  position: absolute;
+  top: 14px; right: 16px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+  padding-right: 30px;
+}
+.card-question { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 10px; }
+.card-example {
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  border-top: 1px solid var(--light-2);
+  padding-top: 10px;
+}
+.card-example em { font-style: normal; color: var(--text-mid); font-weight: 500; }
+
+/* ---------- Card tipi (Step 3) ---------- */
+.tipi-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 640px) { .tipi-grid { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- Output (Step 4) ---------- */
+.out-block {
+  background: #fff;
+  border: 1px solid var(--light-3);
+  border-radius: var(--radius);
+  padding: 26px 26px 24px;
+  margin-bottom: 18px;
+}
+.out-block h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+}
+.out-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-mid);
+  margin-bottom: 14px;
+}
+.out-text p { margin-bottom: 10px; }
+.out-text p:last-child { margin-bottom: 0; }
+
+.table-scroll { overflow-x: auto; margin-top: 14px; }
+.rubrica {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 640px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.rubrica th, .rubrica td {
+  border: 1px solid var(--light-3);
+  padding: 10px 12px;
+  vertical-align: top;
+  text-align: left;
+}
+.rubrica thead th {
+  background: var(--dark);
+  color: var(--text-light);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+.rubrica tbody th {
+  background: var(--light-2);
+  font-weight: 700;
+  min-width: 120px;
+}
+
+.osservare-list { margin: 8px 0 0 20px; }
+.osservare-list li { margin-bottom: 5px; }
+.nota-docente { margin-top: 14px; font-size: 0.9rem; color: var(--text-mid); }
+
+/* ---------- Azioni output (Step 4) ---------- */
+.out-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 6px 0 10px;
+}
+.out-actions[hidden] { display: none; }
+
+/* ---------- Navigazione ---------- */
+.step-error {
+  display: none;
+  color: var(--red-deep);
+  font-weight: 500;
+  font-size: 0.92rem;
+  margin-bottom: 14px;
+}
+
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0 56px;
+}
+
+.btn {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 14px 30px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.btn-primary { background: var(--red); color: #fff; }
+.btn-primary:hover { background: var(--red-deep); transform: translateY(-1px); }
+.btn-ghost { background: transparent; border-color: var(--light-3); color: var(--text-mid); }
+.btn-ghost:hover { border-color: var(--text-muted); color: var(--text-dark); }
+.btn:focus-visible { outline: 3px solid var(--eu-blue); outline-offset: 2px; }
+.btn[hidden] { display: none; }
+
+/* ---------- Footer ---------- */
+footer {
+  border-top: 1px solid var(--light-3);
+  padding: 26px 0 40px;
+  font-size: 0.85rem;
+  color: var(--text-mid);
+}
+footer a { color: var(--eu-blue); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+@media (max-width: 480px) {
+  header { padding-top: 32px; }
+  .progress-track li { font-size: 0.68rem; }
+  .btn { padding: 12px 22px; }
+}
+
+/* ---------- Accessibilità ---------- */
+.step-title:focus { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ---------- Stampa: solo l'output dello Step 4, nero su bianco ---------- */
+@media print {
+  body { background: #fff; color: #000; font-size: 11pt; line-height: 1.45; }
+  .wrap { max-width: 100%; padding: 0; }
+  header, .progress, .nav-row, footer, .out-actions,
+  #step-1, #step-2, #step-3, #step-4 .step-sub, #step-4 .step-title { display: none !important; }
+  #step-4 { display: block !important; padding: 0; }
+
+  .out-block {
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0 0 22pt;
+  }
+  #blocco-consegna, #blocco-nota { page-break-inside: avoid; }
+  .out-block h3 {
+    color: #000;
+    font-size: 13pt;
+    border-bottom: 1.5pt solid #000;
+    padding-bottom: 4pt;
+    margin-bottom: 8pt;
+  }
+  .out-meta { color: #000; }
+  .out-text strong { font-weight: 700; }
+
+  .table-scroll { overflow: visible; margin-top: 8pt; }
+  .rubrica { min-width: 0; font-size: 9pt; }
+  .rubrica th, .rubrica td { border: 1pt solid #000; padding: 4pt 6pt; }
+  .rubrica thead th { background: #fff !important; color: #000; }
+  .rubrica tbody th { background: #fff !important; color: #000; }
+  .rubrica tr { page-break-inside: avoid; }
+
+  .osservare-list li { margin-bottom: 2pt; }
+  .nota-docente { color: #000; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <h1 class="brand">Verific<span class="ai">AI</span></h1>
+    <p class="claim">La tesina su Carlo Magno è obsoleta. <strong>Il prompt su Carlo Magno no.</strong></p>
+    <p class="subtitle">Progetta in 10 minuti una verifica che valuta il pensiero, non il prodotto. Consegna pronta, rubrica inclusa.</p>
+  </header>
+
+  <nav class="progress" aria-label="Avanzamento">
+    <ol class="progress-track" id="progressTrack">
+      <li data-step="1">Contesto</li>
+      <li data-step="2">Obiettivo</li>
+      <li data-step="3">Forma</li>
+      <li data-step="4">Verifica</li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- ============ STEP 1 — Contesto ============ -->
+    <section class="step" id="step-1" aria-labelledby="title-1">
+      <h2 class="step-title" id="title-1">Il contesto</h2>
+      <p class="step-sub">Dimmi cosa insegni e a chi.</p>
+
+      <div class="field" id="field-disciplina">
+        <label for="disciplina">Disciplina</label>
+        <select id="disciplina">
+          <option value="" selected disabled>Scegli la disciplina</option>
+          <optgroup label="Umanistiche">
+            <option value="Italiano" data-gruppo="umanistiche">Italiano</option>
+            <option value="Storia" data-gruppo="umanistiche">Storia</option>
+            <option value="Filosofia" data-gruppo="umanistiche">Filosofia</option>
+            <option value="Arte" data-gruppo="umanistiche">Arte</option>
+          </optgroup>
+          <optgroup label="Scientifiche">
+            <option value="Matematica" data-gruppo="scientifiche">Matematica</option>
+            <option value="Fisica" data-gruppo="scientifiche">Fisica</option>
+            <option value="Scienze" data-gruppo="scientifiche">Scienze</option>
+            <option value="Chimica" data-gruppo="scientifiche">Chimica</option>
+          </optgroup>
+          <optgroup label="Linguistiche">
+            <option value="Inglese" data-gruppo="linguistiche">Inglese</option>
+            <option value="Altre lingue" data-gruppo="linguistiche">Altre lingue</option>
+          </optgroup>
+          <optgroup label="Tecniche">
+            <option value="Informatica" data-gruppo="tecniche">Informatica</option>
+            <option value="Tecnologia" data-gruppo="tecniche">Tecnologia</option>
+            <option value="Economia" data-gruppo="tecniche">Economia</option>
+          </optgroup>
+          <optgroup label="Altro">
+            <option value="__altro__" data-gruppo="umanistiche">Altro…</option>
+          </optgroup>
+        </select>
+        <div class="field" id="field-altro">
+          <label for="disciplinaAltro" class="sr-only" style="font-weight:500;font-size:0.9rem;">La tua disciplina</label>
+          <input type="text" id="disciplinaAltro" placeholder="Scrivi la tua disciplina" autocomplete="off">
+        </div>
+        <p class="error-msg">Scegli una disciplina per continuare.</p>
+      </div>
+
+      <div class="field" id="field-livello">
+        <label id="label-livello">Livello scolastico</label>
+        <div class="pill-group" role="radiogroup" aria-labelledby="label-livello">
+          <input type="radio" name="livello" id="liv-primaria" value="primaria">
+          <label for="liv-primaria">Primaria</label>
+          <input type="radio" name="livello" id="liv-media" value="secondaria1">
+          <label for="liv-media">Secondaria I grado</label>
+          <input type="radio" name="livello" id="liv-biennio" value="biennio">
+          <label for="liv-biennio">Biennio superiori</label>
+          <input type="radio" name="livello" id="liv-triennio" value="triennio">
+          <label for="liv-triennio">Triennio superiori</label>
+        </div>
+        <p class="error-msg">Indica il livello scolastico.</p>
+      </div>
+
+      <div class="field" id="field-argomento">
+        <label for="argomento">Argomento della verifica</label>
+        <input type="text" id="argomento" placeholder="Es. Carlo Magno, la fotosintesi, le equazioni di secondo grado…" autocomplete="off" maxlength="120">
+        <p class="hint">Scrivilo come lo diresti in classe: la consegna lo userà così com'è.</p>
+        <p class="error-msg">Scrivi l'argomento della verifica: è il cuore della consegna.</p>
+      </div>
+    </section>
+
+    <!-- ============ STEP 2 — Obiettivo cognitivo ============ -->
+    <section class="step" id="step-2" aria-labelledby="title-2">
+      <h2 class="step-title" id="title-2">L'obiettivo cognitivo</h2>
+      <p class="step-sub">Cosa deve dimostrare lo studente?</p>
+
+      <p class="step-error" id="error-bloom">Scegli un obiettivo: è la bussola che orienta la forma del compito.</p>
+
+      <div class="bloom-grid" id="bloomGrid">
+        <button type="button" class="card-select" data-bloom="ricordare" aria-pressed="false">
+          <span class="card-name">Ricordare</span>
+          <span class="card-question">Lo studente deve dimostrare di conoscere fatti, date, termini, informazioni?</span>
+          <span class="card-example"><em>In pratica:</em> sa distinguere un'informazione corretta da una sbagliata sull'argomento.</span>
+        </button>
+        <button type="button" class="card-select" data-bloom="capire" aria-pressed="false">
+          <span class="card-name">Capire</span>
+          <span class="card-question">Lo studente deve spiegare l'argomento con parole sue, coglierne il senso?</span>
+          <span class="card-example"><em>In pratica:</em> sa riformulare, fare esempi propri, spiegare a qualcun altro.</span>
+        </button>
+        <button type="button" class="card-select" data-bloom="applicare" aria-pressed="false">
+          <span class="card-name">Applicare</span>
+          <span class="card-question">Lo studente deve usare regole, metodi o procedure in situazioni nuove?</span>
+          <span class="card-example"><em>In pratica:</em> sa costruire o risolvere un caso che non ha mai visto uguale.</span>
+        </button>
+        <button type="button" class="card-select" data-bloom="analizzare" aria-pressed="false">
+          <span class="card-name">Analizzare</span>
+          <span class="card-question">Lo studente deve scomporre l'argomento, confrontare, individuare relazioni?</span>
+          <span class="card-example"><em>In pratica:</em> sa vedere la struttura sotto la superficie: cause, parti, collegamenti.</span>
+        </button>
+        <button type="button" class="card-select" data-bloom="valutare" aria-pressed="false">
+          <span class="card-name">Valutare</span>
+          <span class="card-question">Lo studente deve giudicare con criteri espliciti e argomentare una posizione?</span>
+          <span class="card-example"><em>In pratica:</em> sa dire cosa è più accurato, più efficace, più fondato — e perché.</span>
+        </button>
+        <button type="button" class="card-select" data-bloom="creare" aria-pressed="false">
+          <span class="card-name">Creare</span>
+          <span class="card-question">Lo studente deve produrre qualcosa di nuovo combinando ciò che sa?</span>
+          <span class="card-example"><em>In pratica:</em> sa progettare un prodotto, un percorso o un problema originale.</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ STEP 3 — Forma del compito ============ -->
+    <section class="step" id="step-3" aria-labelledby="title-3">
+      <h2 class="step-title" id="title-3">La forma del compito</h2>
+      <p class="step-sub">Ecco le forme di verifica più adatte al tuo obiettivo. Scegline una.</p>
+
+      <p class="step-error" id="error-tipo">Scegli una forma di verifica per generare la consegna.</p>
+
+      <div id="tipiContainer" class="tipi-grid"></div>
+    </section>
+
+    <!-- ============ STEP 4 — Verifica generata ============ -->
+    <section class="step" id="step-4" aria-labelledby="title-4">
+      <h2 class="step-title" id="title-4">La tua verifica</h2>
+      <p class="step-sub">Consegna, rubrica e nota metodologica. Pronte da usare.</p>
+
+      <div id="outputContainer"></div>
+
+      <div class="out-actions" id="outActions" hidden>
+        <button type="button" class="btn btn-primary" id="btnCopiaConsegna">Copia consegna</button>
+        <button type="button" class="btn btn-ghost" id="btnCopiaTutto">Copia tutto</button>
+        <button type="button" class="btn btn-ghost" id="btnStampa">Stampa / PDF</button>
+        <button type="button" class="btn btn-ghost" id="btnRicomincia">Ricomincia</button>
+      </div>
+    </section>
+
+    <div class="nav-row">
+      <button type="button" class="btn btn-ghost" id="btnBack" hidden>Indietro</button>
+      <button type="button" class="btn btn-primary" id="btnNext">Avanti</button>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>VerificAI è uno strumento di <a href="https://nuovadidattica.eu">NuovaDidattica.eu</a> · Progettato da Andrea Poletti · I contenuti generati sono liberamente utilizzabili in classe.</p>
+  </footer>
+
+</div>
+
+<script>
+'use strict';
+
+/* ==========================================================
+   VerificAI — wizard (Sessione 2)
+   Lo stato raccoglie tutto ciò che serve al motore (Sessione 3).
+   ========================================================== */
+
+/* ==========================================================
+   TEMPLATES — tutti i testi da CONTENUTI.md (Sessione 1).
+   Chiave: Tipo_bloom. Struttura per cella:
+   - consegna: varianti disciplinari (testo base = biennio);
+     "tutte" per le celle C di sostituzione
+   - triennioExtra: frase aggiunta in coda per il triennio
+   - secondaria1 / primaria: testo completo alternativo
+     (null per le celle E, mai proposte a quei livelli)
+   - notaPrimaria: avvertenza extra per il docente (solo primaria)
+   ========================================================== */
+const TEMPLATES = {
+
+  B_ricordare: {
+    tipo: 'B',
+    titolo: 'Fact-checking aumentato',
+    descrizione: "Lo studente usa l'AI come fonte da verificare: la conoscenza serve per controllare, non per ripetere.",
+    esempio: '"Chiedi all\'AI 5 informazioni su {argomento} e verifica una per una se sono corrette."',
+    consegna: {
+      umanistiche: "Chiedi a un'AI di darti 5 informazioni essenziali su {argomento} (fatti, date, protagonisti, contesto). Copia le risposte così come sono. Poi verifica ogni informazione sul manuale o su una fonte affidabile che citerai. Per ciascuna scrivi: corretta, imprecisa o sbagliata, e su quale fonte l'hai controllata. Se trovi un'imprecisione, riscrivi tu l'informazione in modo corretto.",
+      scientifiche: "Chiedi a un'AI di darti 5 affermazioni fondamentali su {argomento} (definizioni, formule, valori, passaggi di un procedimento). Copia le risposte così come sono. Poi verifica ogni affermazione sul libro di testo o sugli appunti, indicando la pagina o la fonte. Per ciascuna scrivi: corretta, imprecisa o sbagliata. Se trovi un errore, correggilo tu e mostra il controllo che lo dimostra (calcolo, definizione, esempio).",
+      linguistiche: "Chiedi a un'AI 5 informazioni o esempi su {argomento} (regole, forme, usi, eccezioni). Copia le risposte così come sono. Poi verifica ogni punto sulla grammatica di riferimento o sul libro di testo, citando dove hai controllato. Per ciascuno scrivi: corretto, impreciso o sbagliato, e correggi tu gli errori con un esempio tuo.",
+      tecniche: "Chiedi a un'AI 5 affermazioni operative su {argomento} (definizioni, procedure, caratteristiche, valori). Copia le risposte così come sono. Poi verifica ogni affermazione su manuale, documentazione ufficiale o prova pratica, indicando la fonte del controllo. Per ciascuna scrivi: corretta, imprecisa o sbagliata, e correggi tu gli errori."
+    },
+    triennioExtra: "Concludi con 3-4 righe: quale tipo di errore ha commesso più spesso l'AI su {argomento}, e cosa ti dice questo su come va usata come fonte?",
+    secondaria1: "Chiedi all'AI 5 informazioni su {argomento}. Copiale su un foglio, una per riga. Poi controlla ogni informazione sul libro o sugli appunti. Accanto a ciascuna scrivi V (vera), F (falsa) o Q (quasi giusta, ma imprecisa) e la pagina dove hai controllato. Per ogni F o Q, scrivi tu la versione corretta.",
+    primaria: "Il tuo insegnante ti darà 5 frasi su {argomento} scritte da un computer. Alcune sono giuste, altre no. Leggile con attenzione. Cerca sul libro se sono vere. Colora di verde quelle giuste e di rosso quelle sbagliate. Poi riscrivi bene quelle sbagliate.",
+    notaPrimaria: "Alla primaria è l'insegnante a generare in anticipo le frasi con l'AI, includendo 1-2 errori se l'AI non ne produce.",
+    nota: "Questa consegna capovolge il rapporto con l'AI: lo studente non le chiede la risposta, la mette alla prova. Per dire se un'informazione è corretta deve conoscerla o saperla trovare: la conoscenza dei fatti resta l'oggetto della valutazione, ma diventa strumento attivo di controllo invece che materia da ripetere. Il lavoro non è delegabile perché il prodotto richiesto è il confronto con le fonti, non il contenuto. Avvertenza pratica: chiedete di consegnare anche le risposte AI originali, altrimenti non potete verificare la qualità del controllo.",
+    osservare: [
+      "Se lo studente controlla davvero sulle fonti o giudica “a occhio”",
+      "La precisione nel citare dove ha verificato",
+      "La qualità delle correzioni: riscrive o si limita a segnare l'errore?"
+    ],
+    rubrica: {
+      processo: [
+        "Giudica le informazioni senza consultare fonti.",
+        "Controlla alcune informazioni su una fonte, senza indicarla con precisione.",
+        "Controlla ogni informazione e indica la fonte del controllo.",
+        "Controlla tutto su fonti pertinenti e sceglie la fonte più adatta a ogni tipo di informazione."
+      ],
+      consapevolezza: [
+        "Non sa spiegare perché un'informazione è corretta o sbagliata.",
+        "Riconosce gli errori evidenti ma non le imprecisioni.",
+        "Distingue errori e imprecisioni e motiva il giudizio.",
+        "Spiega anche perché l'AI ha probabilmente sbagliato e che tipo di errore è."
+      ],
+      originalita: [
+        "Le correzioni ricopiano la fonte parola per parola.",
+        "Le correzioni sono giuste ma minime.",
+        "Le correzioni sono riformulate con parole proprie e complete.",
+        "Le correzioni aggiungono contesto o esempi che non erano né nell'AI né nella fonte."
+      ]
+    }
+  },
+
+  D_ricordare: {
+    tipo: 'D',
+    titolo: 'Critica del prodotto AI',
+    descrizione: "Lo studente riceve un testo AI sull'argomento e deve scovarne gli errori: serve sapere le cose per accorgersi di ciò che manca.",
+    esempio: '"In questo testo su {argomento} ci sono errori e imprecisioni: trovali e correggili."',
+    consegna: {
+      umanistiche: "Ricevi un testo generato da un'AI su {argomento} (te lo fornisce l'insegnante). Il testo contiene errori, imprecisioni o omissioni importanti. Leggilo con il manuale chiuso e sottolinea tutto ciò che ti sembra sbagliato o incompleto. Poi apri il manuale e verifica i tuoi sospetti. Consegna: l'elenco dei problemi trovati (almeno 3), la correzione di ciascuno con la fonte, e una riga su cosa manca del tutto nel testo.",
+      scientifiche: "Ricevi un testo generato da un'AI che spiega {argomento} (te lo fornisce l'insegnante). Contiene errori di contenuto, passaggi saltati o imprecisioni. Prima analizzalo da solo, segnando ciò che non torna. Poi verifica con il libro o rifacendo i passaggi. Consegna: almeno 3 problemi trovati, la correzione di ciascuno (con calcolo o definizione a supporto) e una riga su cosa il testo avrebbe dovuto dire e non dice.",
+      linguistiche: "Ricevi un testo generato da un'AI su {argomento} (te lo fornisce l'insegnante). Contiene errori o imprecisioni su regole, forme o usi. Segnali prima da solo, poi verifica sulla grammatica o sul libro. Consegna: almeno 3 problemi trovati, la correzione di ciascuno con un esempio corretto scritto da te, e una riga su cosa manca nel testo.",
+      tecniche: "Ricevi un testo generato da un'AI su {argomento} (te lo fornisce l'insegnante). Contiene errori tecnici, procedure imprecise o affermazioni datate. Segnali prima da solo, poi verifica su manuale o documentazione. Consegna: almeno 3 problemi trovati, la correzione motivata di ciascuno e una riga su cosa nel testo è troppo vago per essere usato davvero."
+    },
+    triennioExtra: "Chiudi riscrivendo tu il paragrafo peggiore del testo, come lo vorresti trovare in un buon manuale.",
+    secondaria1: "L'insegnante ti dà un testo su {argomento} scritto da un'AI. Dentro ci sono degli errori. Leggilo senza libro e cerchia le cose che ti sembrano sbagliate. Poi controlla sul libro se avevi ragione. Scrivi: quali errori hai trovato, qual è la versione giusta, e una cosa importante su {argomento} che nel testo non c'è.",
+    primaria: "L'insegnante ti dà un breve testo su {argomento}: l'ha scritto un computer e ha fatto qualche errore. Leggilo piano. Cerchia le cose sbagliate. Poi scrivi tu le frasi giuste. Alla fine racconta: qual era l'errore più difficile da trovare?",
+    notaPrimaria: "Preparare il testo in anticipo con 2-3 errori riconoscibili dal libro di testo.",
+    nota: "Per trovare un errore bisogna sapere come stanno le cose: questa consegna valuta la conoscenza dei fatti senza chiederne la ripetizione. È strutturalmente non delegabile: se lo studente incolla il testo in un'AI chiedendo “trova gli errori”, ottiene una critica generica che non coincide con gli errori realmente inseriti — e si vede. Preparate il testo in anticipo: chiedete a un'AI un testo sull'argomento e, se serve, inserite voi 2-3 errori calibrati sul livello della classe. Conservate la “chiave” degli errori per correggere in fretta.",
+    osservare: [
+      "La prima fase a libro chiuso: dove si ferma l'occhio dello studente?",
+      "Se distingue errori veri da formulazioni solo diverse dal libro",
+      "Il rapporto tra errori trovati e errori realmente presenti"
+    ],
+    rubrica: {
+      processo: [
+        "Segna a caso o riporta il giudizio di altri.",
+        "Trova gli errori più evidenti solo con il libro davanti.",
+        "Individua a libro chiuso i punti sospetti e li verifica poi sulle fonti.",
+        "Lavora in due fasi distinte e documenta sia i sospetti confermati sia quelli smentiti."
+      ],
+      consapevolezza: [
+        "Non sa dire perché un punto segnato sarebbe un errore.",
+        "Riconosce l'errore ma lo spiega ripetendo il libro.",
+        "Spiega con parole proprie perché è un errore e perché è plausibile che l'AI lo commetta.",
+        "Classifica i problemi (errore, imprecisione, omissione) e valuta quale è più grave e perché."
+      ],
+      originalita: [
+        "Le correzioni sono copiate dalla fonte.",
+        "Le correzioni sono giuste ma minime, senza rielaborazione.",
+        "Le correzioni sono riformulate e integrate con conoscenze proprie.",
+        "Individua anche omissioni non ovvie e riscrive i passaggi meglio della fonte consultata."
+      ]
+    }
+  },
+
+  A_capire: {
+    tipo: 'A',
+    titolo: 'Verifica del prompt',
+    descrizione: "Lo studente non scrive la spiegazione: scrive la domanda che la ottiene, e poi giudica la risposta. Per farlo deve aver capito.",
+    esempio: '"Scrivi il prompt per farti spiegare {argomento} da un\'AI, poi valuta la risposta ottenuta."',
+    consegna: {
+      umanistiche: "Scrivi il prompt che useresti per farti spiegare {argomento} da un'AI, come se dovessi poi ripetere l'argomento a voce. Il prompt deve precisare: cosa vuoi sapere esattamente, quali aspetti ti interessano di più e cosa invece l'AI può tralasciare. Poi invia il prompt e leggi la risposta. Consegna: il prompt, la risposta ottenuta e la tua valutazione in 5-8 righe: cosa la risposta spiega bene, cosa spiega male o salta, e quale domanda faresti adesso per colmare la lacuna.",
+      scientifiche: "Scrivi il prompt che useresti per farti spiegare {argomento} da un'AI in modo che ti sia davvero chiaro, non solo formalmente corretto. Il prompt deve precisare: il tuo punto di partenza (cosa sai già), cosa non ti torna, e che tipo di spiegazione vuoi (con esempio numerico? con analogia? passo per passo?). Invia il prompt e leggi la risposta. Consegna: il prompt, la risposta e la tua valutazione in 5-8 righe: dove la spiegazione funziona, dove è fumosa o dà per scontato troppo, e la domanda successiva che faresti.",
+      linguistiche: "Scrivi il prompt che useresti per farti spiegare {argomento} da un'AI, indicando: il tuo livello, gli errori che fai di solito su questo punto, e che tipo di esempi vuoi (frasi d'uso reale, confronti con l'italiano, falsi amici). Invia il prompt e leggi la risposta. Consegna: il prompt, la risposta e la tua valutazione in 5-8 righe: gli esempi sono utili o artificiali? La spiegazione ti aiuterebbe a non ripetere i tuoi errori? Cosa chiederesti dopo?",
+      tecniche: "Scrivi il prompt che useresti per farti spiegare {argomento} da un'AI in vista di un uso pratico che sceglierai tu (un progetto, un esercizio, un caso reale). Il prompt deve precisare il contesto d'uso e il livello di dettaglio che ti serve. Invia il prompt e leggi la risposta. Consegna: il prompt, la risposta e la tua valutazione in 5-8 righe: la spiegazione è utilizzabile nel contesto che hai indicato? Cosa manca per passare dalla teoria alla pratica?"
+    },
+    triennioExtra: "Poi riscrivi il prompt una seconda volta, migliorandolo alla luce della risposta ricevuta, e spiega in 2-3 righe cosa hai cambiato e perché.",
+    secondaria1: "Immagina di dover chiedere a un'AI di spiegarti {argomento}. Scrivi la tua domanda in almeno 3 righe: più è precisa, migliore sarà la risposta. Devi dire: cosa vuoi capire, cosa sai già, e come la vuoi (con un esempio? con parole semplici?). Poi prova la domanda con l'AI e leggi la risposta. Scrivi: 2 cose che la risposta spiega bene e 1 cosa che non hai capito o che secondo te manca.",
+    primaria: "Oggi sei tu a fare le domande. Scrivi la domanda che faresti a un robot per farti spiegare {argomento}. Scrivila completa: che cosa vuoi sapere? Come la vuoi, la spiegazione? Poi con l'insegnante proverete la domanda al computer. Leggete insieme la risposta e tu scrivi: una cosa spiegata bene e una cosa che vorresti chiedere ancora.",
+    nota: "Scrivere una buona domanda su un argomento richiede di averlo già in parte capito: bisogna sapere cosa chiedere, cosa si sa e cosa manca. La valutazione si sposta dal contenuto (che produce l'AI) alla qualità della domanda e del giudizio sulla risposta (che produce lo studente). Un prompt vago e una valutazione generica (“la risposta è chiara e completa”) sono il segnale che la comprensione non c'è. Avvertenza pratica: fate scrivere il prompt prima di dare accesso all'AI, altrimenti alcuni studenti faranno il percorso inverso — leggere la risposta e ricostruire la domanda.",
+    osservare: [
+      "La precisione linguistica del prompt: chiede qualcosa di specifico o “parlami di”?",
+      "Se la valutazione della risposta entra nel merito o resta generica",
+      "La domanda successiva proposta: rivela cosa lo studente ha capito davvero"
+    ],
+    rubrica: {
+      processo: [
+        "Il prompt è generico (“parlami di…”) e la valutazione è assente o di una riga.",
+        "Il prompt contiene una richiesta specifica; la valutazione tocca un solo aspetto.",
+        "Il prompt precisa cosa chiedere e come; la valutazione distingue punti forti e deboli della risposta.",
+        "Il percorso domanda-risposta-giudizio è completo e la domanda successiva apre un aspetto nuovo e pertinente."
+      ],
+      consapevolezza: [
+        "Non sa spiegare perché ha formulato il prompt così.",
+        "Sa dire cosa voleva ottenere, ma non collega il prompt alla risposta ricevuta.",
+        "Collega le scelte del prompt alla qualità della risposta ottenuta.",
+        "Sa dire cosa cambierebbe nel prompt e prevede l'effetto della modifica."
+      ],
+      originalita: [
+        "Prompt e valutazione potrebbero valere per qualunque argomento.",
+        "Il prompt è ancorato all'argomento ma la valutazione è di maniera.",
+        "Prompt e valutazione mostrano un punto di vista personale sull'argomento.",
+        "La valutazione coglie lacune o ingenuità della risposta AI che solo chi ha capito l'argomento può vedere."
+      ]
+    }
+  },
+
+  C_capire: {
+    tipo: 'C',
+    titolo: 'Consegna autentica situata',
+    descrizione: "Spiegare a un destinatario reale, con un vincolo che rende inutile il copia-incolla: la comprensione o c'è o si vede.",
+    esempio: '"Spiega {argomento} a un compagno assente, senza usare le tre parole chiave del libro."',
+    consegna: {
+      umanistiche: "Un tuo compagno era assente quando abbiamo trattato {argomento} e domani viene interrogato. Prepara per lui una spiegazione scritta o registrata di massimo 5 minuti. Vincoli: puoi usare solo ciò che ricordi (niente libro, niente AI durante la preparazione) e non puoi usare le 3 espressioni-chiave con cui il libro presenta l'argomento — l'insegnante te le dirà — perché il tuo compagno il libro non l'ha letto. Chiudi con le 2 domande che secondo te gli farà l'insegnante.",
+      scientifiche: "Un tuo compagno era assente quando abbiamo trattato {argomento}. Prepara per lui una spiegazione di massimo 5 minuti, con un esempio o un caso numerico inventato da te (non quello del libro). Vincoli: lavori solo con ciò che ricordi, senza libro né AI, e non puoi usare i 3 termini tecnici che indicherà l'insegnante: devi farli capire senza nominarli. Chiudi indicando l'errore che il tuo compagno rischia di più di fare su questo argomento.",
+      linguistiche: "Un tuo compagno era assente quando abbiamo trattato {argomento}. Prepara per lui una spiegazione di massimo 5 minuti con almeno 3 esempi inventati da te, legati alla vita della classe (non frasi del libro). Vincoli: solo ciò che ricordi, senza libro né AI, e senza usare i termini grammaticali che indicherà l'insegnante: fagli capire la regola dagli esempi. Chiudi con l'errore tipico che si fa su questo punto e il trucco per evitarlo.",
+      tecniche: "Un tuo compagno era assente quando abbiamo trattato {argomento}. Prepara per lui una spiegazione di massimo 5 minuti agganciata a un caso pratico che conoscete entrambi. Vincoli: solo ciò che ricordi, senza materiali né AI, e senza usare i 3 termini tecnici che indicherà l'insegnante: traducili in parole di tutti i giorni. Chiudi con la cosa che secondo te è più facile fraintendere di {argomento}."
+    },
+    triennioExtra: "Dopo la spiegazione, scrivi 3-4 righe: quale parte di {argomento} ti sei accorto di non padroneggiare mentre la spiegavi? È l'informazione più preziosa di questo compito.",
+    secondaria1: "Immagina che un compagno sia stato assente e non sappia niente di {argomento}. Spiegaglielo tu, per iscritto o a voce, in modo che capisca davvero. Regole: usa solo quello che ricordi (libro chiuso), fai almeno un esempio tuo che non c'è sul libro, e non usare le parole “difficili” che scriverà alla lavagna l'insegnante: spiega le cose con parole tue. Alla fine scrivi la domanda che secondo te il compagno ti farebbe.",
+    primaria: "Devi spiegare {argomento} a un bambino più piccolo di te, che non lo ha mai studiato. Racconta con parole tue, come se fosse una storia o un gioco. Regole: libro chiuso, e fai un esempio preso dalla tua vita di tutti i giorni. Poi disegna o scrivi la cosa più importante da ricordare.",
+    nota: "Il vincolo delle parole proibite è il cuore della consegna: chi ha solo memorizzato l'argomento resta senza parole, chi lo ha capito lo riformula. Il destinatario reale (un compagno, non “il docente”) costringe a scegliere cosa serve davvero, e la preparazione a libro chiuso rende l'AI inutilizzabile nel momento che conta. La consegna funziona ancora meglio se la spiegazione avviene davvero, in classe, davanti al compagno. Avvertenza pratica: scegliete voi le parole proibite prima di distribuire la consegna e tenetele uguali per tutti, o la correzione diventa impossibile.",
+    osservare: [
+      "Come lo studente aggira le parole proibite: perifrasi meccanica o riformulazione vera?",
+      "Gli esempi propri: sono pertinenti o decorativi?",
+      "I momenti di esitazione: indicano i punti di comprensione fragile"
+    ],
+    rubrica: {
+      processo: [
+        "Ripete frammenti del libro e si blocca sui vincoli.",
+        "Costruisce una spiegazione ordinata ma con passaggi presi di peso dal libro.",
+        "Costruisce una spiegazione autonoma, rispettando i vincoli, con esempi propri.",
+        "Adatta la spiegazione al destinatario, anticipandone le difficoltà e le domande."
+      ],
+      consapevolezza: [
+        "Non sa dire cosa il destinatario capirà o no.",
+        "Sa cosa vuole far capire, ma non verifica se ci riesce.",
+        "Sceglie esempi e parole pensando esplicitamente al destinatario.",
+        "Riconosce da solo i punti deboli della propria spiegazione e ci torna sopra."
+      ],
+      originalita: [
+        "La spiegazione è indistinguibile da un riassunto del libro.",
+        "Qualche riformulazione propria, ma la struttura è quella del libro.",
+        "Struttura ed esempi sono personali e funzionano.",
+        "La spiegazione contiene un'idea, un'analogia o un percorso che non viene da nessuna fonte."
+      ]
+    }
+  },
+
+  A_applicare: {
+    tipo: 'A',
+    titolo: 'Verifica del prompt',
+    descrizione: "Lo studente costruisce un caso o un esercizio su misura e usa l'AI per metterlo alla prova: per costruirlo deve saper applicare.",
+    esempio: '"Costruisci un esercizio su {argomento}, fallo risolvere all\'AI e correggi la sua soluzione."',
+    consegna: {
+      umanistiche: "Costruisci tu un quesito su {argomento} del tipo che potrebbe capitare in una verifica: una domanda che richieda di collegare, confrontare o mettere in relazione, non di elencare. Risolvi il quesito per iscritto. Poi proponilo a un'AI con un prompt scritto da te e confronta la sua risposta con la tua: dove coincide, dove diverge, chi ha ragione e come lo dimostri. Consegna: quesito, tua risposta, prompt, risposta AI e confronto (5-8 righe).",
+      scientifiche: "Inventa un esercizio su {argomento} con dati scelti da te, diverso da quelli del libro ma risolvibile con lo stesso metodo. Risolvilo tu per primo, mostrando i passaggi. Poi chiedi a un'AI di risolverlo, con un prompt scritto da te, e correggi la sua soluzione come faresti con un compagno: passaggi giusti, errori, scorciatoie discutibili. Consegna: esercizio, tua soluzione, prompt, soluzione AI e correzione motivata.",
+      linguistiche: "Costruisci un esercizio su {argomento} per un tuo compagno: 5 frasi da completare, trasformare o correggere, inventate da te (non prese dal libro). Prepara la chiave delle soluzioni. Poi fai svolgere l'esercizio a un'AI e correggilo con la tua chiave: dove sbaglia o dove la sua risposta è giusta ma diversa dalla tua? Consegna: esercizio, chiave, risposte AI e correzione commentata.",
+      tecniche: "Progetta un piccolo caso pratico su {argomento}: un problema realistico, con dati o requisiti definiti da te, risolvibile con le procedure studiate. Risolvilo tu documentando i passaggi. Poi affidalo a un'AI con un prompt scritto da te e valuta la sua soluzione: funziona? rispetta i requisiti? dove è più debole della tua? Consegna: caso, tua soluzione, prompt, soluzione AI e valutazione comparata."
+    },
+    triennioExtra: "Poi modifica il tuo esercizio quel tanto che basta per mettere in difficoltà l'AI (un dato implicito, un'ambiguità, un vincolo insolito) e verifica se ci casca. Spiega perché hai scelto proprio quella modifica.",
+    secondaria1: "Inventa tu un esercizio su {argomento}, simile a quelli fatti in classe ma con numeri o esempi tuoi. Prima risolvilo tu su un foglio. Poi chiedi all'AI di risolverlo e fai l'insegnante: correggi la sua risposta con la penna rossa. Ha fatto giusto? Ha spiegato bene i passaggi? Scrivi il voto che le daresti e perché.",
+    primaria: "Inventa tu un esercizio su {argomento} per un tuo compagno, come quelli che fate in classe ma con esempi tuoi. Scrivi anche le soluzioni giuste su un altro foglio. Poi con l'insegnante darete l'esercizio al computer: correggete insieme la sua risposta. Il computer ha fatto giusto? Tu l'avresti spiegato meglio?",
+    nota: "Per costruire un esercizio funzionante bisogna padroneggiare il metodo più di quanto serva per risolverne uno: è il classico rovesciamento che rende il compito non delegabile. Il secondo livello di applicazione è la correzione della soluzione AI, che obbliga a ripercorrere il procedimento con occhio critico. Se lo studente delega all'AI anche la costruzione dell'esercizio, si vede subito: non sa difenderne le scelte quando gli chiedete perché ha messo quei dati. Avvertenza pratica: chiedete sempre la soluzione dello studente PRIMA del passaggio in AI, ed eventualmente fatela consegnare separatamente.",
+    osservare: [
+      "La calibratura dell'esercizio inventato: banale, impossibile o ben tarato?",
+      "Se la soluzione propria precede davvero quella dell'AI",
+      "La qualità della correzione: individua errori reali o approva tutto?"
+    ],
+    rubrica: {
+      processo: [
+        "L'esercizio è copiato o non risolvibile; manca la soluzione propria.",
+        "L'esercizio ricalca il libro con modifiche minime; la soluzione propria è abbozzata.",
+        "L'esercizio è originale e ben tarato; la soluzione propria è completa e precede il confronto.",
+        "L'intero ciclo (costruzione, soluzione, prova AI, correzione) è documentato e coerente."
+      ],
+      consapevolezza: [
+        "Non sa spiegare le scelte fatte nel costruire l'esercizio.",
+        "Spiega le scelte in modo generico (“così è più difficile”).",
+        "Motiva dati e struttura dell'esercizio in rapporto al metodo da applicare.",
+        "Prevede dove l'AI (o un compagno) sbaglierebbe e costruisce l'esercizio di conseguenza."
+      ],
+      originalita: [
+        "Esercizio e correzione potrebbero uscire da un eserciziario qualunque.",
+        "Contesto o dati personali, ma struttura standard.",
+        "L'esercizio ha un'idea propria e la correzione entra nel merito dei passaggi.",
+        "La correzione dell'AI mostra una padronanza del metodo superiore alla semplice soluzione."
+      ]
+    }
+  },
+
+  E_applicare: {
+    tipo: 'E',
+    titolo: 'Meta-compito',
+    descrizione: "Lo studente progetta un'attività o un esercizio per i compagni: applicare il metodo non basta, bisogna saperlo far applicare.",
+    esempio: '"Progetta un esercizio su {argomento} per la tua classe, con istruzioni e criteri di correzione."',
+    consegna: {
+      umanistiche: "Progetta un'attività su {argomento} per la tua classe: qualcosa che obblighi i compagni a usare ciò che sanno, non a ripeterlo. Definisci: la consegna esatta (come la scrivereste alla lavagna), il tempo, cosa è permesso e cosa no, e i 3 criteri con cui l'insegnante dovrebbe valutarla. Chiudi con 4-5 righe: perché questa attività non si può risolvere incollando la consegna in un'AI?",
+      scientifiche: "Progetta un esercizio su {argomento} per la tua classe, con la chiave di soluzione e i criteri di correzione (quanto vale ogni passaggio, quali errori sono gravi e quali veniali). L'esercizio deve richiedere di applicare il metodo a una situazione non identica a quelle viste. Chiudi con 4-5 righe: cosa rende questo esercizio diverso da uno risolvibile con l'AI in trenta secondi?",
+      linguistiche: "Progetta un'attività su {argomento} per la tua classe: definisci la consegna, i materiali, il tempo e i criteri di valutazione (almeno 3). L'attività deve far usare la lingua in situazione, non completare schemi. Chiudi con 4-5 righe: perché un'AI non può svolgerla al posto di un compagno?",
+      tecniche: "Progetta un'esercitazione pratica su {argomento} per la tua classe: obiettivo, requisiti, vincoli, tempo e griglia di valutazione (almeno 3 criteri). L'esercitazione deve richiedere decisioni, non solo esecuzione. Chiudi con 4-5 righe: quale parte del lavoro resta umana anche se i compagni usano l'AI, e perché è quella che conta?"
+    },
+    triennioExtra: "Fai svolgere l'esercizio a un'AI e allega il risultato: conferma o smentisce quello che avevi previsto? Correggi il progetto di conseguenza.",
+    secondaria1: null,
+    primaria: null,
+    nota: "Progettare un esercizio richiede di vedere il metodo dall'alto: cosa lo rende difficile, dove si sbaglia, cosa distingue un'applicazione meccanica da una ragionata. È il livello di padronanza più alto dell'applicare, e non è delegabile: l'AI può generare un esercizio, ma non può motivare i criteri di correzione al posto dello studente, né difendere le scelte in un confronto orale. La domanda finale (“perché non si risolve con l'AI?”) costringe a riflettere sulla natura del compito stesso. Avvertenza pratica: i progetti migliori usateli davvero in classe — è la validazione più motivante che esista.",
+    osservare: [
+      "I criteri di correzione: distinguono errori gravi e veniali o sono generici?",
+      "La risposta alla domanda “perché l'AI non basta”: riflessione vera o slogan?",
+      "Se lo studente sa difendere le scelte progettuali a voce"
+    ],
+    rubrica: {
+      processo: [
+        "Il progetto è incompleto: manca la chiave o mancano i criteri.",
+        "Il progetto è completo ma ricalca esercizi esistenti.",
+        "Il progetto è completo, originale e realizzabile in classe così com'è.",
+        "Il progetto è stato testato (su AI o su un compagno) e corretto in base al test."
+      ],
+      consapevolezza: [
+        "Non sa spiegare perché l'esercizio è fatto così.",
+        "Motiva le scelte principali ma i criteri di valutazione sono generici.",
+        "Criteri e vincoli sono motivati in rapporto agli errori tipici sull'argomento.",
+        "Sa dire cosa il suo esercizio misura e cosa NON misura, e dove l'AI fallirebbe."
+      ],
+      originalita: [
+        "Il progetto è generabile da un'AI senza intervento umano.",
+        "Contesto personalizzato ma struttura standard.",
+        "L'esercizio contiene un'idea che non c'è nel libro.",
+        "L'esercizio rivela una comprensione del metodo che va oltre il programma svolto."
+      ]
+    }
+  },
+
+  C_applicare: {
+    tipo: 'C',
+    titolo: 'Consegna autentica situata',
+    descrizione: "Applicare il metodo a una situazione vera della classe o del quotidiano: il contesto reale rende inutile il copia-incolla.",
+    esempio: '"Usa {argomento} per risolvere un problema vero della tua classe e mostra come hai fatto."',
+    consegna: {
+      tutte: "Trova nella tua esperienza concreta (casa, scuola, sport, lavoretti, città) una situazione reale in cui {argomento} si applica davvero. Descrivi la situazione, applica il metodo o il concetto mostrando tutti i passaggi, e concludi con cosa cambia nella situazione grazie a questa applicazione. Vincolo: la situazione deve essere tua e verificabile — l'insegnante può chiederti dettagli che solo chi c'era conosce."
+    },
+    triennioExtra: "Chiudi indicando i limiti dell'applicazione: cosa il modello o metodo non cattura della situazione reale?",
+    secondaria1: "Cerca nella tua vita di tutti i giorni una situazione vera dove serve {argomento}: a casa, nello sport, a scuola. Descrivi la situazione, poi usa quello che hai imparato per affrontarla, mostrando tutti i passaggi. Alla fine racconta alla classe come hai fatto: preparati, perché i compagni potranno farti domande.",
+    primaria: "Dove lo trovi {argomento} fuori dalla scuola? Cerca un esempio vero: a casa, al parco, al supermercato. Racconta o disegna la situazione, e fai vedere come usi quello che hai imparato. Poi lo racconterai ai compagni.",
+    nota: "L'ancoraggio a un'esperienza personale e verificabile è ciò che rende la consegna non delegabile: l'AI può inventare una situazione plausibile, ma non conosce la vita dello studente, e bastano due domande di dettaglio per distinguere il vissuto dal generato. Per i livelli più bassi è la forma naturale dell'applicare: concreta, raccontabile, condivisibile con la classe. Avvertenza pratica: prevedete sempre il momento delle domande — è lì che il compito si valuta davvero, più che nell'elaborato.",
+    osservare: [
+      "La situazione scelta: vissuta davvero o di plastica?",
+      "La correttezza dell'applicazione, al netto della semplicità del caso",
+      "Le risposte alle domande di dettaglio dei compagni o del docente"
+    ],
+    rubrica: {
+      processo: [
+        "La situazione è inventata o copiata e l'applicazione non si vede.",
+        "La situazione è reale ma l'applicazione è abbozzata o con errori.",
+        "Situazione reale e applicazione corretta, con i passaggi visibili.",
+        "Applicazione corretta e adattata con intelligenza alle irregolarità del caso reale."
+      ],
+      consapevolezza: [
+        "Non sa spiegare perché {argomento} c'entra con la situazione.",
+        "Sa dire che c'entra, ma non dove il metodo serve davvero.",
+        "Spiega dove e perché il metodo si applica, rispondendo alle domande.",
+        "Riconosce anche i limiti: cosa del caso reale il metodo non spiega."
+      ],
+      originalita: [
+        "Esempio già sentito, riproposto senza rielaborazione.",
+        "Esempio comune ma raccontato con dettagli propri.",
+        "Esempio personale e non ovvio, applicato con precisione.",
+        "L'esempio rivela un collegamento tra scuola e realtà che nessuno aveva proposto."
+      ]
+    }
+  },
+
+  D_analizzare: {
+    tipo: 'D',
+    titolo: 'Critica del prodotto AI',
+    descrizione: "Lo studente smonta un'analisi fatta dall'AI: ne individua struttura, semplificazioni e punti ciechi.",
+    esempio: '"Questa analisi AI di {argomento} è superficiale in 3 punti: trovali e fai di meglio."',
+    consegna: {
+      umanistiche: "Ricevi un'analisi di {argomento} generata da un'AI (te la fornisce l'insegnante). Il tuo compito è smontarla: (1) individua la struttura del testo — quali aspetti tratta e in che ordine; (2) trova almeno 3 punti deboli tra semplificazioni, luoghi comuni, omissioni e affermazioni non argomentate; (3) per il punto più grave, scrivi tu il paragrafo come dovrebbe essere, con riferimenti precisi a testi o fonti studiate. Consegna: schema della struttura, elenco motivato dei punti deboli, paragrafo riscritto.",
+      scientifiche: "Ricevi una spiegazione di {argomento} generata da un'AI (te la fornisce l'insegnante). Smontala: (1) individua i passaggi logici della spiegazione e rappresentali in uno schema; (2) trova almeno 3 punti deboli tra passaggi saltati, casi non considerati, cause confuse con correlazioni, condizioni di validità taciute; (3) per il punto più grave, riscrivi tu il passaggio in modo rigoroso. Consegna: schema, elenco motivato dei punti deboli, passaggio riscritto.",
+      linguistiche: "Ricevi un testo in lingua (o un'analisi linguistica) su {argomento} generato da un'AI (te lo fornisce l'insegnante). Smontalo: (1) individua registro, struttura e scelte lessicali; (2) trova almeno 3 punti deboli tra forme innaturali, calchi, errori di registro, regole enunciate male; (3) riscrivi tu il passaggio peggiore come lo direbbe un parlante reale, spiegando le tue scelte. Consegna: analisi della struttura, elenco motivato, riscrittura.",
+      tecniche: "Ricevi una soluzione o un'analisi tecnica di {argomento} generata da un'AI (te la fornisce l'insegnante). Smontala: (1) ricostruisci la logica della soluzione, passaggio per passaggio; (2) trova almeno 3 punti deboli tra assunzioni non dichiarate, casi limite ignorati, scelte non motivate, pratiche datate; (3) per il punto più grave, proponi tu l'alternativa e giustificala. Consegna: schema logico, elenco motivato, alternativa argomentata."
+    },
+    triennioExtra: "Chiudi con una diagnosi in 3-4 righe: che tipo di testo produce l'AI su {argomento}? Cosa privilegia e cosa sistematicamente trascura? Da cosa credi dipenda?",
+    secondaria1: "L'insegnante ti dà un testo su {argomento} scritto da un'AI. Il testo non è sbagliato, ma è troppo semplice: dice le cose senza spiegarle bene. Trova 3 punti dove il testo “vola basso”: dove non spiega il perché, dove dimentica qualcosa di importante, dove dice una cosa vera ma a metà. Per ognuno scrivi cosa aggiungeresti tu. Poi scegli il punto peggiore e riscrivilo come lo spiegheresti a un compagno.",
+    primaria: "L'insegnante ti dà un testo su {argomento} scritto da un computer. Il computer però spiega le cose a metà! Trova 2 punti dove il testo non spiega il perché delle cose. Scrivi tu il perché, con parole tue.",
+    notaPrimaria: "Scegliere o preparare un testo con 2 “perché” mancanti ben riconoscibili.",
+    nota: "Analizzare il testo di un'AI è un'analisi al quadrato: lo studente deve padroneggiare l'argomento E riconoscere come un testo lo costruisce — struttura, omissioni, appiattimenti. I testi AI sono perfetti per questo esercizio: fluidi, plausibili e sistematicamente superficiali, offrono punti deboli veri senza bisogno di inventarli. La richiesta di riscrittura finale impedisce la critica gratuita: smontare è facile, fare meglio no. Avvertenza pratica: generate voi il testo e usatelo per tutta la classe; testi diversi renderebbero i lavori non confrontabili.",
+    osservare: [
+      "Se lo schema della struttura è fedele al testo o proiettato",
+      "La natura dei punti deboli trovati: sostanziali o cosmetici?",
+      "Il salto di qualità (o meno) tra il testo AI e la riscrittura dello studente"
+    ],
+    rubrica: {
+      processo: [
+        "Legge il testo senza smontarlo: osservazioni sparse, nessuna struttura.",
+        "Individua la struttura a grandi linee e almeno un punto debole reale.",
+        "Ricostruisce la struttura e documenta 3 punti deboli pertinenti e diversi tra loro.",
+        "L'analisi copre struttura, contenuto e strategia del testo, con esempi puntuali."
+      ],
+      consapevolezza: [
+        "Non distingue tra “non mi piace” e “è debole perché”.",
+        "Motiva le critiche ma in modo generico.",
+        "Ogni critica è motivata con un criterio esplicito e un riferimento preciso al testo.",
+        "Riconosce il pattern: sa dire cosa l'AI sistematicamente semplifica e perché."
+      ],
+      originalita: [
+        "La critica potrebbe applicarsi a qualunque testo.",
+        "Critica pertinente ma prevedibile (i difetti più ovvi).",
+        "Trova almeno un punto debole non ovvio e la riscrittura è migliore dell'originale.",
+        "La riscrittura mostra una comprensione dell'argomento che il testo AI non poteva dare."
+      ]
+    }
+  },
+
+  A_analizzare: {
+    tipo: 'A',
+    titolo: 'Verifica del prompt',
+    descrizione: "Lo studente progetta prompt che mettono alla prova l'AI sull'argomento da angolazioni diverse, e analizza le differenze tra le risposte.",
+    esempio: '"Interroga l\'AI su {argomento} da 3 angolazioni diverse e analizza come cambiano le risposte."',
+    consegna: {
+      umanistiche: "Scrivi 3 prompt che interrogano un'AI su {argomento} da tre angolazioni diverse (per esempio: le cause, le interpretazioni contrastanti, il punto di vista di chi l'ha vissuto — scegli tu le angolazioni e motivale). Invia i prompt e raccogli le risposte. Poi analizza: cosa compare in tutte le risposte? Cosa emerge solo da un'angolazione? Quale aspetto di {argomento} nessuno dei tre prompt è riuscito a far emergere? Consegna: i 3 prompt con la motivazione delle angolazioni, le risposte e l'analisi comparativa (10-15 righe).",
+      scientifiche: "Scrivi 3 prompt che interrogano un'AI su {argomento} a tre livelli diversi (per esempio: il “come” operativo, il “perché” concettuale, i casi limite in cui il modello non vale — scegli tu i livelli e motivali). Raccogli le risposte e analizza: quali risposte sono coerenti tra loro? Dove l'AI cambia versione o si contraddice? Quale livello produce la risposta più debole, e perché secondo te? Consegna: prompt motivati, risposte, analisi comparativa (10-15 righe).",
+      linguistiche: "Scrivi 3 prompt che chiedono a un'AI {argomento} in tre contesti d'uso diversi (per esempio: registro formale, conversazione informale, testo scritto per nativi — scegli tu i contesti e motivali). Raccogli le risposte e analizza: cosa resta stabile nei tre contesti? Cosa cambia? Le differenze che l'AI propone sono reali o stereotipate? Consegna: prompt motivati, risposte, analisi comparativa (10-15 righe).",
+      tecniche: "Scrivi 3 prompt che interrogano un'AI su {argomento} da tre prospettive diverse (per esempio: progettazione, funzionamento, cosa succede quando si guasta o fallisce — scegli tu le prospettive e motivale). Raccogli le risposte e analizza: dove le risposte si confermano a vicenda? Dove emergono incoerenze? Quale prospettiva l'AI gestisce peggio? Consegna: prompt motivati, risposte, analisi comparativa (10-15 righe)."
+    },
+    triennioExtra: "Aggiungi un quarto prompt progettato apposta per far emergere il punto cieco individuato nell'analisi, e commenta il risultato: l'AI ce l'ha fatta stavolta?",
+    secondaria1: "Fai all'AI 3 domande diverse su {argomento}: una sul COSA (cos'è, cosa succede), una sul PERCHÉ (perché è così, perché è importante) e una inventata da te. Copia le tre risposte. Poi confronta: quali cose l'AI ripete in tutte le risposte? C'è qualcosa che dice in una risposta e contraddice in un'altra? Quale delle tre risposte è la migliore e perché?",
+    primaria: "Con l'insegnante, farete al computer 2 domande su {argomento}: una la sceglie l'insegnante, una la inventi tu. Leggete insieme le due risposte. Poi tu scrivi o racconti: cosa dicono tutte e due? Cosa dice solo una? Quale risposta ti è piaciuta di più e perché?",
+    nota: "Qui l'oggetto d'analisi non è solo l'argomento ma il modo in cui le risposte lo costruiscono: per progettare tre angolazioni sensate lo studente deve avere in testa una mappa dell'argomento, e per confrontare le risposte deve riconoscere coerenze, contraddizioni e omissioni. È l'abilità analitica applicata due volte — all'argomento e allo strumento. Il compito non è delegabile: chiedere all'AI di analizzare le proprie risposte produce un testo compiacente, riconoscibile a colpo d'occhio. Avvertenza pratica: fissate voi il numero di scambi consentiti (3 prompt, non conversazioni infinite), o l'analisi annega nel materiale.",
+    osservare: [
+      "La scelta delle angolazioni: coprono l'argomento o si sovrappongono?",
+      "Se l'analisi confronta davvero le risposte o le riassume una per una",
+      "L'individuazione del punto cieco: c'è, ed è pertinente?"
+    ],
+    rubrica: {
+      processo: [
+        "I prompt sono varianti della stessa domanda; il confronto manca.",
+        "Le angolazioni sono distinte ma l'analisi riassume invece di confrontare.",
+        "Angolazioni ben scelte e analisi che confronta punto per punto.",
+        "Il confronto è sistematico e individua anche ciò che nessun prompt ha fatto emergere."
+      ],
+      consapevolezza: [
+        "Non sa motivare la scelta delle angolazioni.",
+        "Motiva le angolazioni in modo generico.",
+        "Motiva le angolazioni in base a una mappa esplicita dell'argomento.",
+        "Sa spiegare perché l'AI risponde diversamente a prompt diversi e cosa questo rivela."
+      ],
+      originalita: [
+        "Angolazioni e analisi sono quelle che proporrebbe l'AI stessa.",
+        "Almeno un'angolazione non banale.",
+        "Le angolazioni rivelano una lettura personale dell'argomento.",
+        "L'analisi produce una conclusione su {argomento} che nessuna delle risposte AI conteneva."
+      ]
+    }
+  },
+
+  D_valutare: {
+    tipo: 'D',
+    titolo: 'Critica del prodotto AI',
+    descrizione: "Due risposte AI sullo stesso tema: lo studente stabilisce criteri, confronta e argomenta quale è migliore.",
+    esempio: '"Ecco due risposte AI su {argomento}: decidi quale è più affidabile e difendi il verdetto."',
+    consegna: {
+      umanistiche: "Ricevi due testi su {argomento} generati da due AI diverse (o dalla stessa con richieste diverse — te li fornisce l'insegnante). Prima di leggerli, scrivi i 3 criteri con cui giudicherai quale è migliore (per esempio: accuratezza, completezza, capacità di distinguere fatti e interpretazioni — ma scegli tu, e motivali). Poi valuta entrambi i testi criterio per criterio, con esempi puntuali, ed emetti il verdetto: quale useresti per studiare, e con quali cautele? Consegna: criteri motivati, valutazione comparata, verdetto argomentato.",
+      scientifiche: "Ricevi due spiegazioni di {argomento} generate dall'AI (te le fornisce l'insegnante). Prima di leggerle, fissa i 3 criteri del confronto (per esempio: correttezza, rigore dei passaggi, onestà sui limiti di validità — scegli tu e motiva). Poi valuta le due spiegazioni criterio per criterio, citando i passaggi esatti, e concludi: quale spiegherebbe meglio {argomento} a chi non lo conosce, e quale contiene il rischio più serio? Consegna: criteri, valutazione comparata, verdetto.",
+      linguistiche: "Ricevi due versioni di un testo su {argomento} generate dall'AI (te le fornisce l'insegnante). Fissa prima i 3 criteri del confronto (per esempio: naturalezza, correttezza, adeguatezza al contesto — scegli tu e motiva). Poi confronta le versioni criterio per criterio, con esempi dal testo, e concludi: quale sembra più scritta da un parlante reale e da cosa lo capisci? Consegna: criteri, confronto, verdetto.",
+      tecniche: "Ricevi due soluzioni dello stesso problema su {argomento} generate dall'AI (te le fornisce l'insegnante). Fissa prima i 3 criteri del confronto (per esempio: correttezza, efficienza, manutenibilità o praticità — scegli tu e motiva). Poi valuta le soluzioni criterio per criterio e concludi: quale adotteresti in un caso reale e quale rischio ti porti a casa scegliendola? Consegna: criteri, valutazione comparata, verdetto."
+    },
+    triennioExtra: "Chiudi con 3-4 righe di autocritica: quale dei tuoi criteri si è rivelato più difficile da applicare, e come lo riformuleresti la prossima volta?",
+    secondaria1: "L'insegnante ti dà due testi su {argomento}, scritti da un'AI in due modi diversi. Tu sei il giudice. Prima decidi 2 regole per giudicare (esempio: “dice cose giuste”, “si capisce bene”). Poi leggi i due testi e dai un punteggio da 1 a 5 a ciascuno, per ogni regola. Vince il testo con più punti. Scrivi perché ha vinto, con almeno un esempio preso da ogni testo.",
+    primaria: "L'insegnante ti dà due brevi testi su {argomento}, scritti da un computer. Quale è più bello e più giusto? Leggili bene. Scegli il vincitore e scrivi 3 motivi della tua scelta. Trova nel testo perdente una frase che non ti convince e spiega perché.",
+    nota: "Valutare richiede criteri, e i criteri vengono prima della lettura: è questa sequenza che distingue il giudizio argomentato dall'impressione. Il confronto tra due prodotti AI è ideale perché nessuno dei due è “quello giusto”: lo studente non può indovinare la risposta attesa, deve costruirla. Delegare all'AI il confronto produce il tipico verdetto equidistante (“entrambi hanno punti di forza…”), immediatamente riconoscibile. Avvertenza pratica: generate voi le due versioni con richieste diverse (una sintetica e una prolissa, una prudente e una assertiva): differenze reali rendono il confronto più ricco.",
+    osservare: [
+      "I criteri: scelti prima o ricamati dopo sul giudizio già preso?",
+      "Gli esempi puntuali: cita i passaggi o parla in generale?",
+      "Il verdetto: si sbilancia con argomenti o resta equidistante?"
+    ],
+    rubrica: {
+      processo: [
+        "Giudica a impressione, senza criteri dichiarati.",
+        "Dichiara i criteri ma li applica in modo discontinuo.",
+        "Applica i criteri a entrambi i testi, con esempi puntuali.",
+        "Il percorso criteri-analisi-verdetto è rigoroso e ripercorribile da un lettore esterno."
+      ],
+      consapevolezza: [
+        "Non sa spiegare perché ha scelto quei criteri.",
+        "Motiva i criteri in modo generico.",
+        "Motiva i criteri in rapporto all'argomento e all'uso previsto del testo.",
+        "Riconosce i limiti dei propri criteri e i casi in cui il verdetto potrebbe rovesciarsi."
+      ],
+      originalita: [
+        "Il verdetto è equidistante o immotivato.",
+        "Si sbilancia, ma con gli argomenti più ovvi.",
+        "Verdetto netto, sostenuto da osservazioni non banali sui testi.",
+        "La valutazione fa emergere su {argomento} qualcosa che nessuno dei due testi diceva esplicitamente."
+      ]
+    }
+  },
+
+  B_valutare: {
+    tipo: 'B',
+    titolo: 'Fact-checking aumentato',
+    descrizione: "Non solo verificare le affermazioni dell'AI, ma giudicare l'affidabilità delle fonti usate per verificarle.",
+    esempio: '"Verifica le affermazioni dell\'AI su {argomento} e classifica le tue fonti dalla più alla meno affidabile."',
+    consegna: {
+      umanistiche: "Chiedi a un'AI le 5 affermazioni più importanti su {argomento}. Poi costruisci il processo alle affermazioni: per ciascuna cerca almeno 2 fonti di tipo diverso (manuale, enciclopedia, sito specialistico, documento originale) e stabilisci un verdetto: confermata, smentita, controversa. Infine classifica le fonti usate dalla più alla meno affidabile, spiegando i criteri della tua graduatoria. Consegna: affermazioni, verdetti con doppia fonte, graduatoria motivata delle fonti.",
+      scientifiche: "Chiedi a un'AI le 5 affermazioni più importanti su {argomento}, includendo se possibile valori numerici o condizioni di validità. Per ciascuna cerca almeno 2 fonti di tipo diverso (libro di testo, sito scientifico, banca dati) ed emetti il verdetto: confermata, smentita, imprecisa. Poi classifica le fonti usate per affidabilità, spiegando i criteri (chi la scrive? come lo sa? è aggiornata?). Consegna: affermazioni, verdetti con doppia fonte, graduatoria motivata.",
+      linguistiche: "Chiedi a un'AI 5 regole o affermazioni su {argomento}, con esempi. Per ciascuna cerca conferma in almeno 2 fonti di tipo diverso (grammatica di riferimento, dizionario, corpus o testi autentici) ed emetti il verdetto: confermata, smentita, “vera ma con eccezioni che l'AI tace”. Poi classifica le fonti per affidabilità, motivando. Consegna: affermazioni, verdetti con doppia fonte, graduatoria motivata.",
+      tecniche: "Chiedi a un'AI le 5 affermazioni più importanti su {argomento}. Per ciascuna cerca almeno 2 fonti di tipo diverso (documentazione ufficiale, manuale, articolo tecnico) ed emetti il verdetto: confermata, smentita, datata. Poi classifica le fonti per affidabilità, motivando i criteri (ufficialità, aggiornamento, indipendenza). Consegna: affermazioni, verdetti con doppia fonte, graduatoria motivata."
+    },
+    triennioExtra: "Chiudi con un giudizio complessivo in 4-5 righe: su {argomento}, l'AI è una fonte da usare, da usare con cautela o da evitare? Argomenta in base ai verdetti raccolti.",
+    secondaria1: "Chiedi all'AI 4 informazioni su {argomento}. Per ogni informazione, controlla su DUE posti diversi: il libro di scuola e un altro posto (un'enciclopedia, un sito che conosci). Scrivi per ciascuna: vera, falsa o “i due posti non sono d'accordo”. Alla fine rispondi: di quale dei tuoi due “posti” ti fidi di più? Perché?",
+    primaria: "L'insegnante ti dà 4 frasi su {argomento} scritte da un computer. Per ogni frase, cerca sul libro se è vera. Poi rispondi a questa domanda difficile: perché ci fidiamo di più del libro che del computer? Parlane con un compagno e scrivete insieme la vostra risposta.",
+    notaPrimaria: "È l'occasione per la prima conversazione sull'affidabilità delle fonti.",
+    nota: "Il salto dal Ricordare al Valutare sta nella seconda mossa: non basta dire se l'affermazione è vera, bisogna giudicare gli strumenti del giudizio. La doppia fonte obbligatoria mette lo studente davanti ai casi interessanti — le fonti che non concordano — dove il pensiero critico smette di essere uno slogan. La graduatoria delle fonti è la parte non delegabile: richiede di aver maneggiato davvero quelle fonti, su quell'argomento. Avvertenza pratica: pretendete riferimenti verificabili (titolo, pagina, indirizzo): “ho controllato su internet” non è una fonte.",
+    osservare: [
+      "La varietà reale delle fonti: due tipi diversi o due siti fotocopia?",
+      "Come gestisce i casi in cui le fonti non concordano",
+      "I criteri della graduatoria: riflettuti o di senso comune?"
+    ],
+    rubrica: {
+      processo: [
+        "Verifica su una fonte sola o su fonti non identificabili.",
+        "Usa due fonti ma dello stesso tipo, con riferimenti vaghi.",
+        "Usa fonti di tipo diverso, con riferimenti verificabili, per ogni affermazione.",
+        "Gestisce anche i disaccordi tra fonti, documentando come ha deciso."
+      ],
+      consapevolezza: [
+        "Non sa dire perché una fonte sarebbe affidabile.",
+        "Usa criteri di affidabilità generici (“è famosa”).",
+        "La graduatoria delle fonti ha criteri espliciti e pertinenti.",
+        "Sa applicare i criteri anche contro le apparenze (una fonte nota ma debole su questo tema)."
+      ],
+      originalita: [
+        "Verdetti e graduatoria sembrano compilati per dovere.",
+        "Verdetti corretti ma motivazioni di maniera.",
+        "Motivazioni proprie, ancorate a ciò che ha trovato davvero nelle fonti.",
+        "Il giudizio finale sull'AI come fonte è sfumato, argomentato e specifico per {argomento}."
+      ]
+    }
+  },
+
+  E_creare: {
+    tipo: 'E',
+    titolo: 'Meta-compito',
+    descrizione: "Lo studente progetta una verifica sull'argomento che l'AI non possa svolgere da sola: il compito più avanzato di tutti.",
+    esempio: '"Progetta una verifica su {argomento} a prova di ChatGPT e difendi le tue scelte."',
+    consegna: {
+      umanistiche: "Progetta una verifica su {argomento} che uno studente non possa svolgere semplicemente incollando la consegna in un'AI. Il progetto deve contenere: la consegna esatta, i materiali consentiti, il tempo, i criteri di valutazione (almeno 3) e una difesa scritta (8-10 righe): perché questa verifica resiste all'AI? Quale processo mentale pretende, che l'AI non può eseguire al posto dello studente? Prova finale: incolla la tua consegna in un'AI, allega il risultato e commenta se la tua previsione ha retto.",
+      scientifiche: "Progetta una verifica su {argomento} che non si possa risolvere delegando all'AI. Definisci: consegna, dati o materiali, tempo, criteri di valutazione (almeno 3) e una difesa scritta (8-10 righe): dove sta il passaggio che richiede il ragionamento dello studente in carne e ossa? Prova finale: sottoponi la consegna a un'AI, allega la sua risposta e valuta se la tua verifica ha retto. Se non ha retto, correggila e spiega la correzione.",
+      linguistiche: "Progetta una verifica su {argomento} che non si possa superare con una traduzione o una risposta generata dall'AI. Definisci: consegna, contesto d'uso, materiali, tempo e criteri (almeno 3), più la difesa scritta (8-10 righe): cosa deve fare lo studente con la lingua, che l'AI non può fare per lui? Prova finale: dai la consegna a un'AI, allega il risultato e commenta la tenuta del tuo progetto.",
+      tecniche: "Progetta una prova pratica su {argomento} che non si possa completare facendo generare tutto all'AI. Definisci: obiettivo, requisiti, vincoli, tempo e griglia di valutazione (almeno 3 criteri), più la difesa scritta (8-10 righe): quale decisione, misura o adattamento resta necessariamente in mano allo studente? Prova finale: sottoponi il compito a un'AI, allega l'output e valuta dove arriva e dove si ferma."
+    },
+    triennioExtra: "Scambia il progetto con un compagno: ciascuno prova a “bucare” la verifica dell'altro usando l'AI. Poi scrivi cosa ha resistito, cosa no, e come rendi il progetto più robusto.",
+    secondaria1: null,
+    primaria: null,
+    nota: "È il compito più meta del tool: per progettare una verifica a prova di AI bisogna capire sia la struttura profonda dell'argomento sia cosa l'AI sa e non sa fare — esattamente la doppia competenza che vogliamo formare. La prova finale obbligatoria (testare la propria consegna sull'AI) trasforma la difesa teorica in verifica empirica, e i fallimenti sono istruttivi quanto i successi. Non delegabile per costruzione: un'AI a cui si chiede una verifica anti-AI produce risposte deboli e generiche. Avvertenza pratica: valutate la difesa scritta più del progetto — è lì che si vede il livello di comprensione.",
+    osservare: [
+      "La difesa scritta: individua un processo cognitivo preciso o parla per slogan?",
+      "La prova empirica: onesta o addomesticata?",
+      "La reazione al fallimento: correzione intelligente o rattoppo?"
+    ],
+    rubrica: {
+      processo: [
+        "Il progetto è incompleto o è una verifica tradizionale rietichettata.",
+        "Progetto completo ma non testato sull'AI.",
+        "Progetto completo, testato sull'AI, con esito documentato.",
+        "Progetto testato, corretto dopo il test e ritestato: un vero ciclo di design."
+      ],
+      consapevolezza: [
+        "La difesa scritta manca o si riduce a “l'AI non può saperlo”.",
+        "La difesa individua genericamente cosa rende difficile il compito.",
+        "La difesa nomina con precisione il processo cognitivo che l'AI non può sostituire.",
+        "La difesa mostra consapevolezza sia dell'argomento sia dei limiti reali dell'AI, con esempi."
+      ],
+      originalita: [
+        "Il progetto riproduce esempi visti in classe.",
+        "Il progetto varia esempi noti con un'idea propria.",
+        "Il progetto contiene un meccanismo anti-delega originale e funzionante.",
+        "Il progetto è così ben pensato che il docente potrebbe usarlo davvero, così com'è."
+      ]
+    }
+  },
+
+  A_creare: {
+    tipo: 'A',
+    titolo: 'Verifica del prompt',
+    descrizione: "Lo studente progetta una sequenza di prompt per costruire, con l'AI, qualcosa che l'AI da sola non produrrebbe.",
+    esempio: '"Progetta la sequenza di prompt per creare un prodotto originale su {argomento} — la regia è tua."',
+    consegna: {
+      umanistiche: "Scegli un prodotto originale su {argomento} (un dialogo impossibile, una guida per un pubblico insolito, un processo con accusa e difesa — decidi tu) e realizzalo usando l'AI come esecutore, mai come autore. Progetta prima su carta la sequenza di prompt (minimo 4): cosa chiedi a ogni passo, cosa tieni e cosa scarti della risposta, come correggi il tiro. Poi esegui la sequenza. Consegna: il progetto, la trascrizione degli scambi con le tue decisioni annotate a margine, il prodotto finale e 5 righe: cosa c'è nel prodotto che l'AI, da sola, non avrebbe mai fatto?",
+      scientifiche: "Scegli un prodotto originale su {argomento} (un esperimento simulato, un problema a più soluzioni con analisi comparata, una spiegazione per tre pubblici diversi — decidi tu) e realizzalo dirigendo l'AI passo per passo. Progetta prima la sequenza di prompt (minimo 4), indicando per ogni passo cosa verificherai prima di proseguire. Esegui, correggendo gli errori dell'AI quando compaiono. Consegna: progetto, trascrizione con le correzioni evidenziate, prodotto finale e 5 righe: quali errori dell'AI hai intercettato e come?",
+      linguistiche: "Scegli un prodotto originale su {argomento} (una scena con dialoghi in registri diversi, un materiale didattico per compagni, una mini-guida con esempi autentici — decidi tu) e realizzalo usando l'AI come assistente sotto la tua direzione. Progetta la sequenza di prompt (minimo 4), poi esegui, correggendo forme innaturali o errori dell'AI a ogni passo. Consegna: progetto, trascrizione con le tue correzioni linguistiche evidenziate, prodotto finale e 5 righe: dove è stato necessario il tuo orecchio, e l'AI da sola non bastava?",
+      tecniche: "Scegli un prodotto originale su {argomento} (un piccolo progetto funzionante, una guida operativa per un caso specifico, un'analisi di alternative con raccomandazione — decidi tu) e realizzalo usando l'AI come strumento di lavoro. Progetta la sequenza di prompt (minimo 4), con i controlli di qualità che farai a ogni passo. Esegui e documenta. Consegna: progetto, trascrizione con i controlli annotati, prodotto finale e 5 righe: quali decisioni sono rimaste tue dall'inizio alla fine?"
+    },
+    triennioExtra: "Allega anche il “controfattuale”: chiedi all'AI il prodotto finito con un unico prompt secco e confronta il risultato col tuo. La differenza tra i due È la dimostrazione del tuo lavoro.",
+    secondaria1: "Devi creare qualcosa di tuo su {argomento}: scegli tu cosa (un fumetto, un'intervista impossibile, un quiz per la classe). L'AI può aiutarti, ma il capo sei tu. Prima scrivi il tuo piano: quali 3 domande farai all'AI, in che ordine, e cosa farai tu da solo. Poi realizza il tuo prodotto. Consegna il piano, il prodotto e la risposta a questa domanda: qual è la parte più bella che hai fatto TU e non l'AI?",
+    primaria: "Oggi creiamo qualcosa su {argomento}: un cartellone, una storia, un gioco — scegli tu con l'insegnante. Il computer può aiutarvi con le idee, ma le decisioni le prendi tu. Prima disegna o scrivi il tuo piano. Poi realizzalo. Alla fine racconta: quale idea è tutta tua?",
+    nota: "Qui l'AI entra dichiaratamente nel processo, ma in un ruolo capovolto: esecutore diretto da uno studente-regista. Creare con l'AI qualcosa che l'AI da sola non produrrebbe richiede visione del prodotto, scomposizione in passi e controllo di qualità a ogni passo: è la competenza creativa e progettuale nella sua forma contemporanea. La trascrizione annotata rende il processo visibile e valutabile; il confronto col prompt “secco” (triennio) rende la differenza dimostrabile. Avvertenza pratica: valutate le decisioni documentate, non la bellezza del prodotto — altrimenti premierete l'AI, non lo studente.",
+    osservare: [
+      "Il progetto viene prima dell'esecuzione o è ricostruito dopo?",
+      "Le annotazioni a margine: decisioni vere o didascalie?",
+      "Cosa scarta delle risposte AI: chi non scarta nulla non sta dirigendo"
+    ],
+    rubrica: {
+      processo: [
+        "Un solo prompt e il prodotto è quasi tutto AI.",
+        "La sequenza esiste ma le decisioni tra un passo e l'altro non si vedono.",
+        "Sequenza progettata prima, eseguita con decisioni documentate a ogni passo.",
+        "Il processo mostra vera regia: verifiche, scarti, correzioni di rotta motivate."
+      ],
+      consapevolezza: [
+        "Non distingue il proprio contributo da quello dell'AI.",
+        "Indica il proprio contributo ma in modo vago.",
+        "Sa dire con precisione cosa è suo, cosa è dell'AI e perché ha diviso così il lavoro.",
+        "Riflette anche su cosa ha imparato sull'argomento e sull'AI durante il processo."
+      ],
+      originalita: [
+        "Il prodotto è indistinguibile da un output AI a prompt singolo.",
+        "Il prodotto ha tracce di scelte personali.",
+        "Il prodotto ha una visione riconoscibile che l'AI ha eseguito, non generato.",
+        "Il confronto col prompt secco dimostra un valore aggiunto umano evidente."
+      ]
+    }
+  },
+
+  C_creare: {
+    tipo: 'C',
+    titolo: 'Consegna autentica situata',
+    descrizione: "Creare un prodotto vero per un destinatario vero, con materiali che solo lo studente possiede: la sua esperienza.",
+    esempio: '"Crea un prodotto su {argomento} per un destinatario reale, usando esempi della tua vita e della tua classe."',
+    consegna: {
+      tutte: "Crea un prodotto su {argomento} destinato a qualcuno di reale e identificabile (i compagni di un'altra classe, i tuoi genitori, gli studenti che l'anno prossimo faranno questo programma). Vincolo: il prodotto deve contenere almeno 3 elementi che vengono dalla tua esperienza diretta — esempi vissuti, riferimenti alla vostra classe, difficoltà che tu stesso hai incontrato con {argomento} e come le hai superate. Il prodotto verrà consegnato davvero al destinatario."
+    },
+    triennioExtra: "Accompagna il prodotto con una nota di progetto: quali scelte hai fatto pensando al destinatario e cosa hai escluso apposta.",
+    secondaria1: "Crea qualcosa su {argomento} per qualcuno di vero: per esempio una guida per i compagni di prima, un poster per la scuola, un video per i tuoi genitori. Regola importante: dentro ci devono essere almeno 3 cose che vengono dalla TUA esperienza — un esempio successo in classe, una cosa che all'inizio non capivi e poi sì, un trucco che hai scoperto tu. Il lavoro verrà dato davvero alle persone a cui lo dedichi.",
+    primaria: "Crea qualcosa su {argomento} da regalare a qualcuno: una storia per i bambini più piccoli, un cartellone per la classe, un libretto per la tua famiglia. Dentro ci devono essere: una cosa che hai imparato, una cosa successa in classe mentre la imparavi, e un tuo disegno o esempio. Il regalo verrà consegnato davvero!",
+    nota: "Il destinatario reale e la consegna effettiva trasformano il compito da esercizio a esperienza: la qualità smette di essere un voto e diventa una responsabilità. I tre elementi autobiografici obbligatori sono il meccanismo anti-delega: l'AI non era in classe quel giorno, non sa cosa lo studente non capiva a settembre, non ha il suo quaderno. Per i livelli più bassi è la forma naturale del creare. Avvertenza pratica: mantenete la promessa della consegna reale — se il prodotto non arriva mai al destinatario, il meccanismo si spegne dalla volta successiva.",
+    osservare: [
+      "Gli elementi autobiografici: veri e specifici o generici?",
+      "Le scelte fatte pensando al destinatario (linguaggio, esempi, formato)",
+      "L'investimento: il prodotto è fatto per essere consegnato o per essere valutato?"
+    ],
+    rubrica: {
+      processo: [
+        "Il prodotto è generico e gli elementi personali mancano o sono di facciata.",
+        "Prodotto completo con qualche elemento personale, ma pensato per il docente.",
+        "Prodotto completo, con elementi personali autentici, calibrato sul destinatario.",
+        "Il prodotto mostra un processo di creazione consapevole: scelte, esclusioni, revisioni."
+      ],
+      consapevolezza: [
+        "Non sa spiegare le scelte fatte.",
+        "Spiega le scelte principali ma non le collega al destinatario.",
+        "Ogni scelta importante è motivata pensando a chi riceverà il prodotto.",
+        "Sa dire anche cosa ha lasciato fuori e perché: il segno del vero progettista."
+      ],
+      originalita: [
+        "Il prodotto potrebbe averlo fatto chiunque (o qualsiasi AI).",
+        "Contenuti corretti con tocchi personali sporadici.",
+        "L'esperienza personale è il tessuto del prodotto, non la decorazione.",
+        "Il prodotto ha una voce: nessun altro studente (e nessuna AI) avrebbe fatto questo."
+      ]
+    }
+  }
+};
+
+const state = {
+  disciplina: null,   // etichetta leggibile (es. "Storia" o testo libero)
+  gruppo: null,       // umanistiche | scientifiche | linguistiche | tecniche
+  livello: null,      // primaria | secondaria1 | biennio | triennio
+  argomento: '',
+  bloom: null,        // ricordare | capire | applicare | analizzare | valutare | creare
+  tipo: null          // A | B | C | D | E (scelto allo Step 3 — Sessione 3)
+};
+
+let currentStep = 1;
+const TOTAL_STEPS = 4;
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+/* ---------- Navigazione ---------- */
+
+function showStep(n) {
+  currentStep = n;
+  if (n === 3) renderTipi();
+  $$('.step').forEach(s => s.classList.remove('active'));
+  $('#step-' + n).classList.add('active');
+
+  // Barra di avanzamento
+  $$('#progressTrack li').forEach(li => {
+    const s = Number(li.dataset.step);
+    li.classList.toggle('active', s === n);
+    li.classList.toggle('done', s < n);
+  });
+
+  // Pulsanti
+  const btnBack = $('#btnBack');
+  const btnNext = $('#btnNext');
+  btnBack.hidden = (n === 1);
+  btnNext.hidden = (n === TOTAL_STEPS); // allo Step 4 le azioni sono nel blocco output (Sessione 4)
+  btnNext.textContent = (n === 3) ? 'Genera la verifica' : 'Avanti';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(n) {
+  let ok = true;
+
+  if (n === 1) {
+    // Disciplina
+    const sel = $('#disciplina');
+    const isAltro = sel.value === '__altro__';
+    const altroTxt = $('#disciplinaAltro').value.trim();
+    const discOk = sel.value !== '' && (!isAltro || altroTxt !== '');
+    $('#field-disciplina').classList.toggle('invalid', !discOk);
+    if (!discOk) ok = false;
+
+    // Livello
+    const liv = document.querySelector('input[name="livello"]:checked');
+    $('#field-livello').classList.toggle('invalid', !liv);
+    if (!liv) ok = false;
+
+    // Argomento
+    const arg = $('#argomento').value.trim();
+    $('#field-argomento').classList.toggle('invalid', arg === '');
+    if (arg === '') ok = false;
+
+    if (ok) {
+      const opt = sel.options[sel.selectedIndex];
+      state.disciplina = isAltro ? altroTxt : sel.value;
+      state.gruppo = opt.dataset.gruppo; // per "Altro" si usa la variante umanistica (formulazioni più generali)
+      state.livello = liv.value;
+      state.argomento = arg;
+    }
+  }
+
+  if (n === 2) {
+    const chosen = $('.card-select[aria-pressed="true"]');
+    $('#error-bloom').classList.toggle('visible', !chosen);
+    if (!chosen) ok = false;
+    else state.bloom = chosen.dataset.bloom;
+  }
+
+  if (n === 3) {
+    const chosen = $('#tipiContainer .card-select[aria-pressed="true"]');
+    $('#error-tipo').classList.toggle('visible', !chosen);
+    if (!chosen) ok = false;
+    else state.tipo = chosen.dataset.tipo;
+  }
+
+  if (!ok) {
+    const firstErr = $('#step-' + n + ' .invalid, #step-' + n + ' .step-error.visible');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  return ok;
+}
+
+$('#btnNext').addEventListener('click', () => {
+  if (!validateStep(currentStep)) return;
+  if (currentStep === 3) generateOutput();
+  showStep(Math.min(currentStep + 1, TOTAL_STEPS));
+});
+
+$('#btnBack').addEventListener('click', () => {
+  showStep(Math.max(currentStep - 1, 1));
+});
+
+/* ---------- Step 1: interazioni ---------- */
+
+$('#disciplina').addEventListener('change', e => {
+  const isAltro = e.target.value === '__altro__';
+  $('#field-altro').classList.toggle('visible', isAltro);
+  if (isAltro) $('#disciplinaAltro').focus();
+  $('#field-disciplina').classList.remove('invalid');
+});
+$('#disciplinaAltro').addEventListener('input', () => $('#field-disciplina').classList.remove('invalid'));
+$$('input[name="livello"]').forEach(r =>
+  r.addEventListener('change', () => $('#field-livello').classList.remove('invalid'))
+);
+$('#argomento').addEventListener('input', () => $('#field-argomento').classList.remove('invalid'));
+
+// Invio nel campo argomento = Avanti
+$('#argomento').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); $('#btnNext').click(); }
+});
+
+/* ---------- Step 2: card Bloom ---------- */
+
+$$('#bloomGrid .card-select').forEach(card => {
+  card.addEventListener('click', () => {
+    $$('#bloomGrid .card-select').forEach(c => c.setAttribute('aria-pressed', 'false'));
+    card.setAttribute('aria-pressed', 'true');
+    $('#error-bloom').classList.remove('visible');
+  });
+});
+
+/* ==========================================================
+   Motore di generazione (Sessione 3)
+   ========================================================== */
+
+/* Matrice Bloom × Tipo — ordine = preferenza (SVILUPPO.md) */
+const MATRICE = {
+  ricordare:  ['B', 'D'],
+  capire:     ['A', 'C'],
+  applicare:  ['A', 'E'],
+  analizzare: ['D', 'A'],
+  valutare:   ['D', 'B'],
+  creare:     ['E', 'A']
+};
+
+const LIVELLI = {
+  primaria: 'Primaria',
+  secondaria1: 'Secondaria I grado',
+  biennio: 'Biennio superiori',
+  triennio: 'Triennio superiori'
+};
+
+/* L'argomento è testo dell'utente: va sempre inserito in modo sicuro */
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+function sub(text) {
+  return text.split('{argomento}').join('<strong>' + esc(state.argomento) + '</strong>');
+}
+function subPlain(text) {
+  return text.split('{argomento}').join(esc(state.argomento));
+}
+
+/* Regola non negoziabile: mai Tipo E per primaria e secondaria I grado → C */
+function tipiSuggeriti() {
+  const bassi = state.livello === 'primaria' || state.livello === 'secondaria1';
+  const tipi = MATRICE[state.bloom].map(t => (bassi && t === 'E') ? 'C' : t);
+  return [...new Set(tipi)];
+}
+
+/* ---------- Step 3: card dei tipi suggeriti ---------- */
+
+function renderTipi() {
+  const suggeriti = tipiSuggeriti();
+  if (state.tipo && !suggeriti.includes(state.tipo)) state.tipo = null;
+
+  const cont = $('#tipiContainer');
+  cont.innerHTML = '';
+  suggeriti.forEach(tipo => {
+    const t = TEMPLATES[tipo + '_' + state.bloom];
+    if (!t) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'card-select';
+    btn.dataset.tipo = tipo;
+    btn.setAttribute('aria-pressed', state.tipo === tipo ? 'true' : 'false');
+    btn.innerHTML =
+      '<span class="card-name">' + t.titolo + '</span>' +
+      '<span class="card-question">' + t.descrizione + '</span>' +
+      '<span class="card-example"><em>Esempio:</em> ' + subPlain(t.esempio) + '</span>';
+    btn.addEventListener('click', () => {
+      $$('#tipiContainer .card-select').forEach(c => c.setAttribute('aria-pressed', 'false'));
+      btn.setAttribute('aria-pressed', 'true');
+      $('#error-tipo').classList.remove('visible');
+    });
+    cont.appendChild(btn);
+  });
+}
+
+/* ---------- Step 4: generazione dei 3 blocchi ---------- */
+
+function consegnaText(t) {
+  if (state.livello === 'primaria') return t.primaria;
+  if (state.livello === 'secondaria1') return t.secondaria1;
+  let txt = t.consegna[state.gruppo] || t.consegna.tutte;
+  if (state.livello === 'triennio' && t.triennioExtra) txt += ' ' + t.triennioExtra;
+  return txt;
+}
+
+function generateOutput() {
+  const t = TEMPLATES[state.tipo + '_' + state.bloom];
+  if (!t) return;
+
+  const meta = esc(state.disciplina) + ' · ' + LIVELLI[state.livello] + ' · ' +
+               esc(state.argomento) + ' · ' + t.titolo;
+
+  const dimensioni = [
+    ['Processo', t.rubrica.processo],
+    ['Consapevolezza', t.rubrica.consapevolezza],
+    ['Originalità del ragionamento', t.rubrica.originalita]
+  ];
+  const righe = dimensioni.map(([nome, desc]) =>
+    '<tr><th scope="row">' + nome + '</th>' +
+    desc.map(d => '<td>' + subPlain(d) + '</td>').join('') + '</tr>'
+  ).join('');
+
+  const notaPrimaria = (state.livello === 'primaria' && t.notaPrimaria)
+    ? '<p class="nota-docente"><strong>Per la primaria:</strong> ' + subPlain(t.notaPrimaria) + '</p>'
+    : '';
+
+  $('#outputContainer').innerHTML =
+    '<article class="out-block" id="blocco-consegna">' +
+      '<h3>Consegna per gli studenti</h3>' +
+      '<p class="out-meta">' + meta + '</p>' +
+      '<div class="out-text"><p>' + sub(consegnaText(t)) + '</p></div>' +
+    '</article>' +
+
+    '<article class="out-block" id="blocco-rubrica">' +
+      '<h3>Rubrica di valutazione</h3>' +
+      '<p class="out-meta">3 dimensioni × 4 livelli · specifica per: ' + t.titolo + '</p>' +
+      '<div class="table-scroll"><table class="rubrica">' +
+        '<thead><tr><th scope="col">Dimensione</th><th scope="col">Iniziale</th><th scope="col">Base</th><th scope="col">Intermedio</th><th scope="col">Avanzato</th></tr></thead>' +
+        '<tbody>' + righe + '</tbody>' +
+      '</table></div>' +
+    '</article>' +
+
+    '<article class="out-block" id="blocco-nota">' +
+      '<h3>Nota metodologica per il docente</h3>' +
+      '<div class="out-text"><p>' + sub(t.nota) + '</p></div>' +
+      '<p style="margin-top:12px;"><strong>Cosa osservare durante il lavoro:</strong></p>' +
+      '<ul class="osservare-list">' + t.osservare.map(o => '<li>' + subPlain(o) + '</li>').join('') + '</ul>' +
+      notaPrimaria +
+    '</article>';
+}
+
+/* ==========================================================
+   Sessione 4 — azioni, stampa, accessibilità
+   ========================================================== */
+
+/* Testo semplice (non HTML) per la clipboard */
+function txtArg(s) { return s.split('{argomento}').join(state.argomento); }
+
+function testoConsegna() {
+  const t = TEMPLATES[state.tipo + '_' + state.bloom];
+  return 'VERIFICA — ' + state.disciplina + ' · ' + LIVELLI[state.livello] + ' · ' + state.argomento + '\n' +
+         'Forma del compito: ' + t.titolo + '\n\n' + txtArg(consegnaText(t));
+}
+
+function testoTutto() {
+  const t = TEMPLATES[state.tipo + '_' + state.bloom];
+  const livelli = ['Iniziale', 'Base', 'Intermedio', 'Avanzato'];
+  const dims = [
+    ['PROCESSO', t.rubrica.processo],
+    ['CONSAPEVOLEZZA', t.rubrica.consapevolezza],
+    ['ORIGINALITÀ DEL RAGIONAMENTO', t.rubrica.originalita]
+  ];
+  let out = testoConsegna() + '\n\n————————————————\nRUBRICA DI VALUTAZIONE\n';
+  dims.forEach(([nome, d]) => {
+    out += '\n' + nome + '\n';
+    d.forEach((desc, i) => { out += '· ' + livelli[i] + ': ' + txtArg(desc) + '\n'; });
+  });
+  out += '\n————————————————\nNOTA METODOLOGICA PER IL DOCENTE\n' + txtArg(t.nota) + '\n\nCosa osservare durante il lavoro:\n';
+  t.osservare.forEach(o => { out += '· ' + txtArg(o) + '\n'; });
+  if (state.livello === 'primaria' && t.notaPrimaria) out += '\nPer la primaria: ' + txtArg(t.notaPrimaria) + '\n';
+  out += '\n— Generato con VerificAI · nuovadidattica.eu';
+  return out;
+}
+
+function copia(btn, testo) {
+  const fatto = () => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copiato ✓';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(testo).then(fatto).catch(() => copiaFallback(testo, fatto));
+  } else {
+    copiaFallback(testo, fatto);
+  }
+}
+function copiaFallback(testo, fatto) {
+  const ta = document.createElement('textarea');
+  ta.value = testo;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { if (document.execCommand('copy')) fatto(); } catch (e) { /* clipboard non disponibile */ }
+  document.body.removeChild(ta);
+}
+
+$('#btnCopiaConsegna').addEventListener('click', e => copia(e.currentTarget, testoConsegna()));
+$('#btnCopiaTutto').addEventListener('click', e => copia(e.currentTarget, testoTutto()));
+$('#btnStampa').addEventListener('click', () => window.print());
+$('#btnRicomincia').addEventListener('click', () => {
+  if (!window.confirm('Vuoi ricominciare da capo? I dati inseriti andranno persi.')) return;
+  state.disciplina = null; state.gruppo = null; state.livello = null;
+  state.bloom = null; state.tipo = null; state.argomento = '';
+  $('#disciplina').selectedIndex = 0;
+  $('#disciplinaAltro').value = '';
+  $('#field-altro').classList.remove('visible');
+  $$('input[name="livello"]').forEach(r => { r.checked = false; });
+  $('#argomento').value = '';
+  $$('.card-select').forEach(c => c.setAttribute('aria-pressed', 'false'));
+  $('#tipiContainer').innerHTML = '';
+  $('#outputContainer').innerHTML = '';
+  $('#outActions').hidden = true;
+  showStep(1);
+});
+
+/* Mostra le azioni quando l'output è generato */
+const generateOutputBase = generateOutput;
+generateOutput = function () {
+  generateOutputBase();
+  $('#outActions').hidden = false;
+};
+
+/* Accessibilità: il focus segue lo step attivo */
+$$('.step-title').forEach(h => { h.tabIndex = -1; });
+const showStepBase = showStep;
+showStep = function (n) {
+  showStepBase(n);
+  const h = $('#title-' + n);
+  if (h) h.focus({ preventScroll: true });
+};
+
+/* ---------- Avvio ---------- */
+showStep(1);
+/* VerificAI v1.0 — Sessioni 1-4 complete */
+</script>
+
+</body>
+</html>
