@@ -77,10 +77,15 @@ Pesi usati: Syne 400/600/700/800 · DM Sans 300/400/500 (anche italic) · DM Mon
 | File | Descrizione |
 |---|---|
 | `index.html` | Homepage principale — feed, blog, pubblicazioni tutti da Supabase |
-| `capire-ai.html` | Guida "Capire l'AI" — 9 sezioni, collegata dal nav e dall'hook in #filosofia |
+| `capire-ai.html` | Guida "Capire l'AI" — 9 sezioni, dropdown "Capitoli" nell'header + back-to-top "↑ Indice", collegata dal nav e dall'hook in #filosofia |
 | `docente-team.html` | Articolo blog "Il Docente-Team: Dirigere l'Ecosistema AI" |
+| `la-mente-rivendicata.html` | Paper "La Mente Rivendicata" — collegato da card in #filosofia |
+| `guida-notebooklm.html` | Guida NotebookLM — collegata dalla card `tool-notebooklm` |
+| `notebooklm-generator.html` | Tool generatore di prompt per NotebookLM (topbar con logo + menu unificato) |
+| `prompt-coach.html` | Tool PromptCoach — analisi prompt via API Claude (key inserita dall'utente) |
+| `verificai.html` | Tool VerificAI — progettazione verifiche in 4 step (contesto → obiettivo Bloom → forma → consegna+rubrica); topbar con logo + menu unificato |
 | `admin-feed.html` | Pannello admin unificato: feed, blog, pubblicazioni (con card linking) |
-| `notebooklm-generator.html` | Tool generatore di prompt per NotebookLM |
+| `nd-components.js` + `nd-components-demo.html` | Libreria componenti sperimentale — NON usata dalle pagine di produzione |
 | `CNAME` | `nuovadidattica.eu` |
 
 ---
@@ -113,7 +118,7 @@ Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-a
 
 **Reveal on scroll:** classe `.reveal` + `.reveal-delay-1/2/3` attivata da `IntersectionObserver`.
 
-**Bento grid:** layout a griglia asimmetrica con card di dimensioni variabili (`.bento`, `.bento-card`).
+**Bento grid:** layout a griglia asimmetrica con card di dimensioni variabili (`.bento`, `.bento-card`). Vedi la sezione "Schema bento grid — regole vincolanti" più sotto.
 
 **Section anatomy:**
 ```html
@@ -127,22 +132,124 @@ Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-a
 
 **Expand inline (Pattern B):** card cliccabili che espandono un pannello `.bento-expand` con JS `toggleExpand(id)`. Le card con expand hanno attributi `data-card-id` e `data-expand-id` per il sistema risorse.
 
+**Expand raggruppati (wrapper):** se una sezione ha più pannelli expand, vanno racchiusi in un unico wrapper `span 12` con `display:none` di default (es. `#eticaCritExpands`, `#casiExpands`), altrimenti ogni pannello chiuso genera una gap-row vuota nella grid. I wrapper sono registrati nell'oggetto `expandWrappers` dentro `toggleExpand()` in `index.html` — nuovi wrapper vanno aggiunti lì.
+
 **Card multi-CTA (Pattern D):** la card `.card-approfondimento` (docente-team) è un `<div>` con `onclick="window.location.href=..."` e un wrapper `.card-approfondimento-ctas` che contiene più link `<a>` in colonna — articolo + PDF quando disponibile. Non usare `<a>` come wrapper se servono più CTA.
 
 **Sezioni scure** (hero, etica): `background: var(--dark)`, testo `var(--text-light)`, label in `var(--eu-yellow)`.
 
 **Sezioni chiare** (default): `background: var(--light)`, testo `var(--text-dark)`.
 
-**Pagine guida** (pattern da `capire-ai.html`): nav con pulsante "← Home" + tag pagina al posto dei link sezione; griglia capitoli `.chapters-grid` 3×3 su `var(--dark-2)` al posto della barra TOC; footer identico alla homepage (logo ND + logo AP + credits).
+**Pagine guida** (pattern da `capire-ai.html`): header unificato (vedi sezione non negoziabile) + dropdown "Capitoli ▾" nell'header (`.nav-chapters`) + pulsante fisso "↑ Indice" (`.back-to-top`) che compare superata la griglia capitoli; griglia capitoli `.chapters-grid` 3×3 su `var(--dark-2)` al posto della barra TOC; footer identico alla homepage (logo ND + logo AP + credits).
+
+**Pagine tool** (pattern da `notebooklm-generator.html` / `verificai.html`): topbar sticky scura con **logo ND base64** (`.topbar-logo` + `#navLogoND`) + separatore + nome tool a sinistra, menu sito + hamburger a destra. Il vecchio wordmark testuale "N**D**" e il link "← NuovaDidattica.eu" sono stati eliminati (lug 2026): OGNI pagina monta il logo vero e il menu unificato.
 
 ---
 
-## Navigazione e UI
+## ⛔ Schema bento grid — regole NON NEGOZIABILI
 
-- **Nav desktop:** logo + link sezioni + CTA pill rossa "Unisciti"
-- **Nav mobile:** hamburger → menu overlay a schermo intero
+> Ogni aggiunta, rimozione o modifica di card DEVE rispettare questo schema **su tutti e tre i formati (desktop, tablet, smartphone), senza che l'utente debba richiederlo**. **Mai lasciare spazi vuoti a fianco di una card.** Chi modifica una sezione è responsabile di ricomporla e verificarla nei tre formati.
+
+### Regola fondamentale
+
+Le grid desktop sono a **12 colonne** (`grid-template-columns: repeat(12, 1fr)`). **Ogni riga visiva deve sommare esattamente 12.** Righe ammesse:
+
+| Composizione | Uso |
+|---|---|
+| `12` | Card hero / full-width (es. nlm-generator, tool-ada, banda etica) |
+| `6+6` | Coppia paritaria (es. PromptCoach + VerificAI) |
+| `7+5` | Coppia asimmetrica (es. video + card-filosofia) |
+| `8+4` | Coppia asimmetrica forte (es. etica-main + etica-side) |
+| `4+4+4` | Terzina regolare (es. classroom + notebooklm + drive) |
+| `4+5+3` | Terzina espressiva — max una per sezione (es. riga 1 di #casi) |
+
+**Parità:** con numero **pari** di card → coppie; con numero **dispari** → una card a riga intera (span 12) + coppie/terzine. Se aggiungi o togli una card, ricomponi le righe finché ogni riga somma 12 — non lasciare mai una card orfana con spazio vuoto accanto.
+
+### Layout attuale per sezione (desktop)
+
+| Sezione | Righe |
+|---|---|
+| `#filosofia` | `7+5` / `4+4+4` / `12` (docente-team) / `7+5` (mente-rivendicata + claim) |
+| `#casi` | `4+5+3` / `6+6` (tutoring + studenti) |
+| `#etica` | `8+4` / `4+4+4` / `12` (banda falso allarme) |
+| `#toolbox` | `12` (nlm-gen) / `4+4+4` / `6+6` (PromptCoach + VerificAI) / `12` (ADA) |
+
+### Breakpoint
+
+- **Tablet (601–900px):** grid a 2 colonne. Card dispari → l'ultima prende `span 2 !important` (mai orfana). Es.: `.caso-studenti`, `.tool-ada`, `.tool-nlm-generator`.
+- **Mobile (≤768px / ≤600px):** tutte le grid → 1 colonna, tutte le card → `span 1 !important`.
+- I pannelli `.bento-expand` sono sempre `span 12` (desktop) / `span 2` (tablet) / `span 1` (mobile) e non contano come card nel calcolo delle righe.
+
+### Procedura vincolante — AGGIUNGERE una card
+
+1. Conta le card della sezione DOPO l'aggiunta e ricomponi le righe: ogni riga desktop deve sommare 12 (composizioni ammesse sopra). Se non entra, ridistribuisci le card esistenti — mai una card orfana.
+2. Aggiungi la regola desktop (`grid-column: span N`).
+3. **Tablet (601–900px):** assegna lo span sulla grid a 2 colonne; se il totale card è dispari, l'ultima prende `span 2 !important`.
+4. **Mobile (≤768px/≤600px):** aggiungi la card alla lista `span 1 !important`.
+5. Se la card è cliccabile: classe `interactive`, `data-card-id` (e `data-expand-id` se ha pannello expand; il pannello va nel wrapper expand della sezione e registrato in `expandWrappers`).
+6. Aggiorna la tabella "Layout attuale per sezione" qui sopra e, se la card può ricevere PDF, la tabella "ID card disponibili".
+
+### Procedura vincolante — RIMUOVERE una card
+
+1. Elimina markup + TUTTE le regole CSS della card nei tre formati (desktop, tablet, mobile) — niente selettori morti.
+2. Ricomponi le righe della sezione: desktop deve tornare a somme di 12; tablet deve tornare pari (o ultima card `span 2 !important`).
+3. Se la card aveva expand: rimuovi il pannello, il wrapper se resta vuoto, e la voce in `expandWrappers`.
+4. Se la card aveva `data-card-id`: verifica in Supabase che nessuna pubblicazione la usi come `card_id` (altrimenti il CTA PDF sparisce in silenzio) e aggiorna la tabella "ID card disponibili".
+5. Aggiorna la tabella "Layout attuale per sezione".
+
+### Procedura vincolante — AGGIUNGERE / RIMUOVERE una sezione della homepage
+
+1. Rispetta la **section anatomy** standard (label + title + subtitle) e l'alternanza sezioni chiare/scure.
+2. Aggiorna la navigazione in **tutti** i punti: `.nav-links` desktop di `index.html`, `.mobile-menu` di `index.html`, e i menu unificati di TUTTE le pagine interne (che puntano a `index.html#sezione`).
+3. Se la sezione contiene una bento grid: applica lo schema righe=12 e i tre breakpoint fin dalla prima stesura.
+4. Aggiorna in questo file: elenco "Struttura della homepage", tabella "Layout attuale per sezione", TODO.
+5. Se rimuovi una sezione: elimina anche le voci di menu in tutte le pagine e verifica che nessun link interno (`#anchor` o `index.html#anchor`) resti morto.
+
+---
+
+## ⛔ REGOLE UI/UX NON NEGOZIABILI — valgono per OGNI pagina, presente e futura
+
+> Queste regole sono **vincolanti**. Nessuna pagina nuova può essere creata, e nessuna pagina esistente può essere modificata, in violazione di questi punti. Se una richiesta dell'utente sembra in conflitto, segnalarlo PRIMA di procedere. Non ripartire mai da zero: copiare i blocchi standard dalle pagine esistenti.
+
+### 1. Header di orientamento su OGNI pagina (nessuna eccezione)
+
+Ogni pagina pubblica DEVE avere un header fisso/sticky che contiene, nell'ordine:
+
+1. **Logo ND cliccabile → `index.html`** — `<img src="" id="navLogoND" alt="NuovaDidattica.eu">` popolato a runtime dalla costante `ND_B64` (base64 PNG). La costante reale è in `index.html`: copiarla da lì (o da una qualsiasi pagina già a norma). MAI wordmark testuali al posto del logo.
+2. **Menu sito desktop** `.nav-links` con le voci standard: Home, Capire l'AI, Filosofia, Applicazioni, Etica, Toolbox, Blog, Pubblicazioni, Community (link `index.html#sezione` dalle pagine interne, `#sezione` dalla homepage).
+3. **Identità pagina** (facoltativa): `.nav-tag` / `.nav-badge` / nome tool — nascosta sotto i 1380px per non affollare.
+4. **Hamburger** `.hamburger` (3 span) visibile **≤900px**, che apre l'overlay `.mobile-menu`.
+
+Varianti ammesse (solo grafiche, mai strutturali):
+- **Pagine editoriali** (articoli, guide, paper): nav fissa trasparente → `.scrolled` scura dopo scroll.
+- **Pagine tool**: `.tool-topbar` sticky sempre scura.
+- **`capire-ai.html`**: in più il dropdown "Capitoli ▾" — non sostituisce il menu sito, lo affianca.
+
+### 2. Menu mobile standard (hamburger) su OGNI pagina
+
+- Overlay `.mobile-menu` a schermo intero, sfondo `var(--dark)`, voci: Home, Capire l'AI, Filosofia, Applicazioni, Etica, Toolbox, Progetti, Feed, Blog, Pubblicazioni + CTA "Unisciti".
+- JS standard: `toggleMenu()` (toggle classi `.open` + `body.style.overflow='hidden'`) + chiusura con Escape. Copiare il blocco `// MENU MOBILE (standard sito — vedi CLAUDE.md)` da una pagina esistente.
+- L'hamburger è un `<button>` con `aria-label="Menu"`.
+
+### 3. Zero overflow orizzontale (la "mezza pagina bianca")
+
+- **OGNI pagina** deve avere `overflow-x:hidden` **sia su `html` sia su `body`** (iOS ignora la regola se è solo su `body`).
+- Vietati elementi più larghi del viewport: attenzione a `100vw`, margini negativi, elementi decorativi assoluti senza `overflow:hidden` sul contenitore, tabelle non wrappate (usare `.table-scroll{overflow-x:auto}` sul wrapper, mai lasciare la pagina intera scrollabile).
+- **Test obbligatorio prima di consegnare**: verificare a 360px, 390px, 768px che non esista scroll orizzontale.
+
+### 4. Checklist nuova pagina (da eseguire SEMPRE, in ordine)
+
+1. Copiare da una pagina a norma (`docente-team.html` per editoriali, `verificai.html` per tool): blocco CSS `/* ===== MENU SITO UNIFICATO ===== */`, markup nav + `.mobile-menu`, JS `toggleMenu`, costante `ND_B64`.
+2. `html` e `body` con `overflow-x:hidden`.
+3. Meta viewport presente.
+4. Footer standard (logo ND + logo AP + credits) per le pagine editoriali.
+5. Verificare i tre formati: desktop (≥1281px), tablet (901–1280px: gap ridotti, tag nascosto), mobile (≤900px: hamburger).
+
+### Riferimenti tecnici
+
 - **Nav scrolled:** `background: rgba(10,10,10,0.85)` + `backdrop-filter: blur(16px)` dopo scroll
 - **Logo:** base64 PNG iniettato via JS con costanti `ND_B64` e `AP_B64` definite nello script inline. Gli `<img>` hanno `src=""` nel markup e vengono popolati a runtime. IDs usati: `navLogoND`, `heroLogoND`, `footerLogoND`, `footerLogoAP`. Le costanti base64 reali sono in `index.html` — copiare da lì per nuove pagine.
+- **Breakpoint menu:** `.nav-links` visibile >900px; hamburger ≤900px; tag/badge nascosti ≤1380px.
 
 ---
 
@@ -198,16 +305,19 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | `card-stat-73` | 73% — Il problema della formazione |
 | `card-claim-prompt` | Il prompt generico: il nemico invisibile |
 | `card-docente-team` | Il Docente-Team (card con multi-CTA) |
-| `caso-verifiche` | Verifiche & Valutazioni |
-| `caso-inclusione` | Inclusione BES/DSA |
-| `caso-lezioni` | Unità Didattiche |
-| `caso-tutoring` | Tutoring Personalizzato |
+| `caso-verifiche` | Verifiche & Valutazioni (→ `verificai.html`) |
+| `caso-inclusione` | Inclusione BES/DSA (expand `exp-caso-incl`) |
+| `caso-lezioni` | Unità Didattiche (expand `exp-caso-lez`) |
+| `caso-tutoring` | Tutoring Personalizzato (expand `exp-caso-tut`) |
+| `caso-studenti` | Studiare con l'AI senza barare (expand `exp-caso-stud`) |
 | `tool-classroom` | Google Classroom |
 | `tool-notebooklm` | NotebookLM |
 | `tool-drive` | Google Drive |
-| `tool-prompts` | Libreria di Prompt Pronti |
-| `tool-pdf` | PDF & Slide |
+| `tool-prompts` | PromptCoach |
+| `tool-verificai` | VerificAI |
 | `tool-ada` | App ADA |
+
+> `tool-pdf` e `caso-ada` sono stati rimossi (lug 2026): il primo sostituito da `tool-verificai`, il secondo dalla card `caso-studenti` (ADA resta presentata in `tool-ada`).
 
 ---
 
@@ -220,6 +330,9 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 - [x] Sezione #pubblicazioni con lista reale pubblicazioni — operativa, PDF da Google Drive
 - [x] Sistema card linking (pubblicazioni.card_id → bento card CTA) — operativo
 - [x] Admin panel unificato (feed + blog + pubblicazioni) in `admin-feed.html`
+- [x] VerificAI: card nel #toolbox + link da `caso-verifiche` + topbar sito su `verificai.html`
+- [x] Card #casi ricablate: expand Pattern B con contenuto metodologico (niente più scroll generici)
+- [x] Menu "Capitoli" + back-to-top su `capire-ai.html`
 - [ ] Video sezione #filosofia (link YouTube da inserire)
 - [ ] Nuove pagine blog da aggiungere (struttura simile a `docente-team.html`)
 - [ ] Pagina dedicata ADA (ada.nuovadidattica.eu)
@@ -241,7 +354,16 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | mag 2026 | `pubblicazioni.card_id` per collegare PDF alle bento card | Un campo solo fa due cose: appare in Scritti & Quaderni E inietta CTA nella card — zero duplicazioni |
 | mag 2026 | Admin unificato in `admin-feed.html` per feed + blog + pubblicazioni | Un solo pannello editoriale; nessun file da toccare per aggiungere contenuti |
 | mag 2026 | Cache `_pubsCache` in admin invece di JSON.stringify in onclick | Le virgolette doppie nel JSON spezzano gli attributi HTML — pattern da seguire per tutti i render futuri |
+| lug 2026 | Card #casi con expand inline invece di scroll verso feed/blog/pubblicazioni | Le destinazioni generiche deludevano la promessa delle card; il contenuto metodologico vive nella card stessa |
+| lug 2026 | ADA presentata solo in #toolbox (`tool-ada`); rimossa la card duplicata in #casi | Una sola presentazione completa vale più di due parziali; in #casi al suo posto la card studenti |
+| lug 2026 | Card `tool-pdf` eliminata, sostituita da `tool-verificai` | Duplicava tool-drive e #pubblicazioni; VerificAI è contenuto reale al posto di un placeholder |
+| lug 2026 | Schema bento grid formalizzato (righe che sommano 12, regola pari/dispari) | Coerenza grafica vincolante per ogni futura aggiunta/rimozione di card |
+| lug 2026 | Dropdown "Capitoli" + back-to-top sulle pagine guida | Con ~15 min di lettura serve orientamento costante, non solo l'indice in cima |
+| lug 2026 | **Menu sito unificato su OGNI pagina** (logo ND base64 + `.nav-links` + hamburger + `.mobile-menu`) | Navigando tra le pagine ci si perdeva: header incoerenti, logo assente sui tool, nessun hamburger fuori da index. Regola blindata in "REGOLE UI/UX NON NEGOZIABILI" |
+| lug 2026 | Revocata l'eccezione "pagine tool leggere senza logo base64" | La coerenza di navigazione vale più dei ~90KB del logo; ogni pagina monta il logo vero |
+| lug 2026 | `overflow-x:hidden` obbligatorio su `html` E `body` in ogni pagina | Su mobile compariva una "mezza pagina bianca" scrollabile: iOS ignora la regola se applicata solo a `body` |
+| lug 2026 | Procedure vincolanti add/remove card e sezioni (desktop+tablet+mobile) | Ogni modifica ricomponeva la grid a mano e a memoria; ora la procedura è scritta e non negoziabile |
 
 ---
 
-*Ultima revisione: 2026-07-07 — link Tavola dei Pensatori aggiornato a simposio.nuovadidattica.eu; aggiunta card "La Scuola dei Professoracci" in #progetti*
+*Ultima revisione: 2026-07-10 (2ª sessione) — menu sito unificato con logo + hamburger su tutte le 8 pagine pubbliche; fix overflow orizzontale mobile (`html`+`body`); sezione "REGOLE UI/UX NON NEGOZIABILI" e procedure vincolanti card/sezioni aggiunte a questo file*

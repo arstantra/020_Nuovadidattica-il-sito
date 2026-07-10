@@ -36,7 +36,7 @@
   --radius:20px;--radius-sm:12px;--gap:16px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
+html{scroll-behavior:smooth;font-size:16px;overflow-x:hidden}
 body{cursor:none;overflow-x:hidden}
 
 /* CURSOR */
@@ -44,10 +44,28 @@ body{cursor:none;overflow-x:hidden}
 .cursor-ring{position:fixed;top:0;left:0;width:36px;height:36px;border:1.5px solid #D91B1B;border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .08s ease-out,width .2s,height .2s;mix-blend-mode:difference}
 
 /* NAV */
-.nd-nav{position:fixed;top:0;left:0;right:0;z-index:160;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;transition:background .4s,backdrop-filter .4s,padding .3s;background:rgba(10,10,10,0);}
+.nd-nav{position:fixed;top:0;left:0;right:0;z-index:160;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;transition:background .4s,backdrop-filter .4s,padding .3s;background:var(--dark);}
 .nd-nav.scrolled{background:rgba(10,10,10,.85);backdrop-filter:blur(16px);padding:14px 48px}
 .nd-nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}
 .nd-nav-tag{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:8px 16px;border:1px solid rgba(255,255,255,.1);border-radius:100px}
+/* ===== MENU SITO UNIFICATO (non negoziabile — vedi CLAUDE.md) ===== */
+.nav-links{display:flex;gap:26px;list-style:none}
+.nav-links a{font-family:var(--font-display);font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#F5F3EE;text-decoration:none;opacity:.7;transition:opacity .2s}
+.nav-links a:hover{opacity:1}
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:none;border:none;cursor:pointer;padding:4px;z-index:200}
+.hamburger span{display:block;width:100%;height:2px;background:#F5F3EE;border-radius:2px;transition:transform .3s,opacity .3s,width .3s;transform-origin:center}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--dark);z-index:150;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.mobile-menu.open{opacity:1;pointer-events:all}
+.mobile-menu a{font-family:var(--font-display);font-size:clamp(1rem,4vw,1.4rem);font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s,transform .2s,letter-spacing .2s;transform:translateY(8px)}
+.mobile-menu.open a{transform:translateY(0)}
+.mobile-menu a:hover{color:white;letter-spacing:.08em}
+.mobile-menu .mobile-cta{margin-top:20px;font-size:.72rem!important;font-weight:700!important;background:var(--red);color:white!important;padding:12px 32px;border-radius:100px;letter-spacing:.1em!important;opacity:1!important;transform:none!important}
+.mobile-menu-footer{position:absolute;bottom:32px;font-family:var(--font-mono);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+@media(min-width:901px) and (max-width:1380px){.nav-links{gap:16px}.nd-nav-tag{display:none}}
+@media(max-width:900px){.nav-links{display:none}.hamburger{display:flex}.nd-nav-tag{display:none}}
 @media(max-width:768px){
   .nd-nav{padding:16px 24px}
   .nd-nav.scrolled{padding:12px 24px}
@@ -91,8 +109,38 @@ input[type=range]{accent-color:#1c1917}
   <a href="index.html" class="nd-nav-logo">
     <img src="" alt="NuovaDidattica.eu" id="navLogoND" style="height:38px;width:auto">
   </a>
-  <span class="nd-nav-tag">Strumento · NotebookLM</span>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="capire-ai.html">Capire l'AI</a></li>
+    <li><a href="index.html#filosofia">Filosofia</a></li>
+    <li><a href="index.html#casi">Applicazioni</a></li>
+    <li><a href="index.html#etica">Etica</a></li>
+    <li><a href="index.html#toolbox">Toolbox</a></li>
+    <li><a href="index.html#blog">Blog</a></li>
+    <li><a href="index.html#pubblicazioni">Pubblicazioni</a></li>
+    <li><a href="index.html#community">Community</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="nd-nav-tag">Strumento · NotebookLM</span>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
 </nav>
+
+<!-- MENU MOBILE -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="capire-ai.html">Capire l'AI</a>
+  <a href="index.html#filosofia">Filosofia</a>
+  <a href="index.html#casi">Applicazioni</a>
+  <a href="index.html#etica">Etica</a>
+  <a href="index.html#toolbox">Toolbox</a>
+  <a href="index.html#progetti">Progetti</a>
+  <a href="index.html#feed">Feed</a>
+  <a href="index.html#blog">Blog</a>
+  <a href="index.html#pubblicazioni">Pubblicazioni</a>
+  <a href="index.html#community" class="mobile-cta">Unisciti</a>
+  <div class="mobile-menu-footer">NuovaDidattica.eu</div>
+</div>
 
 <!-- SLAM JAM APP -->
 
@@ -373,6 +421,21 @@ if(cursor && ring){
 const nav = document.getElementById('mainNav');
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// MENU MOBILE (standard sito — vedi CLAUDE.md)
+function toggleMenu(){
+  const m=document.getElementById('mobileMenu'),b=document.getElementById('hamburger');
+  const open=m.classList.toggle('open');
+  b.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    const m=document.getElementById('mobileMenu'),b=document.getElementById('hamburger');
+    if(m)m.classList.remove('open');if(b)b.classList.remove('open');
+    document.body.style.overflow='';
+  }
 });
 
 // LOGO INJECTION

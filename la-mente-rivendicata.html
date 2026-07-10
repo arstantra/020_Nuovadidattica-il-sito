@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
+html{scroll-behavior:smooth;font-size:16px;overflow-x:hidden}
 body{font-family:'DM Sans',sans-serif;background:#F5F3EE;color:#0D0D0D;overflow-x:hidden;cursor:none}
 .cursor{position:fixed;top:0;left:0;width:12px;height:12px;background:#D91B1B;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:difference}
 .cursor-ring{position:fixed;top:0;left:0;width:36px;height:36px;border:1.5px solid #D91B1B;border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .08s ease-out,width .2s,height .2s;mix-blend-mode:difference}
@@ -31,6 +31,24 @@ nav.scrolled{background:rgba(10,10,10,.85);backdrop-filter:blur(16px);padding:14
 .nav-back::before{content:"←";font-size:.9rem}
 .nav-right{display:flex;align-items:center;gap:28px}
 .nav-tag{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:8px 16px;border:1px solid rgba(255,255,255,.1);border-radius:100px}
+/* ===== MENU SITO UNIFICATO (non negoziabile — vedi CLAUDE.md) ===== */
+.nav-links{display:flex;gap:26px;list-style:none}
+.nav-links a{font-family:var(--font-display);font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#F5F3EE;text-decoration:none;opacity:.7;transition:opacity .2s}
+.nav-links a:hover{opacity:1}
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;background:none;border:none;cursor:pointer;padding:4px;z-index:200}
+.hamburger span{display:block;width:100%;height:2px;background:#F5F3EE;border-radius:2px;transition:transform .3s,opacity .3s,width .3s;transform-origin:center}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;width:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--dark);z-index:150;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;opacity:0;pointer-events:none;transition:opacity .35s ease}
+.mobile-menu.open{opacity:1;pointer-events:all}
+.mobile-menu a{font-family:var(--font-display);font-size:clamp(1rem,4vw,1.4rem);font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.45);text-decoration:none;transition:color .2s,transform .2s,letter-spacing .2s;transform:translateY(8px)}
+.mobile-menu.open a{transform:translateY(0)}
+.mobile-menu a:hover{color:white;letter-spacing:.08em}
+.mobile-menu .mobile-cta{margin-top:20px;font-size:.72rem!important;font-weight:700!important;background:var(--red);color:white!important;padding:12px 32px;border-radius:100px;letter-spacing:.1em!important;opacity:1!important;transform:none!important}
+.mobile-menu-footer{position:absolute;bottom:32px;font-family:var(--font-mono);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+@media(min-width:901px) and (max-width:1380px){.nav-links{gap:16px}.nav-tag{display:none}}
+@media(max-width:900px){.nav-links{display:none}.hamburger{display:flex}.nav-tag{display:none}}
 /* HERO */
 .article-hero{min-height:72vh;background:var(--dark);position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:140px 48px 80px;overflow:hidden}
 .hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(217,27,27,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(217,27,27,.04) 1px,transparent 1px);background-size:60px 60px;opacity:.5}
@@ -134,11 +152,38 @@ footer{background:var(--dark);padding:60px 48px;display:flex;align-items:center;
   <a href="index.html" class="nav-logo">
     <img src="" alt="NuovaDidattica.eu" id="navLogoND">
   </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="capire-ai.html">Capire l'AI</a></li>
+    <li><a href="index.html#filosofia">Filosofia</a></li>
+    <li><a href="index.html#casi">Applicazioni</a></li>
+    <li><a href="index.html#etica">Etica</a></li>
+    <li><a href="index.html#toolbox">Toolbox</a></li>
+    <li><a href="index.html#blog">Blog</a></li>
+    <li><a href="index.html#pubblicazioni">Pubblicazioni</a></li>
+    <li><a href="index.html#community">Community</a></li>
+  </ul>
   <div class="nav-right">
     <span class="nav-tag">Ricerca · Identità &amp; AI</span>
-    <a href="index.html" class="nav-back">Torna al sito</a>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+
+<!-- MENU MOBILE -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="capire-ai.html">Capire l'AI</a>
+  <a href="index.html#filosofia">Filosofia</a>
+  <a href="index.html#casi">Applicazioni</a>
+  <a href="index.html#etica">Etica</a>
+  <a href="index.html#toolbox">Toolbox</a>
+  <a href="index.html#progetti">Progetti</a>
+  <a href="index.html#feed">Feed</a>
+  <a href="index.html#blog">Blog</a>
+  <a href="index.html#pubblicazioni">Pubblicazioni</a>
+  <a href="index.html#community" class="mobile-cta">Unisciti</a>
+  <div class="mobile-menu-footer">NuovaDidattica.eu</div>
+</div>
 
 <!-- HERO -->
 <section class="article-hero">
@@ -291,6 +336,21 @@ const ring = document.getElementById('cursorRing');
 document.addEventListener('mousemove', e => {
   cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px';
   ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+});
+
+// MENU MOBILE (standard sito — vedi CLAUDE.md)
+function toggleMenu(){
+  const m=document.getElementById('mobileMenu'),b=document.getElementById('hamburger');
+  const open=m.classList.toggle('open');
+  b.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    const m=document.getElementById('mobileMenu'),b=document.getElementById('hamburger');
+    if(m)m.classList.remove('open');if(b)b.classList.remove('open');
+    document.body.style.overflow='';
+  }
 });
 
 // NAV SCROLL
