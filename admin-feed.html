@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Admin · Feed Ragionato — NuovaDidattica.eu</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- FIX: tag src chiuso correttamente — il contenuto inline dentro <script src> viene ignorato dai browser -->
@@ -172,9 +173,37 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
 .modal h2 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 8px; }
 .modal p { font-size: 0.88rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 24px; }
 .drive-badge { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(245,200,0,0.1); color: var(--eu-yellow); padding: 3px 9px; border-radius: 100px; }
+.login-screen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 500; padding: 20px; }
+.login-screen.hidden { display: none; }
+.login-box { background: var(--dark-2); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 44px; max-width: 380px; width: 100%; }
+.login-logo { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: white; text-align: center; }
+.login-logo span { color: var(--red); }
+.login-sub { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); text-align: center; margin: 8px 0 28px; }
+.login-error { font-family: var(--font-mono); font-size: 0.7rem; color: var(--red); margin-top: 12px; text-align: center; }
+.admin-layout.hidden { display: none; }
 </style>
 </head>
 <body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Nuova<span>Didattica</span>.eu</div>
+    <div class="login-sub">Accesso amministratore</div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="tua@email.it" autocomplete="username">
+    </div>
+    <div class="field" style="margin-bottom:4px">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <div class="login-error" id="loginError" style="display:none"></div>
+    <div class="form-actions" style="margin-top:22px">
+      <button class="btn btn-red" onclick="login()" style="width:100%">Accedi →</button>
+    </div>
+  </div>
+</div>
 
 <!-- CONFIG MODAL -->
 <div class="modal-overlay hidden" id="configModal">
@@ -204,7 +233,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
   <button onclick="document.getElementById('configModal').classList.remove('hidden')" style="background:none;border:none;color:var(--orange);cursor:pointer;font-family:var(--font-mono);font-size:0.75rem;text-decoration:underline;margin-left:8px">Configura ora →</button>
 </div>
 
-<div class="admin-layout">
+<div class="admin-layout hidden" id="adminLayout">
   <aside class="sidebar">
     <div>
       <div class="sidebar-logo">Nuova<span>Didattica</span>.eu</div>
@@ -241,6 +270,7 @@ body { font-family: 'DM Sans', sans-serif; background: #0A0A0A; color: #F5F3EE; 
         <span class="icon">⚙️</span> Impostazioni
       </button>
     </nav>
+    <button onclick="logout()" class="sidebar-back" style="border:none;background:none;cursor:pointer;font-family:var(--font-mono)">⎋ Esci</button>
     <a href="index.html" class="sidebar-back">← Torna al sito</a>
   </aside>
 
@@ -595,14 +625,58 @@ function initSB(url, key) {
     document.getElementById('cfgUrlEdit').value = url;
     document.getElementById('cfgKeyEdit').value = key;
     demoMode = false;
-    loadAll();
-    loadBlogAdmin();
-    loadPubAdmin();
-    loadFonti();
-    toast('✓ Connesso a Supabase', 'ok');
+    checkAuthAndInit();
   } catch(e) {
     toast('⚠ Errore connessione Supabase', 'err');
   }
+}
+
+// ── AUTH (obbligatorio: la RLS su Supabase limita le scritture agli
+// utenti autenticati — vedi CLAUDE.md § Sicurezza. Senza login qui,
+// ogni insert/update/delete viene rifiutato dal database) ──────
+async function checkAuthAndInit() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) { onAuthed(); }
+  else {
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('adminLayout').classList.add('hidden');
+  }
+}
+
+async function login() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+  if (!email || !password) {
+    errEl.textContent = 'Inserisci email e password.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    errEl.textContent = 'Credenziali non valide.';
+    errEl.style.display = 'block';
+    return;
+  }
+  document.getElementById('loginPassword').value = '';
+  toast('✓ Accesso effettuato', 'ok');
+  onAuthed();
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('adminLayout').classList.add('hidden');
+}
+
+function onAuthed() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('adminLayout').classList.remove('hidden');
+  loadAll();
+  loadBlogAdmin();
+  loadPubAdmin();
+  loadFonti();
 }
 
 function saveConfig() {
@@ -625,6 +699,8 @@ function useDemoMode() {
   demoMode = true;
   document.getElementById('configModal').classList.add('hidden');
   document.getElementById('demoBanner').classList.remove('hidden');
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('adminLayout').classList.remove('hidden');
   loadAll();
   loadBlogAdmin();
   loadPubAdmin();

@@ -85,8 +85,9 @@ Pesi usati: Syne 400/600/700/800 · DM Sans 300/400/500 (anche italic) · DM Mon
 | `prompt-coach.html` | Tool PromptCoach — analisi prompt via API Claude (key inserita dall'utente) |
 | `verificai.html` | Tool VerificAI — progettazione verifiche in 4 step (contesto → obiettivo Bloom → forma → consegna+rubrica); topbar con logo + menu unificato. Nel toolbox la card si chiama "Verifiche a prova di AI" |
 | `generatore-test.html` | Tool Generatore Test & Rubriche — wizard in 4 step (contesto classe → test → differenziazione BES/DSA e file A/B → rubrica+griglia) che produce prompt pronti da incollare nell'AI; topbar con logo + menu unificato |
-| `admin-feed.html` | Pannello admin unificato: feed, blog, pubblicazioni (con card linking) |
+| `admin-feed.html` | Pannello admin unificato: feed, blog, pubblicazioni (con card linking). Login Supabase Auth obbligatorio (`#loginScreen`) |
 | `nd-components.js` + `nd-components-demo.html` | Libreria componenti sperimentale — NON usata dalle pagine di produzione |
+| `supabase-rls-fix.sql` | Script RLS da eseguire nel SQL Editor di Supabase — vedi sezione "Sicurezza" |
 | `CNAME` | `nuovadidattica.eu` |
 
 ---
@@ -273,6 +274,21 @@ Varianti ammesse (solo grafiche, mai strutturali):
 6. **Accessibilità:** `alt` su tutte le immagini, `aria-label` sui bottoni icon-only
 7. **Supabase** — client `SB` condiviso in `index.html` (costanti `SB_URL`/`SB_KEY` hardcoded nello script); in `admin-feed.html` le stesse credenziali sono configurabili da UI con fallback su `localStorage`. Mai hardcodare in pagine pubbliche nuove senza valutare le RLS policy.
 8. **onclick con dati complessi** — non usare `JSON.stringify(obj)` dentro attributi `onclick="..."`: le virgolette doppie spezzano l'HTML. Usare una cache JS indicizzata per ID (es. `_pubsCache`) e passare solo l'ID stringa.
+9. **RLS obbligatoria su ogni tabella nuova, fin dalla creazione** — vedi sezione "Sicurezza" qui sotto. Nessuna tabella Supabase va lasciata senza policy esplicite, nemmeno per test rapidi.
+
+---
+
+## Sicurezza
+
+**La anon key è pubblica per design** — è embeddata nel sorgente di `index.html` e `admin-feed.html`, chiunque può leggerla. La sicurezza non sta nel nasconderla ma nelle **RLS policy** di ogni tabella.
+
+Pattern standard del progetto (vedi `supabase-rls-fix.sql` per lo script completo):
+
+- **Lettura pubblica** (`to anon`): solo righe "pubblicate" (`published = true` o `status = 'published'`). Tabelle mai lette dal sito pubblico (es. `monitored_sources`) non hanno nessuna policy `anon` — zero accesso, nemmeno in lettura.
+- **Scrittura** (insert/update/delete, policy `for all`): riservata `to authenticated`, **con `using`/`with check` sull'email specifica** (`auth.jwt() ->> 'email' = 'andrea.poletti@nuovadidattica.eu'`) — "authenticated" da solo non basta: se il progetto Supabase permette signup pubblici, chiunque potrebbe creare un account e aggirare la restrizione.
+- **Tabelle con insert pubblico** (es. `iscritti`, form community): policy `insert to anon with check (true)` separata dalla policy admin, mai unita alla lettura — altrimenti la lista email diventa leggibile da chiunque.
+
+`admin-feed.html` richiede login (schermata `#loginScreen`, Supabase Auth email/password) prima di mostrare `#adminLayout`: senza questo, con la RLS attiva, ogni scrittura dell'admin verrebbe rifiutata dal database. L'utente admin si crea manualmente in Supabase Dashboard → Authentication → Users (non è automatizzabile da SQL). Consigliato disattivare anche "Allow new users to sign up" in Authentication → Settings.
 
 ---
 
@@ -284,6 +300,7 @@ Varianti ammesse (solo grafiche, mai strutturali):
 | `blog_posts` | Articoli blog leggibili inline | campi: title, body (HTML), excerpt, category, author, drive_url, published, published_at |
 | `pubblicazioni` | Scritti & Quaderni (PDF su Drive) | campi: title, tipo, numero, drive_url, pages, excerpt, published, published_at, **card_id** |
 | `monitored_sources` | Fonti RSS/YouTube monitorate | campi: name, url, tipo, active |
+| `iscritti` | Iscrizioni community (form `#community` in `index.html`) | campi: email (unique) — solo insert pubblico, lettura/gestione riservata ad admin autenticato |
 
 **`card_id`** in `pubblicazioni`: collega un PDF a una specifica bento card della homepage. Se valorizzato, `injectCardRisorse()` inietta automaticamente il CTA "Scarica PDF" nella card corrispondente. Se `null`, il PDF appare solo in Scritti & Quaderni.
 
@@ -338,7 +355,8 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 - [ ] Video sezione #filosofia (link YouTube da inserire)
 - [ ] Nuove pagine blog da aggiungere (struttura simile a `docente-team.html`)
 - [ ] Pagina dedicata ADA (ada.nuovadidattica.eu)
-- [ ] Form iscrizione community #community funzionante
+- [x] Form iscrizione community #community funzionante — insert su `iscritti` operativo (mancano ancora eventuali notifiche/gestione admin degli iscritti)
+- [ ] Creare utente admin in Supabase Auth ed eseguire `supabase-rls-fix.sql` (vedi sezione Sicurezza) — passaggio manuale ancora da fare
 
 ---
 
@@ -368,7 +386,8 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | lug 2026 | Nuovo tool `generatore-test.html` (Generatore Test & Rubriche) + card `tool-testgen`; riga toolbox 6+6 → 4+4+4 | La card `caso-verifiche` prometteva "test, rubriche e griglie in pochi minuti" ma linkava VerificAI, che fa progettazione metodologica: due lavori diversi, due tool distinti |
 | lug 2026 | Card toolbox rinominata "Verifiche a prova di AI" (il nome VerificAI resta nel testo) | "VerificAI" da solo non comunicava lo scopo: la card ora spiega che serve a progettare verifiche non delegabili all'AI dagli studenti |
 | lug 2026 | PDF "Riconoscere la AI" spostato da `caso-verifiche` a `tool-verificai` (card_id in Supabase) | Il PDF parla di riconoscere elaborati fatti con l'AI: era fuori tema sulla card dei test, è coerente con le verifiche a prova di AI |
+| lug 2026 | RLS abilitata su tutte le tabelle Supabase + login Supabase Auth obbligatorio su `admin-feed.html` (email/password, scritture ristrette a `andrea.poletti@nuovadidattica.eu`) | La anon key pubblica permetteva insert/update/delete senza restrizioni: chiunque leggesse il sorgente del sito poteva modificare feed, blog e pubblicazioni. Segnalato da Andrea il 2026-07-10. Vedi sezione "Sicurezza" e `supabase-rls-fix.sql` |
 
 ---
 
-*Ultima revisione: 2026-07-10 (3ª sessione) — nuovo tool `generatore-test.html` + card `tool-testgen` nel toolbox (riga 4+4+4); card `caso-verifiche` ricablata sul generatore; card toolbox rinominata "Verifiche a prova di AI"; PDF "Riconoscere la AI" spostato su `tool-verificai`*
+*Ultima revisione: 2026-07-10 (4ª sessione) — fix sicurezza: RLS su tutte le tabelle Supabase (incluso `iscritti`, ora documentata) + login obbligatorio su `admin-feed.html`; SQL in `supabase-rls-fix.sql`; nuova sezione "Sicurezza"*
