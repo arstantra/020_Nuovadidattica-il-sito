@@ -1,0 +1,7 @@
+# Materiali di lavoro locali — mai da versionare
+_archivio/
+
+# File di sistema
+desktop.ini
+.DS_Store
+Thumbs.db
