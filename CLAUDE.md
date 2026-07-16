@@ -77,7 +77,7 @@ Pesi usati: Syne 400/600/700/800 · DM Sans 300/400/500 (anche italic) · DM Mon
 | File | Descrizione |
 |---|---|
 | `index.html` | Homepage principale — feed, blog, pubblicazioni tutti da Supabase |
-| `capire-ai.html` | Guida "Capire l'AI" — 9 sezioni, dropdown "Capitoli" nell'header + back-to-top "↑ Indice", collegata dal nav e dall'hook in #filosofia |
+| `capire-ai.html` | Guida "Capire l'AI" — 9 sezioni, dropdown "Capitoli" nell'header + back-to-top "↑ Indice", aperta dal CTA dell'hook in #filosofia (da index) e dal menu delle pagine interne; la voce nav di index scrolla all'hook `#capire-ai` |
 | `docente-team.html` | Articolo blog "Il Docente-Team: Dirigere l'Ecosistema AI" |
 | `la-mente-rivendicata.html` | Paper "La Mente Rivendicata" — collegato da card in #filosofia |
 | `guida-notebooklm.html` | Guida NotebookLM — collegata dalla card `tool-notebooklm` |
@@ -108,9 +108,9 @@ Sezioni in ordine, con anchor ID:
 10. **`#pubblicazioni`** — Pubblicazioni e risorse
 11. **`#community`** — CTA iscrizione community
 
-Navigazione: voce "Capire l'AI" (link a `capire-ai.html`) + link a tutte le sezioni + CTA "Unisciti" → `#community`.
+Navigazione: **tutte le voci del menu di index (desktop + mobile) sono anchor interni** — inclusa "Capire l'AI", che punta a `#capire-ai` (l'hook in #filosofia), NON direttamente a `capire-ai.html`. Motivazione: un menu misto scroll/pagina disorienta (lug 2026). + CTA "Unisciti" → `#community`.
 
-Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-ai-hook` (sfondo scuro, testo + CTA gialla) che rimanda a `capire-ai.html` per i docenti alle prime armi.
+Nella sezione `#filosofia`, prima del bento grid, è presente un hook `.capire-ai-hook` con `id="capire-ai"` e `scroll-margin-top:110px` (sfondo scuro, testo + CTA gialla): è il target della voce di menu "Capire l'AI" e il suo CTA è l'unico punto di index che apre `capire-ai.html`. Dalle pagine interne, invece, la voce di menu "Capire l'AI" resta un link diretto a `capire-ai.html` (lì tutte le voci cambiano pagina, nessuna ambiguità).
 
 ---
 
@@ -386,8 +386,9 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | lug 2026 | Nuovo tool `generatore-test.html` (Generatore Test & Rubriche) + card `tool-testgen`; riga toolbox 6+6 → 4+4+4 | La card `caso-verifiche` prometteva "test, rubriche e griglie in pochi minuti" ma linkava VerificAI, che fa progettazione metodologica: due lavori diversi, due tool distinti |
 | lug 2026 | Card toolbox rinominata "Verifiche a prova di AI" (il nome VerificAI resta nel testo) | "VerificAI" da solo non comunicava lo scopo: la card ora spiega che serve a progettare verifiche non delegabili all'AI dagli studenti |
 | lug 2026 | PDF "Riconoscere la AI" spostato da `caso-verifiche` a `tool-verificai` (card_id in Supabase) | Il PDF parla di riconoscere elaborati fatti con l'AI: era fuori tema sulla card dei test, è coerente con le verifiche a prova di AI |
+| lug 2026 | Menu di index 100% scroll-only: la voce "Capire l'AI" punta a `#capire-ai` (hook in #filosofia) e non più a `capire-ai.html`; l'apertura della pagina avviene solo dal CTA dell'hook | Un menu con 9 voci che scrollano e 1 che cambia pagina, tutte con la stessa grafica, disorienta (problema già visto su artantra.org). Le pagine interne mantengono il link diretto: lì tutte le voci cambiano pagina, nessuna ambiguità |
 | lug 2026 | RLS abilitata su tutte le tabelle Supabase + login Supabase Auth obbligatorio su `admin-feed.html` (email/password, scritture ristrette a `andrea.poletti@nuovadidattica.eu`) | La anon key pubblica permetteva insert/update/delete senza restrizioni: chiunque leggesse il sorgente del sito poteva modificare feed, blog e pubblicazioni. Segnalato da Andrea il 2026-07-10. Vedi sezione "Sicurezza" e `supabase-rls-fix.sql` |
 
 ---
 
-*Ultima revisione: 2026-07-10 (4ª sessione) — fix sicurezza: RLS su tutte le tabelle Supabase (incluso `iscritti`, ora documentata) + login obbligatorio su `admin-feed.html`; SQL in `supabase-rls-fix.sql`; nuova sezione "Sicurezza"*
+*Ultima revisione: 2026-07-16 (5ª sessione) — nuovo approfondimento "L'effetto omologazione" in Sezione 4 di `capire-ai.html`; menu di index reso 100% scroll-only (voce "Capire l'AI" → `#capire-ai`, hook in #filosofia)*

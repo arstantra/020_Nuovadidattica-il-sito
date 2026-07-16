@@ -173,6 +173,15 @@ nav.scrolled{background:rgba(10,10,10,.85);backdrop-filter:blur(16px);padding:14
 .prob-bar{height:100%;border-radius:4px;background:var(--red);transition:width 1s ease}
 .prob-pct{font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);width:36px;text-align:right;flex-shrink:0}
 
+/* APPROFONDIMENTO — OMOLOGAZIONE (sezione 4) */
+.approfondimento-kicker{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--eu-yellow);margin:56px 0 14px;display:flex;align-items:center;gap:10px}
+.approfondimento-kicker::before{content:"";display:block;width:20px;height:1px;background:var(--eu-yellow)}
+.approfondimento-title{font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:white;letter-spacing:-.01em;margin-bottom:20px;max-width:700px}
+.callout-dark{border-left:3px solid var(--red);padding:20px 28px;margin:32px 0 0;background:rgba(255,255,255,.04);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.callout-dark .callout-label{color:var(--eu-yellow)}
+.callout-dark .callout-label::before{background:var(--eu-yellow)}
+.callout-dark p{font-size:.95rem;line-height:1.7;color:rgba(255,255,255,.75);margin:0;font-style:italic}
+
 /* MODELLI TABLE */
 .modelli-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--gap);margin-top:40px}
 .modello-card{background:white;border-radius:var(--radius);padding:28px;border-top:3px solid transparent;transition:all .25s}
@@ -558,6 +567,38 @@ nav.scrolled{background:rgba(10,10,10,.85);backdrop-filter:blur(16px);padding:14
       </div>
       <p style="font-size:.78rem;color:var(--text-muted);margin-top:16px;font-family:var(--font-mono)">* valori indicativi a scopo illustrativo. La temperatura del modello regola quanto "rischiare" scelte meno probabili.</p>
     </div>
+
+    <div class="approfondimento-kicker reveal">Approfondimento</div>
+    <h3 class="approfondimento-title reveal reveal-delay-1">L'effetto omologazione: perché le risposte dell'AI si assomigliano tutte</h3>
+
+    <div class="article-prose reveal reveal-delay-2">
+      <p style="color:rgba(255,255,255,.6)">Il meccanismo appena visto spiega anche un fenomeno di cui si parla sempre di più: usata senza attenzione, l'AI produce testi che si somigliano tutti — stesso tono rassicurante, stesse frasi fatte, la stessa prudenza diplomatica. Non è un difetto nascosto del modello, è la conseguenza diretta di come funziona: per costruire ogni token il sistema pesca quasi sempre dall'opzione statisticamente più probabile. E la più probabile è, per definizione, anche la più <strong style="color:white">prevedibile</strong> — una media calcolata su miliardi di testi, non una voce originale.</p>
+      <p style="color:rgba(255,255,255,.6)">Un prompt generico riceve dunque la risposta più "media" che il modello sa produrre. Chiedere genericamente più originalità non basta: serve introdurre nel prompt un <strong style="color:white">attrito volontario</strong> che allontani la scelta dal token più probabile. Chi scrive il prompt deve lavorare più da regista che da committente — specificando non solo cosa produrre, ma soprattutto cosa evitare.</p>
+    </div>
+
+    <div class="card-grid card-grid-3 reveal reveal-delay-2">
+      <div class="dark-card">
+        <div class="concept-card-label">Vincolo negativo</div>
+        <h3>Dì cosa evitare</h3>
+        <p>Escludere per iscritto le uscite più probabili funziona meglio che sperare in un'originalità generica: "senza aggettivi lirici", "senza conclusioni morali", "senza la metafora di [X]".</p>
+      </div>
+      <div class="dark-card">
+        <div class="concept-card-label">Prospettiva vincolata</div>
+        <h3>Fissa un punto di osservazione</h3>
+        <p>Un tema generico lascia il modello libero di scegliere la media. Un punto di vista preciso no: "scrivi dal punto di vista di chi ha fretta", "usa solo suoni e odori, niente immagini visive".</p>
+      </div>
+      <div class="dark-card">
+        <div class="concept-card-label">Sintassi imposta</div>
+        <h3>Rompi la forma</h3>
+        <p>Vincolare la forma — frasi sotto le cinque parole, stile telegrafico, un solo segno di punteggiatura ammesso — cambia a cascata anche le scelte lessicali, non solo il ritmo.</p>
+      </div>
+    </div>
+
+    <div class="callout-dark reveal reveal-delay-3">
+      <div class="callout-label">Per il docente</div>
+      <p>Vale anche in classe: mostrare agli studenti che due prompt quasi identici restituiscono testi quasi identici è il modo più diretto per far capire la differenza tra un testo e una media statistica — e che scriverne uno che non sia scontato richiede la stessa cura registica appena descritta.</p>
+    </div>
+
   </div>
 </section>
 
