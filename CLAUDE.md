@@ -85,6 +85,7 @@ Pesi usati: Syne 400/600/700/800 · DM Sans 300/400/500 (anche italic) · DM Mon
 | `prompt-coach.html` | Tool PromptCoach — analisi prompt via API Claude (key inserita dall'utente) |
 | `verificai.html` | Tool VerificAI — progettazione verifiche in 4 step (contesto → obiettivo Bloom → forma → consegna+rubrica); topbar con logo + menu unificato. Nel toolbox la card si chiama "Verifiche a prova di AI" |
 | `generatore-test.html` | Tool Generatore Test & Rubriche — wizard in 4 step (contesto classe → test → differenziazione BES/DSA e file A/B → rubrica+griglia) che produce prompt pronti da incollare nell'AI; topbar con logo + menu unificato |
+| `percorso.html` | Pagina editoriale "Il percorso" (chi c'è dietro il sito): hero con foto, filo rosso + scheda "In sintesi", tre radici, 9 progetti di classe (featured ENEL `12` / `4+4+4` / `4+4+4` / `6+6`), formazione docenti `4+4+4`, timeline, contatti. Aperta dal CTA di `#chi-sono` e dai crediti del footer. Foto autore in costante `FOTO_B64` (JPEG) |
 | `admin-feed.html` | Pannello admin unificato: feed, blog, pubblicazioni (con card linking). Login Supabase Auth obbligatorio (`#loginScreen`) |
 | `nd-components.js` + `nd-components-demo.html` | Libreria componenti sperimentale — NON usata dalle pagine di produzione |
 | `supabase-rls-fix.sql` | Script RLS da eseguire nel SQL Editor di Supabase — vedi sezione "Sicurezza" |
@@ -106,7 +107,10 @@ Sezioni in ordine, con anchor ID:
 8. **`#feed`** — Feed di aggiornamenti (accento blu EU, dati da Supabase)
 9. **`#blog`** — Articoli blog
 10. **`#pubblicazioni`** — Pubblicazioni e risorse
-11. **`#community`** — CTA iscrizione community
+11. **`#chi-sono`** — Chi c'è dietro (sfondo scuro, label gialla): card autore con foto `FOTO_B64` + card "In sintesi"; CTA → `percorso.html`
+12. **`#community`** — CTA iscrizione community
+
+`#chi-sono` **non ha voce di menu** (scelta deliberata, set 2026): il menu desktop già non entra tra 901 e ~1300px. Vi si arriva dal credito del motto ("— Andrea Poletti"), dal footer e dalla pagina `percorso.html`.
 
 Navigazione: **tutte le voci del menu di index (desktop + mobile) sono anchor interni** — inclusa "Capire l'AI", che punta a `#capire-ai` (l'hook in #filosofia), NON direttamente a `capire-ai.html`. Motivazione: un menu misto scroll/pagina disorienta (lug 2026). + CTA "Unisciti" → `#community`.
 
@@ -174,6 +178,7 @@ Le grid desktop sono a **12 colonne** (`grid-template-columns: repeat(12, 1fr)`)
 | `#filosofia` | `7+5` / `4+4+4` / `12` (docente-team) / `7+5` (mente-rivendicata + claim) |
 | `#casi` | `4+5+3` / `6+6` (tutoring + studenti) |
 | `#etica` | `8+4` / `4+4+4` / `12` (banda falso allarme) |
+| `#chi-sono` | `8+4` (chi-main + chi-side) — ≤900px 1 colonna |
 | `#toolbox` | `12` (nlm-gen) / `4+4+4` (classroom + notebooklm + drive) / `4+4+4` (PromptCoach + Verifiche a prova di AI + Generatore Test & Rubriche) / `12` (ADA) |
 
 ### Breakpoint
@@ -352,6 +357,8 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 - [x] VerificAI: card nel #toolbox + link da `caso-verifiche` + topbar sito su `verificai.html`
 - [x] Card #casi ricablate: expand Pattern B con contenuto metodologico (niente più scroll generici)
 - [x] Menu "Capitoli" + back-to-top su `capire-ai.html`
+- [x] Sezione `#chi-sono` + pagina `percorso.html` (set 2026)
+- [ ] Menu desktop troppo affollato tra 901 e ~1300px (logo schiacciato, CTA "Unisciti" tagliata): valutare hamburger fino a 1280px o meno voci
 - [ ] Video sezione #filosofia (link YouTube da inserire)
 - [ ] Nuove pagine blog da aggiungere (struttura simile a `docente-team.html`)
 - [ ] Pagina dedicata ADA (ada.nuovadidattica.eu)
@@ -388,7 +395,8 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | lug 2026 | PDF "Riconoscere la AI" spostato da `caso-verifiche` a `tool-verificai` (card_id in Supabase) | Il PDF parla di riconoscere elaborati fatti con l'AI: era fuori tema sulla card dei test, è coerente con le verifiche a prova di AI |
 | lug 2026 | Menu di index 100% scroll-only: la voce "Capire l'AI" punta a `#capire-ai` (hook in #filosofia) e non più a `capire-ai.html`; l'apertura della pagina avviene solo dal CTA dell'hook | Un menu con 9 voci che scrollano e 1 che cambia pagina, tutte con la stessa grafica, disorienta (problema già visto su artantra.org). Le pagine interne mantengono il link diretto: lì tutte le voci cambiano pagina, nessuna ambiguità |
 | lug 2026 | RLS abilitata su tutte le tabelle Supabase + login Supabase Auth obbligatorio su `admin-feed.html` (email/password, scritture ristrette a `andrea.poletti@nuovadidattica.eu`) | La anon key pubblica permetteva insert/update/delete senza restrizioni: chiunque leggesse il sorgente del sito poteva modificare feed, blog e pubblicazioni. Segnalato da Andrea il 2026-07-10. Vedi sezione "Sicurezza" e `supabase-rls-fix.sql` |
+| set 2026 | Sezione `#chi-sono` in homepage + pagina `percorso.html`; crediti footer "AP" → "Andrea Poletti" con link | Il sito dava indicazioni forti sull'AI senza dire chi le dava. Dal CV Europass si pubblica solo il percorso professionale pertinente: mai passaporto, data di nascita, indirizzo, telefono |
 
 ---
 
-*Ultima revisione: 2026-07-16 (5ª sessione) — nuovo approfondimento "L'effetto omologazione" in Sezione 4 di `capire-ai.html`; menu di index reso 100% scroll-only (voce "Capire l'AI" → `#capire-ai`, hook in #filosofia)*
+*Ultima revisione: 2026-09-25 — sezione `#chi-sono` e pagina `percorso.html`. Precedente: 2026-07-16 (5ª sessione) — nuovo approfondimento "L'effetto omologazione" in Sezione 4 di `capire-ai.html`; menu di index reso 100% scroll-only (voce "Capire l'AI" → `#capire-ai`, hook in #filosofia)*
