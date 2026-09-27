@@ -78,6 +78,7 @@ Pesi usati: Syne 400/600/700/800 · DM Sans 300/400/500 (anche italic) · DM Mon
 |---|---|
 | `index.html` | Homepage principale — feed, blog, pubblicazioni tutti da Supabase |
 | `capire-ai.html` | Guida "Capire l'AI" — 9 sezioni, dropdown "Capitoli" nell'header + back-to-top "↑ Indice", aperta dal CTA dell'hook in #filosofia (da index) e dal menu delle pagine interne; la voce nav di index scrolla all'hook `#capire-ai` |
+| `norme-ai.html` | Guida normativa "Le regole dell'AI a scuola" (set 2026) — pattern pagina guida come `capire-ai.html`: 9 sezioni (mappa, calendario, AI Act, GDPR, legge 132 e decreti, Ministero e Garante, zone grigie, checklist, glossario+paper), dropdown "Capitoli", riquadri apribili `.percapire`, zone grigie in accordion `.grigia`, checklist spuntabili (solo visuali), glossario filtrabile. Aperta dal CTA dell'hook `#norme-ai` in #etica. Costante `PAPER_URL` nello script: vuota = il bottone rimanda a Scritti & Quaderni; va valorizzata con il link Drive del PDF del paper "La giungla normativa dell'IA a scuola". Contenuti datati: badge "Aggiornata al…" nell'hero da aggiornare a ogni revisione |
 | `docente-team.html` | Articolo blog "Il Docente-Team: Dirigere l'Ecosistema AI" |
 | `la-mente-rivendicata.html` | Paper "La Mente Rivendicata" — collegato da card in #filosofia |
 | `guida-notebooklm.html` | Guida NotebookLM — collegata dalla card `tool-notebooklm` |
@@ -101,7 +102,7 @@ Sezioni in ordine, con anchor ID:
 2. **`#motto`** — Citazione fondante con glifo grafico
 3. **`#filosofia`** — Filosofia del metodo (bento grid con video, card espandibili, statistiche)
 4. **`#casi`** — Applicazioni pratiche in classe
-5. **`#etica`** — Sezione etica (sfondo scuro, accento giallo EU)
+5. **`#etica`** — Sezione etica (sfondo scuro, accento giallo EU). Prima della bento grid c'è l'hook `#norme-ai` (componente `.capire-ai-hook` + variante `.norme-ai-hook` con bordo giallo) il cui CTA apre `norme-ai.html`; nessuna voce di menu dedicata (menu già affollato)
 6. **`#toolbox`** — Strumenti consigliati
 7. **`#progetti`** — Progetti & Esperienze: La Tavola dei Pensatori (→ simposio.nuovadidattica.eu) + La Scuola dei Professoracci (→ professoracci.nuovadidattica.eu)
 8. **`#feed`** — Feed di aggiornamenti (accento blu EU, dati da Supabase)
@@ -358,6 +359,9 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 - [x] Card #casi ricablate: expand Pattern B con contenuto metodologico (niente più scroll generici)
 - [x] Menu "Capitoli" + back-to-top su `capire-ai.html`
 - [x] Sezione `#chi-sono` + pagina `percorso.html` (set 2026)
+- [x] Guida normativa `norme-ai.html` + hook `#norme-ai` in #etica (set 2026)
+- [ ] Caricare il PDF del paper normativo su Drive, pubblicarlo in Scritti & Quaderni (admin) e valorizzare `PAPER_URL` in `norme-ai.html`
+- [ ] `norme-ai.html` sezione 5: aggiornare quando esce in GU il decreto su autorità, formazione e lavoro (termine delega 10/10/2026); aggiornare il badge data
 - [ ] Menu desktop troppo affollato tra 901 e ~1300px (logo schiacciato, CTA "Unisciti" tagliata): valutare hamburger fino a 1280px o meno voci
 - [ ] Video sezione #filosofia (link YouTube da inserire)
 - [ ] Nuove pagine blog da aggiungere (struttura simile a `docente-team.html`)
@@ -396,7 +400,8 @@ La funzione `injectCardRisorse()` in `index.html` gira dopo `loadPubblicazioni()
 | lug 2026 | Menu di index 100% scroll-only: la voce "Capire l'AI" punta a `#capire-ai` (hook in #filosofia) e non più a `capire-ai.html`; l'apertura della pagina avviene solo dal CTA dell'hook | Un menu con 9 voci che scrollano e 1 che cambia pagina, tutte con la stessa grafica, disorienta (problema già visto su artantra.org). Le pagine interne mantengono il link diretto: lì tutte le voci cambiano pagina, nessuna ambiguità |
 | lug 2026 | RLS abilitata su tutte le tabelle Supabase + login Supabase Auth obbligatorio su `admin-feed.html` (email/password, scritture ristrette a `andrea.poletti@nuovadidattica.eu`) | La anon key pubblica permetteva insert/update/delete senza restrizioni: chiunque leggesse il sorgente del sito poteva modificare feed, blog e pubblicazioni. Segnalato da Andrea il 2026-07-10. Vedi sezione "Sicurezza" e `supabase-rls-fix.sql` |
 | set 2026 | Sezione `#chi-sono` in homepage + pagina `percorso.html`; crediti footer "AP" → "Andrea Poletti" con link | Il sito dava indicazioni forti sull'AI senza dire chi le dava. Dal CV Europass si pubblica solo il percorso professionale pertinente: mai passaporto, data di nascita, indirizzo, telefono |
+| set 2026 | Guida normativa come pagina separata `norme-ai.html`, raggiunta da un hook in #etica e non da una voce di menu | Il menu desktop è già saturo tra 901 e 1300px; il tema (regole, rischi, diritti) è naturalmente parte di Etica. La pagina è la versione navigabile del paper, che resta l'approfondimento scaricabile |
 
 ---
 
-*Ultima revisione: 2026-09-25 — sezione `#chi-sono` e pagina `percorso.html`. Precedente: 2026-07-16 (5ª sessione) — nuovo approfondimento "L'effetto omologazione" in Sezione 4 di `capire-ai.html`; menu di index reso 100% scroll-only (voce "Capire l'AI" → `#capire-ai`, hook in #filosofia)*
+*Ultima revisione: 2026-09-27 — guida normativa `norme-ai.html` + hook `#norme-ai` in #etica. Precedente: 2026-09-25 — sezione `#chi-sono` e pagina `percorso.html`. Precedente ancora: 2026-07-16 (5ª sessione) — nuovo approfondimento "L'effetto omologazione" in Sezione 4 di `capire-ai.html`; menu di index reso 100% scroll-only (voce "Capire l'AI" → `#capire-ai`, hook in #filosofia)*
